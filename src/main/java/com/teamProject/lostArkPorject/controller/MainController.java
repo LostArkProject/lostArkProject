@@ -7,7 +7,6 @@ public class MainController {
 
     @GetMapping("/main")
     public String main(){
-        ///=asasd
         return "main";
     }
 }
