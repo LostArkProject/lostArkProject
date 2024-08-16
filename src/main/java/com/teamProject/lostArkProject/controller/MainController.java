@@ -1,4 +1,4 @@
-package com.teamProject.lostArkPorject.controller;
+package com.teamProject.lostArkProject.controller;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
