@@ -65,25 +65,15 @@
 
 
     // Worldwide Sales Chart
-    var ctx1 = $("#worldwide-sales").get(0).getContext("2d");
+    var ctx1 = $("#collectable-percent").get(0).getContext("2d");
     var myChart1 = new Chart(ctx1, {
         type: "bar",
         data: {
-            labels: ["2016", "2017", "2018", "2019", "2020", "2021", "2022"],
+            labels: ["모코코 씨앗", "섬의 마음", "위대한 미술품", "거인의 심장", "이그네아의 징표", "항해 모험물", "세계수의 잎", "오르페우스의 별", "기억의 오르골", "크림스네일의 해도"],
             datasets: [{
-                    label: "USA",
-                    data: [15, 30, 55, 65, 60, 80, 95],
+                    label: "%",
+                    data: [15, 30, 55, 65, 60, 80, 95, 50, 45, 30],
                     backgroundColor: "rgba(235, 22, 22, .7)"
-                },
-                {
-                    label: "UK",
-                    data: [8, 35, 40, 60, 70, 55, 75],
-                    backgroundColor: "rgba(235, 22, 22, .5)"
-                },
-                {
-                    label: "AU",
-                    data: [12, 25, 45, 55, 65, 70, 60],
-                    backgroundColor: "rgba(235, 22, 22, .3)"
                 }
             ]
             },
