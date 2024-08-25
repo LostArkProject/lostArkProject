@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>결과</title>
+</head>
+<body>
+    <h1>캐릭터 정보</h1>
+    <div>
+        <ul>
+            <th:block th:each="character : ${characterList}">
+                <span th:text="${'Lv. ' + character.characterLevel}">Lv. 레벨</span>
+                <span th:text="${character.characterClassName}">직업</span>
+                <span th:text="${'@' + character.serverName}"}>@서버</span>
+                <br>
+
+                <span th:text="${character.characterName}">닉네임</span>
+<!--                    <span th:text="${character.itemAvgLevel}">아이템 레벨</span>-->
+                <span th:text="${character.itemMaxLevel}">최고 템레벨</span>
+                <hr>
+            </th:block>
+        </ul>
+    </div>
+    <a th:href="@{/}">다시 입력하기</a> <!-- 입력 화면으로 돌아가는 링크 -->
+</body>
+</html>
