@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <head>
     <meta charset="utf-8">
@@ -9,26 +9,26 @@
     <meta content="" name="description">
 
     <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
+    <link th:href="@{/img/favicon.ico}" rel="icon">
 
     <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet"> 
+    <link rel="preconnect" th:href="@{https://fonts.googleapis.com}">
+    <link rel="preconnect" th:href="@{https://fonts.gstatic.com}" crossorigin>
+    <link th:href="@{https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap}" rel="stylesheet"> 
     
     <!-- Icon Font Stylesheet -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css}" rel="stylesheet">
+    <link th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css}" rel="stylesheet">
 
     <!-- Libraries Stylesheet -->
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+    <link th:href="@{/lib/owlcarousel/assets/owl.carousel.min.css}" rel="stylesheet">
+    <link th:href="@{/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css}" rel="stylesheet" />
 
     <!-- Customized Bootstrap Stylesheet -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
 
     <!-- Template Stylesheet -->
-    <link href="css/style.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 
 <body>
@@ -178,19 +178,77 @@
                 </div>
             </nav>
             <!-- Navbar End -->
-
-
-            <!-- Sales Chart Start -->
+            
+            <!-- 메인 페이지 코드 시작 -->
             <div class="container-fluid pt-4 px-4">
-                <div class="row g-4">
+                <div class="row">
                     <div class="col-sm-12 col-xl-8">
+                        <!-- 공지사항 -->
                         <div class="bg-secondary text-center rounded p-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <img src="img/notice.png" style="width: 800px; height: auto;">
                             </div>
                         </div>
+                        <!-- 내실 -->
+                        <div class="bg-secondary text-center rounded p-4 mt-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0">내실</h6>
+                                <a href="">Show All</a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table text-start align-middle table-bordered table-hover mb-0">
+                                    <thead>
+                                        <tr class="text-white">
+                                            <th scope="col">순위</th>
+                                            <th scope="col">컨텐츠</th>
+                                            <th scope="col">주요 보상</th>
+                                            <th scope="col">방법</th>
+                                            <th scope="col">상세내용</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>가디언 토벌 - 소나벨</td>
+                                            <td>(전설)질풍</td>
+                                            <td>확률</td>
+                                            <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>이그네아의 징표 8개</td>
+                                            <td>스킬포인트 물약</td>
+                                            <td>수집품</td>
+                                            <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>01 Jan 2045</td>
+                                            <td>INV-0123</td>
+                                            <td>Jhon Doe</td>
+                                            <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>4</td>
+                                            <td>01 Jan 2045</td>
+                                            <td>INV-0123</td>
+                                            <td>Jhon Doe</td>
+                                            <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- 캘린더 -->
+                        <div class="col-sm-12">
+                            <div class="h-100 bg-secondary rounded p-4 mt-4">
+                                <div id="calender"></div>
+                            </div>
+                        </div>
                     </div>
+                    
                     <div class="col-sm-12 col-xl-4">
+                        <!-- 멘토 / 멘티 -->
                         <div class="bg-secondary text-center rounded p-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <h6 class="mb-0">멘토 / 멘티</h6>
@@ -200,90 +258,38 @@
                                 <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
                                 <div class="w-50 ms-3">
                                     <h6 class="mb-0">멘토 대표캐릭터명</h6>
+                                    <small>직업 레벨 서버 템렙<br></small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center border-bottom py-3">
+                                <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                                <div class="w-50 ms-3">
+                                    <h6 class="mb-0">멘티1</h6>
                                     <small>직업 레벨 서버 템렙</small>
                                 </div>
                             </div>
                             <div class="d-flex align-items-center border-bottom py-3">
                                 <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
                                 <div class="w-50 ms-3">
-                                    <h6 class="mb-0">멘티 대표캐릭터명</h6>
+                                    <h6 class="mb-0">멘티2</h6>
+                                    <small>직업 레벨 서버 템렙</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center border-bottom py-3">
+                                <img class="rounded-circle flex-shrink-0" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                                <div class="w-50 ms-3">
+                                    <h6 class="mb-0">멘티3</h6>
                                     <small>직업 레벨 서버 템렙</small>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Sales Chart End -->
-
-
-            <!-- Recent Sales Start -->
-            <div class="container-fluid pt-4 px-4">
-                <div class="bg-secondary text-center rounded p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">내실</h6>
-                        <a href="">Show All</a>
-                    </div>
-                    <div class="table-responsive col-xl-8">
-                        <table class="table text-start align-middle table-bordered table-hover mb-0">
-                            <thead>
-                                <tr class="text-white">
-                                    <th scope="col">순위</th>
-                                    <th scope="col">컨텐츠</th>
-                                    <th scope="col">주요 보상</th>
-                                    <th scope="col">방법</th>
-                                    <th scope="col">상세내용</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>가디언 토벌 - 소나벨</td>
-                                    <td>(전설)질풍</td>
-                                    <td>확률</td>
-                                    <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>이그네아의 징표 8개</td>
-                                    <td>스킬포인트 물약</td>
-                                    <td>수집품</td>
-                                    <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                                </tr>
-                                <tr>
-                                    <td>4</td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <!-- 우측의 빈 공간은 내실 진행도를 나타내는 그림이나 도표를 위한 공간 -->
-                    </div>
-                </div>
-            </div>
-            <!-- Recent Sales End -->
-
-
-            <!-- Widgets Start -->
-            <div class="container-fluid pt-4 px-4">
-                <div class="row g-4">
-                    <!-- 카게, 필보, 모험섬의 등장까지 남은 시간을 날짜별 구분 / 모험섬 종류&보상 -->
-                    <div class="col-sm-12 col-md-6 col-xl-8">
-                        <div class="h-100 bg-secondary rounded p-4">
-                            <div id="calender"></div>
+                        <!-- 알림 설정 -->
+                        <h2>Remain Times</h2>
+                        <div th:each="entry : ${remainTimes}">
+                            <p th:text="'Key: ' + ${entry.key}"></p>
+                            <p th:text="'Remain Time: ' + ${entry.value.remainTime}"></p>
                         </div>
-                    </div>
-                    <div class="col-sm-12 col-md-6 col-xl-4">
-                        <div class="h-100 bg-secondary rounded p-4">
+                        <div class="bg-secondary rounded p-4 mt-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <h6 class="mb-0">알림 설정</h6>
                             </div>
@@ -291,8 +297,8 @@
                                 <input class="form-check-input m-0" type="checkbox">
                                 <div class="w-100 ms-3">
                                     <div class="d-flex align-items-center justify-content-between">
-                                        <span class="flex-grow-1">모험섬</span>
-                                        <span>1:25:30</span>
+                                        <span class="flex-grow-1">카오스게이트</span>
+                                        <span th:text="${remainTimes['카오스게이트'].remainTime}">25:30</span>                                        
                                         <button class="btn btn-sm"><i class="fa fa-times"></i></button>
                                     </div>
                                 </div>
@@ -302,7 +308,7 @@
                                 <div class="w-100 ms-3">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <span class="flex-grow-1">필드보스</span>
-                                        <span>25:30</span>
+                                        <span th:text="${remainTimes['필드보스'].remainTime}">25:30</span>
                                         <button class="btn btn-sm"><i class="fa fa-times"></i></button>
                                     </div>
                                 </div>
@@ -311,19 +317,9 @@
                                 <input class="form-check-input m-0" type="checkbox" checked>
                                 <div class="w-100 ms-3">
                                     <div class="d-flex align-items-center justify-content-between">
-                                        <span class="flex-grow-1"><del>두키 섬</del></span>
-                                        <span>25:30</span>
+                                        <span class="flex-grow-1"><del>모험섬</del></span>
+                                        <span th:text="${remainTimes['모험 섬'].remainTime}">1:25:30</span>
                                         <button class="btn btn-sm text-primary"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center pt-2">
-                                <input class="form-check-input m-0" type="checkbox">
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 align-items-center justify-content-between">
-                                        <span class="flex-grow-1">항해 협동</span>
-                                        <span>5:25:30</span>
-                                        <button class="btn btn-sm"><i class="fa fa-times"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -331,7 +327,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Widgets End -->
+            <!-- 메인 페이지 코드 끝 -->
 
 
             <!-- Footer Start -->
