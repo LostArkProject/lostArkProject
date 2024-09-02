@@ -33,7 +33,29 @@ public class MainController {
         Mono<List<CharacterInfo>> characterInfoMono = lostArkAPIService.getCharacterInfo(characterName);
         return characterInfoMono.flatMap(characterInfoList -> {
             model.addAttribute("characterList", characterInfoList);
-            return Mono.just("characters"); // 결과 뷰로 이동
+            return Mono.just("characters");
         });
+    }
+
+    @GetMapping("/calendar")
+    public Mono<String> calendar(Model model) {
+        return Mono.zip(
+                lostArkAPIService.getCalendar(),
+                lostArkAPIService.getRemainTimes()
+        ).doOnNext(tuple -> {
+            model.addAttribute("calendar", tuple.getT1());
+            model.addAttribute("remainTimes", tuple.getT2());
+        }).then(Mono.just("calendar"));
+    }
+
+    @GetMapping("/home")
+    public Mono<String> home(Model model) {
+        return Mono.zip(
+                lostArkAPIService.getCalendar(),
+                lostArkAPIService.getRemainTimes()
+        ).doOnNext(tuple -> {
+            model.addAttribute("calendar", tuple.getT1());
+            model.addAttribute("remainTimes", tuple.getT2());
+        }).then(Mono.just("project/index"));
     }
 }
