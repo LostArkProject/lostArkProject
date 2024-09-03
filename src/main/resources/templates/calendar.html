@@ -13,6 +13,7 @@
         <h2>Remain Times</h2>
         <div th:each="entry : ${remainTimes}">
             <p th:text="'Key: ' + ${entry.key}"></p>
+            <p th:text="'Content: ' + ${entry.value.contentsName}"></p>
             <p th:text="'Remain Time: ' + ${entry.value.remainTime}"></p>
         </div>
 
