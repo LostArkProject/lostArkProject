@@ -283,22 +283,28 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- 알림 설정 -->
-                        <h2>Remain Times</h2>
-                        <div th:each="entry : ${remainTimes}">
-                            <p th:text="'Key: ' + ${entry.key}"></p>
-                            <p th:text="'Remain Time: ' + ${entry.value.remainTime}"></p>
+
+                        <!-- 컨텐츠까지 남은시간 리스트 (임시) -->
+                        <div class="bg-secondary text-center rounded p-4 mt-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0">Remain Time</h6>
+                                <a href="">Show All</a>
+                            </div>
+                            <!-- "/js/calendar.js" 의 updateRemainTime() 메소드 -->
+                            <div id="calendar"></div>
                         </div>
+                        <!-- 알림 설정 -->
                         <div class="bg-secondary rounded p-4 mt-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <h6 class="mb-0">알림 설정</h6>
                             </div>
+                            <!-- "/js/calendar.js" 의 updateNotice() 메소드 -->
                             <div class="d-flex align-items-center border-bottom py-2">
                                 <input class="form-check-input m-0" type="checkbox">
                                 <div class="w-100 ms-3">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <span class="flex-grow-1">카오스게이트</span>
-                                        <span th:text="${remainTimes['카오스게이트'].remainTime}">25:30</span>
+                                        <span>25:30</span>
                                         <button class="btn btn-sm"><i class="fa fa-times"></i></button>
                                     </div>
                                 </div>
@@ -308,7 +314,7 @@
                                 <div class="w-100 ms-3">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <span class="flex-grow-1">필드보스</span>
-                                        <span th:text="${remainTimes['필드보스'].remainTime}">25:30</span>
+                                        <span>25:30</span>
                                         <button class="btn btn-sm"><i class="fa fa-times"></i></button>
                                     </div>
                                 </div>
@@ -317,9 +323,9 @@
                                 <input class="form-check-input m-0" type="checkbox" checked>
                                 <div class="w-100 ms-3">
                                     <div class="d-flex align-items-center justify-content-between">
-                                        <span class="flex-grow-1" th:text="'모험섬 (' + ${remainTimes['모험 섬'].contentsName} + ')'"><del>모험섬</del></span>
-                                        <span th:text="${remainTimes['모험 섬'].remainTime}">1:25:30</span>
-                                        <button class="btn btn-sm text-primary"><i class="fa fa-times"></i></button>
+                                        <span class="flex-grow-1">모험 섬</span>
+                                        <span>01:25:30</span>
+                                        <button class="btn btn-sm"><i class="fa fa-times"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -367,6 +373,7 @@
 
     <!-- Template Javascript -->
     <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/calendar.js}"></script>
 </body>
 
 </html>

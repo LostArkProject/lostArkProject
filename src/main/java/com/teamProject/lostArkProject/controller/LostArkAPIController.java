@@ -25,8 +25,9 @@ public class LostArkAPIController {
         return lostArkAPIService.getCharacterInfo(characterName);
     }
 
-    @GetMapping("/remainTimes")
+    @GetMapping("/remaintimes")
     public Mono<Map<String, Calendar>> getRemainTimes() {
-        return lostArkAPIService.getRemainTimes();
+        return lostArkAPIService.getCalendar()
+                .flatMap(calendar -> lostArkAPIService.getRemainTimes());
     }
 }

@@ -60,6 +60,9 @@ public class LostArkAPIService {
 
     // 주간일정 가져오는 메소드
     public Mono<List<Calendar>> getCalendar() {
+        // remainTimes 초기화 (남은 시간을 갱신하기 위함)
+        remainTimes.clear();
+
         return webClient.get()
                 .uri("/gamecontents/calendar")
                 .retrieve()
