@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Calendar</title>
+    </head>
+    <body>
+        <div style="display: flex; justify-content: space-between;">
+            <p style="font-size: 24px; font-weight: bold; margin: 0;">Calendars</p>
+            <button type="button" onclick="window.location.href='/'">초기 화면으로</button>
+        </div>
+        <hr>
+        <!-- 여기에 remainTimes의 데이터 출력 -->
+        <h2>Remain Times</h2>
+        <div th:each="entry : ${remainTimes}">
+            <p th:text="'Key: ' + ${entry.key}"></p>
+            <p th:text="'Content: ' + ${entry.value.contentsName}"></p>
+            <p th:text="'Remain Time: ' + ${entry.value.remainTime}"></p>
+        </div>
+
+        <div th:each="cal : ${calendar}">
+            <p th:text="'Contents Name: ' + ${cal.ContentsName}"></p>
+            <img th:src="${cal.ContentsIcon}" alt="Contents Icon"/>
+            <p th:text="'Category: ' + ${cal.CategoryName}"></p>
+            <p th:text="'Location: ' + ${cal.Location}"></p>
+            <p th:text="'Minimum Item Level: ' + ${cal.MinItemLevel}"></p>
+            <p th:text="'Remain Time: ' + ${cal.remainTime}"></p>
+
+            <h2>Start Times</h2>
+            <ul>
+                <li th:each="time : ${cal.startTimes}" th:text="${time}"></li>
+            </ul>
+
+            <h2>Reward Items</h2>
+            <div th:each="rewardItem : ${cal.RewardItems}">
+                <h3 th:text="'Item Level: ' + ${rewardItem.ItemLevel}"></h3>
+                <ul>
+                    <li th:each="item : ${rewardItem.Items}">
+                        <p th:text="'Name: ' + ${item.Name}"></p>
+                        <img th:src="${item.Icon}" alt="Item Icon"/>
+                        <p th:text="'Grade: ' + ${item.Grade}"></p>
+                    </li>
+                </ul>
+            </div>
+            <hr style="border: 20px solid #555;">
+        </div>
+    </body>
+</html>

@@ -11,7 +11,7 @@
             <th:block th:each="character : ${characterList}">
                 <span th:text="${'Lv. ' + character.characterLevel}">Lv. 레벨</span>
                 <span th:text="${character.characterClassName}">직업</span>
-                <span th:text="${'@' + character.serverName}"}>@서버</span>
+                <span th:text="${'@' + character.serverName}">@서버</span>
                 <br>
 
                 <span th:text="${character.characterName}">닉네임</span>
