@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.teamProject.lostArkProject.domain.Calendar;
 import com.teamProject.lostArkProject.domain.CharacterInfo;
+import com.teamProject.lostArkProject.domain.CollectibleItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,13 +42,6 @@ public class LostArkAPIService {
                 .uri("/characters/" + characterName + "/siblings")
                 .retrieve()
                 .bodyToMono(String.class)
-                /* flatMap(): json 방식의 데이터를 CharacterInfo 타입의 List로 변환하는 역할을 하는 메소드
-                 *
-                 * 1. API 요청 결과로 얻은 json 문자열의 키를 ObjectMapper를 사용하여 CharacterInfo 클래스의 필드와 매핑
-                 * 2. json의 각 요소가 CharacterInfo 클래스의 인스턴스로 변환 (이 인스턴스의 필드에는 json에서 추출한 값들이 할당)
-                 * 3. CharacterInfo 객체들이 모여 하나의 List<CharacterInfo>를 생성하고 characterInfos 변수에 저장
-                 * 4. getter 메소드를 이용해 각 필드의 값을 추출할 수 있음
-                 */
                 .flatMap(apiResponse -> {
                     try {
                         List<CharacterInfo> characterInfos = objectMapper.readValue(apiResponse, new TypeReference<List<CharacterInfo>>() {});
@@ -103,14 +97,6 @@ public class LostArkAPIService {
                                 remainTimes.put(categoryName, calendar);
                             }
                         }
-
-                        // 값 확인용 로그
-                        logger.info(now.format(DateTimeFormatter.ISO_DATE_TIME));
-                        logger.info("First ContentsName: {}", calendars.get(1).getContentsName());
-                        logger.info("First StartTimes: {}", calendars.get(1).getStartTimes());
-                        logger.info("Min remainTime: {}", calendars.get(1).getRemainTime());
-                        logger.info("Map Check: {}", remainTimes.get("모험 섬").getRemainTime());
-
                         return Mono.just(calendars);
                     } catch (Exception e) {
                         return Mono.error(new RuntimeException("Failed to parse calendar", e));
@@ -132,5 +118,23 @@ public class LostArkAPIService {
                 .filter(startTime -> startTime.isAfter(now))
                 .findFirst()
                 .orElse(LocalDateTime.MAX);
+    }
+
+
+    // 내실 내용 가져오는 메소드
+    public Mono<List<CollectibleItem>> getCharacterCollectible(String characterName) {
+        return webClient.get()
+                .uri("/armories/characters/" + characterName + "/collectibles") // 실제 API의 경로로 변경
+                .retrieve()
+                .bodyToMono(String.class) // CollectibleItem으로 매핑
+                .flatMap(response -> {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    try {
+                        List<CollectibleItem> collectibleItem = objectMapper.readValue(response, new TypeReference<List<CollectibleItem>>() {});
+                        return Mono.just(collectibleItem);
+                    } catch (Exception e) {
+                        return Mono.error(e);
+                    }
+                });
     }
 }
