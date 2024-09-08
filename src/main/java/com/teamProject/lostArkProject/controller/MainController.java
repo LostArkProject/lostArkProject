@@ -3,6 +3,9 @@ package com.teamProject.lostArkProject.controller;
 import com.teamProject.lostArkProject.domain.CharacterInfo;
 import com.teamProject.lostArkProject.domain.CollectibleItem;
 import com.teamProject.lostArkProject.service.LostArkAPIService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,11 +29,12 @@ public class MainController {
         return "index";
     }
 
-    /* 지금은 간단하게 뷰를 이동해서 데이터를 출력하는 방식으로 구현해뒀는데
-     * 이후에 실제로 api를 사용할 때는 뷰 이동 방식이 아니라 데이터를 반환하는 방식으로 구현해야 할 것 같음
-     */
     @GetMapping("/characters")
-    public Mono<String> getCharacterInfo(@RequestParam String characterName, Model model) {
+    public Mono<String> getCharacterInfo(@RequestParam String characterName, Model model,
+                                         HttpServletRequest request) {
+        // 클라이언트가 입력한 캐릭터 닉네임을 http 세션에 저장
+        HttpSession session = request.getSession();
+        session.setAttribute("nickname", characterName);
         Mono<List<CharacterInfo>> characterInfoMono = lostArkAPIService.getCharacterInfo(characterName);
         return characterInfoMono.flatMap(characterInfoList -> {
             model.addAttribute("characterList", characterInfoList);
@@ -63,9 +67,8 @@ public class MainController {
 
     // 내실
     @GetMapping("/collectible")
-    public Mono<String> getCharacterCollectable(Model model) {
-        String characterName = "ACocg"; // DB에서 꺼내왔다고 가정
-        System.out.println(characterName);
+    public Mono<String> getCharacterCollectable(Model model, HttpSession session) {
+        String characterName = (String) session.getAttribute("nickname"); // http 세션에서 가져온 닉네임
         Mono<List<CollectibleItem>> collectibleItemMono = lostArkAPIService.getCharacterCollectible(characterName);
         return collectibleItemMono.flatMap(collectibleItemList -> {
             model.addAttribute("collectibleItemList", collectibleItemList);
