@@ -1,6 +1,7 @@
 package com.teamProject.lostArkProject.controller;
 
 import com.teamProject.lostArkProject.domain.CharacterInfo;
+import com.teamProject.lostArkProject.domain.CollectibleItem;
 import com.teamProject.lostArkProject.service.LostArkAPIService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,6 +38,7 @@ public class MainController {
         });
     }
 
+    // 캘린더
     @GetMapping("/calendar")
     public Mono<String> calendar(Model model) {
         return Mono.zip(
@@ -57,5 +59,17 @@ public class MainController {
             model.addAttribute("calendar", tuple.getT1());
             model.addAttribute("remainTimes", tuple.getT2());
         }).then(Mono.just("project/index"));
+    }
+
+    // 내실
+    @GetMapping("/collectible")
+    public Mono<String> getCharacterCollectable(Model model) {
+        String characterName = "ACocg"; // DB에서 꺼내왔다고 가정
+        System.out.println(characterName);
+        Mono<List<CollectibleItem>> collectibleItemMono = lostArkAPIService.getCharacterCollectible(characterName);
+        return collectibleItemMono.flatMap(collectibleItemList -> {
+            model.addAttribute("collectibleItemList", collectibleItemList);
+            return Mono.just("project/collectible"); // 결과 뷰로 이동
+        });
     }
 }

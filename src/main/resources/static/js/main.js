@@ -69,16 +69,22 @@
     var myChart1 = new Chart(ctx1, {
         type: "bar",
         data: {
-            labels: ["모코코 씨앗", "섬의 마음", "위대한 미술품", "거인의 심장", "이그네아의 징표", "항해 모험물", "세계수의 잎", "오르페우스의 별", "기억의 오르골", "크림스네일의 해도"],
+            // HTML에서 전달받은 전역 변수로 설정된 데이터를 사용
+            labels: window.collectibleLabels || ["No Data"], // 데이터가 없을 경우 기본값 "No Data"
             datasets: [{
-                    label: "%",
-                    data: [15, 30, 55, 65, 60, 80, 95, 50, 45, 30],
-                    backgroundColor: "rgba(235, 22, 22, .7)"
-                }
-            ]
-            },
+                label: "%",
+                data: window.collectibleData || [0], // 데이터가 없으면 기본값 0
+                backgroundColor: "rgba(235, 22, 22, .7)"
+            }]
+        },
         options: {
-            responsive: true
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100 // 100%까지 표시
+                }
+            }
         }
     });
 

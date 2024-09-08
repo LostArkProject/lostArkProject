@@ -23,7 +23,7 @@ public class LostArkAPIConfig {
         return WebClient.builder()
                 .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(10 * 1024 * 1024)) // 10MB로 설정
                 .baseUrl("https://developer-lostark.game.onstove.com")
-                .defaultHeader("Authorization", "Bearer " + lostArkAPIKey) // 여기에 자신의 API 키를 넣어야 합니다.
+                .defaultHeader("Authorization", "Bearer " + lostArkAPIKey)
                 .build();
     }
 }
