@@ -28,6 +28,29 @@ public class MainController {
         model.addAttribute("characterList", new ArrayList<CharacterInfo>());
         return "index";
     }
+    @GetMapping("/main")
+    public String main(HttpSession session, Model model) {
+        Object user = session.getAttribute("user");
+        if (user != null) {
+            model.addAttribute("isLoggedIn", true);
+            model.addAttribute("username", user.toString()); // user 객체에 따라 다를 수 있음
+        } else {
+            model.addAttribute("isLoggedIn", false);
+        }
+        return "main"; // 렌더링할 템플릿 이름
+    }
+
+    @GetMapping("/signup")
+    public String signup(HttpSession session, Model model){
+        Object user = session.getAttribute("user");
+        if (user != null) {
+            model.addAttribute("isLoggedIn", true);
+            model.addAttribute("username", user.toString()); // user 객체에 따라 다를 수 있음
+        } else {
+            model.addAttribute("isLoggedIn", false);
+        }
+        return "project/signup";
+    }
 
     @GetMapping("/characters")
     public Mono<String> getCharacterInfo(@RequestParam String characterName, Model model,
