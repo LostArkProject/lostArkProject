@@ -77,7 +77,7 @@ public class MainController {
         }).then(Mono.just("calendar"));
     }
 
-    @GetMapping("/home")
+    @GetMapping("/index")
     public Mono<String> home(Model model) {
         return Mono.zip(
                 lostArkAPIService.getCalendar(),
