@@ -52,6 +52,18 @@ public class MainController {
         return "project/signup";
     }
 
+    @GetMapping("/signin")
+    public String signin(HttpSession session, Model model){
+        Object user = session.getAttribute("user");
+        if (user != null) {
+            model.addAttribute("isLoggedIn", true);
+            model.addAttribute("username", user.toString()); // user 객체에 따라 다를 수 있음
+        } else {
+            model.addAttribute("isLoggedIn", false);
+        }
+        return "project/signin";
+    }
+
     @GetMapping("/characters")
     public Mono<String> getCharacterInfo(@RequestParam String characterName, Model model,
                                          HttpServletRequest request) {
