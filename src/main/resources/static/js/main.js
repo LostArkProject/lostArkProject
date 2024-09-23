@@ -1,5 +1,59 @@
 (function ($) {
     "use strict";
+    /* -------------------------------------------------------------
+                        * 프로젝트 함수
+    --------------------------------------------------------------*/
+
+    // 내실 API 요청
+    $.ajax({
+        url: 'collectibles',
+        type: 'GET',
+        success: function(data) {
+            collectibleChart(data);
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.statusText + '\n\n' + xhr.responseText);
+        }
+    });
+
+    function collectibleChart(collectibleItemList) {
+        // collectibleItemList에서 Labels와 데이터 추출 (Type과 비율 계산)
+        window.collectibleLabels = collectibleItemList.map(item => item.Type);
+        window.collectibleData = collectibleItemList.map(item => (item.Point / item.MaxPoint) * 100);
+    
+        // 콘솔에 전역 변수 출력
+        console.log("Labels:", window.collectibleLabels);
+        console.log("Data:", window.collectibleData);
+    
+        var ctx1 = $("#collectable-percent").get(0).getContext("2d");
+        var myChart1 = new Chart(ctx1, {
+            type: "bar",
+            data: {
+                // HTML에서 전달받은 전역 변수로 설정된 데이터를 사용
+                labels: window.collectibleLabels || ["No Data"], // 데이터가 없을 경우 기본값 "No Data"
+                datasets: [{
+                    label: "%",
+                    data: window.collectibleData || [0], // 데이터가 없으면 기본값 0
+                    backgroundColor: "rgba(235, 22, 22, .7)"
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100 // 100%까지 표시
+                    }
+                }
+            }
+        }); 
+    }
+
+    /* -------------------------------------------------------------
+                    * Themewagon Template functions
+    --------------------------------------------------------------*/
+
+    
 
     // Spinner
     var spinner = function () {
@@ -64,31 +118,6 @@
     Chart.defaults.borderColor = "#000000";
 
 
-    // Worldwide Sales Chart
-    var ctx1 = $("#collectable-percent").get(0).getContext("2d");
-    var myChart1 = new Chart(ctx1, {
-        type: "bar",
-        data: {
-            // HTML에서 전달받은 전역 변수로 설정된 데이터를 사용
-            labels: window.collectibleLabels || ["No Data"], // 데이터가 없을 경우 기본값 "No Data"
-            datasets: [{
-                label: "%",
-                data: window.collectibleData || [0], // 데이터가 없으면 기본값 0
-                backgroundColor: "rgba(235, 22, 22, .7)"
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100 // 100%까지 표시
-                }
-            }
-        }
-    });
-
-
     // Salse & Revenue Chart
     var ctx2 = $("#salse-revenue").get(0).getContext("2d");
     var myChart2 = new Chart(ctx2, {
@@ -113,7 +142,6 @@
             responsive: true
         }
     });
-    
 
 
     // Single Line Chart
@@ -133,7 +161,7 @@
             responsive: true
         }
     });
-
+    
 
     // Single Bar Chart
     var ctx4 = $("#bar-chart").get(0).getContext("2d");
@@ -202,7 +230,4 @@
             responsive: true
         }
     });
-
-    
 })(jQuery);
-
