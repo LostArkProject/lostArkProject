@@ -34,7 +34,6 @@ public class LostArkAPIService {
     public LostArkAPIService(WebClient webClient, ObjectMapper objectMapper) {
         this.webClient = webClient;
         this.objectMapper = objectMapper;
-        objectMapper.registerModule(new JavaTimeModule());
     }
 
     public Mono<List<CharacterInfo>> getCharacterInfo(String characterName) {
