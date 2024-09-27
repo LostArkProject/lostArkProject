@@ -60,9 +60,10 @@ public class LostArkAPIService {
                 .uri("/gamecontents/calendar")
                 .retrieve()
                 .bodyToMono(String.class)
-                .flatMap(apiResponse -> {
+                .flatMap(apiResponse -> Mono.fromCallable(() -> {  // mapping 방식을 비동기 처리로 변경
                     try {
-                        List<Calendar> calendars = objectMapper.readValue(apiResponse, new TypeReference<List<Calendar>>() {});
+                        List<Calendar> calendars = objectMapper.readValue(apiResponse, new TypeReference<List<Calendar>>() {
+                        });
 
                         LocalDateTime now = LocalDateTime.now();
 
@@ -96,11 +97,11 @@ public class LostArkAPIService {
                                 remainTimes.put(categoryName, calendar);
                             }
                         }
-                        return Mono.just(calendars);
+                        return calendars;
                     } catch (Exception e) {
-                        return Mono.error(new RuntimeException("Failed to parse calendar", e));
+                        throw new RuntimeException("Failed to parse calendar", e);
                     }
-                });
+                }));
     }
 
     // remainTime 비교를 위한 메소드
