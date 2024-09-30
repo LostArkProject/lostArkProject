@@ -21,13 +21,13 @@ public class CalendarRestController {
         return calendarService.getAndSaveCalendar();
     }
 
-    @PostMapping("/cal")
+    @GetMapping("/getcal")
     public Mono<List<Calendar>> getCalendars() {
         return calendarService.getCalendars();
     }
 
-    //@GetMapping("/mappingdto")
-    //public Mono<List<CalendarDTO>> getCalendarDTOList() {
-    //   return calendarService.getCalendarDTOList();
-    //}
+    @GetMapping("/getcal-with-remaintime")
+    public Mono<List<CalendarDTO>> getCalendarDTOList() {
+       return calendarService.getCalendarWithRemainTime();
+    }
 }

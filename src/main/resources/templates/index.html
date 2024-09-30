@@ -35,8 +35,8 @@
 
         $('#getdb').on('click', () => {
             $.ajax({
-                url: '/cal',
-                type: 'POST',
+                url: '/getcal',
+                type: 'GET',
                 success: function (data) {
                     console.log(data);
                 },
@@ -48,7 +48,7 @@
 
         $('#mappingdto').on('click', () => {
             $.ajax({
-                url: '/mappingdto',
+                url: '/getcal-with-remaintime',
                 type: 'GET',
                 success: function (data) {
                     console.log(data);

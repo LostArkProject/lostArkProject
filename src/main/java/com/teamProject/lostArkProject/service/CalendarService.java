@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,8 +69,7 @@ public class CalendarService {
         dto.setContentsIcon(calendar.getContentsIcon());
         dto.setMinItemLevel(calendar.getMinItemLevel());
         dto.setStartTimes(calendar.getStartTimes());
-
-        //dto.setRemainTime(remainTime 변환 로직);
+        dto.setRemainTime(remainTime(calendar.getStartTimes()));
         dto.setLocation(calendar.getLocation());
 
         List<ItemDTO> items = calendar.getRewardItems().stream()  // Calendar의 RewardItems를 stream 변환
@@ -81,9 +82,21 @@ public class CalendarService {
     }
 
     // 남은 시간 계산
-    //private LocalDateTime remainTime() {
-    //
-    //}
+    private LocalDateTime remainTime(List<LocalDateTime> startTimes) {
+        LocalDateTime now = LocalDateTime.now();
+
+        LocalDateTime remainTime = startTimes.stream()
+                .filter(startTime -> startTime.isAfter(now))
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+
+        if (remainTime != null) {
+            Duration duration = Duration.between(now, remainTime);
+            return remainTime.plus(duration);
+        } else {
+            return null;
+        }
+    }
 
     // Calendar의 Item 객체를 CalendarDTO의 ItemDTO 객체로 변환
     private ItemDTO convertToItemDTO(Item item) {
