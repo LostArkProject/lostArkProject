@@ -16,13 +16,5 @@ public class CalendarDTO {
     private List<LocalDateTime> startTimes;
     private LocalDateTime remainTime;
     private String location;
-    private List<Item> items;
-}
-
-@Getter
-@Setter
-class Item {
-    private String name;
-    private String icon;
-    private String grade;
+    private List<ItemDTO> items;
 }

@@ -27,24 +27,3 @@ public class Calendar {
     private String remainTime;
 }
 
-@Getter
-@Setter
-class RewardItem {
-    @JsonProperty("ItemLevel")
-    private int itemLevel;
-    @JsonProperty("Items")
-    private List<Item> items;
-}
-
-@Getter
-@Setter
-class Item {
-    @JsonProperty("Name")
-    private String name;
-    @JsonProperty("Icon")
-    private String icon;
-    @JsonProperty("Grade")
-    private String grade;
-    @JsonProperty("StartTimes")
-    private List<LocalDateTime> startTimes;
-}

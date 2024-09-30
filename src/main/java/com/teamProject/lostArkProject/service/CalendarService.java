@@ -3,6 +3,8 @@ package com.teamProject.lostArkProject.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teamProject.lostArkProject.domain.Calendar;
+import com.teamProject.lostArkProject.domain.Item;
+import com.teamProject.lostArkProject.dto.ItemDTO;
 import com.teamProject.lostArkProject.dto.CalendarDTO;
 import com.teamProject.lostArkProject.repository.CalendarMemoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,17 +49,49 @@ public class CalendarService {
         return calendarRepository.getCalendar();
     }
 
-    public CalendarDTO convertToDTO(Calendar calendar) {
+    public Mono<List<CalendarDTO>> getCalendarWithRemainTime() {
+        return calendarRepository.getCalendar() // Mono<List<Calendar>> 반환
+                .flatMap(calendars -> {
+                    List<CalendarDTO> calendarDTOs = calendars.stream()
+                            .map(this::convertToDTO) // Calendar -> CalendarDTO 변환
+                            .collect(Collectors.toList());
+                    return Mono.just(calendarDTOs); // DTO 리스트를 Mono로 반환
+                });
+    }
+
+    // CalendarDTO 객체로 변환
+    private CalendarDTO convertToDTO(Calendar calendar) {
         CalendarDTO dto = new CalendarDTO();
-        dto.setCategoryName();
-        dto.setContentsName();
-        dto.setContentsIcon();
-        dto.setMinItemLevel();
-        dto.setStartTimes();
-        dto.setRemainTime();
-        dto.setLocation();
-        dto.setItems();
+        dto.setCategoryName(calendar.getCategoryName());
+        dto.setContentsName(calendar.getContentsName());
+        dto.setContentsIcon(calendar.getContentsIcon());
+        dto.setMinItemLevel(calendar.getMinItemLevel());
+        dto.setStartTimes(calendar.getStartTimes());
+
+        //dto.setRemainTime(remainTime 변환 로직);
+        dto.setLocation(calendar.getLocation());
+
+        List<ItemDTO> items = calendar.getRewardItems().stream()  // Calendar의 RewardItems를 stream 변환
+                .flatMap(rewardItem -> rewardItem.getItems().stream())  // RewardItem의 Items를 stream 변환
+                .map(this::convertToItemDTO)  // Item 객체를 형변환하는 메서드
+                .toList();
+        dto.setItems(items);
 
         return dto;
+    }
+
+    // 남은 시간 계산
+    //private LocalDateTime remainTime() {
+    //
+    //}
+
+    // Calendar의 Item 객체를 CalendarDTO의 ItemDTO 객체로 변환
+    private ItemDTO convertToItemDTO(Item item) {
+        ItemDTO itemDTO = new ItemDTO();
+        itemDTO.setName(item.getName());
+        itemDTO.setIcon(item.getIcon());
+        itemDTO.setGrade(item.getGrade());
+
+        return itemDTO;
     }
 }

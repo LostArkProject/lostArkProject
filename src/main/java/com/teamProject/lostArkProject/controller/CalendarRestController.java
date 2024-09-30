@@ -3,7 +3,6 @@ package com.teamProject.lostArkProject.controller;
 import com.teamProject.lostArkProject.domain.Calendar;
 import com.teamProject.lostArkProject.dto.CalendarDTO;
 import com.teamProject.lostArkProject.service.CalendarService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,8 +26,8 @@ public class CalendarRestController {
         return calendarService.getCalendars();
     }
 
-    @GetMapping("/mappingdto")
-    public Mono<List<CalendarDTO>> getCalendarDTOList() {
-        return calendarService.getCalendarDTOList();
-    }
+    //@GetMapping("/mappingdto")
+    //public Mono<List<CalendarDTO>> getCalendarDTOList() {
+    //   return calendarService.getCalendarDTOList();
+    //}
 }
