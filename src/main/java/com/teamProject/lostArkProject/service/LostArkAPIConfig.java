@@ -2,12 +2,15 @@ package com.teamProject.lostArkProject.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.teamProject.lostArkProject.dto.CalendarDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.List;
 
 
 @Configuration

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -136,5 +137,23 @@ public class LostArkAPIService {
                         return Mono.error(e);
                     }
                 });
+    }
+
+
+
+    public Mono<List<Calendar>> updateCalendar() {
+
+        return webClient.get()
+                .uri("/gamecontents/calendar")
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(apiResponse -> Mono.fromCallable(() -> {
+                    try {
+                        return objectMapper.readValue(apiResponse, new TypeReference<List<Calendar>>() {});
+                    } catch (IOException e) {
+                        logger.error(e.getMessage());
+                        throw new RuntimeException(e);
+                    }
+                }));
     }
 }
