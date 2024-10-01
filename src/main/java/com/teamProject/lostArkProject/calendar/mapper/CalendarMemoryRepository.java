@@ -1,13 +1,13 @@
-package com.teamProject.lostArkProject.repository;
+package com.teamProject.lostArkProject.calendar.mapper;
 
-import com.teamProject.lostArkProject.domain.Calendar;
+import com.teamProject.lostArkProject.calendar.domain.Calendar;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 @Repository
-public class CalendarMemoryRepository implements CalendarRepository {
+public class CalendarMemoryRepository implements CalendarMapper {
     private List<Calendar> calendars;
 
     @Override

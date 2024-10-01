@@ -1,4 +1,4 @@
-package com.teamProject.lostArkProject.dto;
+package com.teamProject.lostArkProject.calendar.dto;
 
 import lombok.Getter;
 import lombok.Setter;

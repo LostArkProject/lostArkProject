@@ -1,4 +1,4 @@
-package com.teamProject.lostArkProject.domain;
+package com.teamProject.lostArkProject.calendar.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
