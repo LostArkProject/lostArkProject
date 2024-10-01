@@ -11,7 +11,53 @@
         <input type="submit" value="확인">
     </form>
 
-    <button type="button" onclick="window.location.href='/calendar'">캘린더 확인</button>
-    <button type="button" onclick="window.location.href='/index'">메인 페이지</button>
+    <button type="button" onclick="location.href='/calendar'">캘린더 확인</button>
+    <button type="button" onclick="location.href='/index'">메인 페이지</button>
+    <br><br>
+    <button type="button" id="savejson">캘린더 json</button>
+    <button type="button" id="getdb">db 캘린더 확인</button>
+    <button type="button" id="mappingdto">남은시간 필드 추가</button>
+
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script>
+        $('#savejson').on('click', () => {
+            $.ajax({
+                url: '/cal',
+                type: 'GET',
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        })
+
+        $('#getdb').on('click', () => {
+            $.ajax({
+                url: '/getcal',
+                type: 'GET',
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        })
+
+        $('#mappingdto').on('click', () => {
+            $.ajax({
+                url: '/getcal-with-remaintime',
+                type: 'GET',
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        })
+    </script>
 </body>
 </html>

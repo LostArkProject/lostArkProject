@@ -1,4 +1,4 @@
-package com.teamProject.lostArkProject.controller;
+package com.teamProject.lostArkProject.chat.controller;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
