@@ -46,7 +46,7 @@ $(document).ready(function() {
 
 function fetchCalendar() {
     $.ajax({
-        url: '/remaintimes', // API 엔드포인트
+        url: '/getcal-with-remaintimes', // API 엔드포인트
         method: 'GET',
 
         // 데이터를 잘 받아오면 success 실행, 실패하면 error 실행

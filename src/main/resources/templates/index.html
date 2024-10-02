@@ -14,13 +14,12 @@
     <button type="button" onclick="location.href='/calendar'">캘린더 확인</button>
     <button type="button" onclick="location.href='/index'">메인 페이지</button>
     <br><br>
-    <button type="button" id="savejson">캘린더 json</button>
     <button type="button" id="getdb">db 캘린더 확인</button>
     <button type="button" id="mappingdto">남은시간 필드 추가</button>
 
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script>
-        $('#savejson').on('click', () => {
+        $(() => {
             $.ajax({
                 url: '/cal',
                 type: 'GET',

@@ -2,6 +2,125 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>Calendar</title>
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script>
+            let calendarData;  // db에서 받아온 데이터를 메모리에 저장
+            let timeOffset;    // 서버와 클라이언트의 시간 차이
+
+            // 1초마다 갱신
+            function updateCalendar(calendar) {
+                setInterval(() => {
+                    addCalendarHTML(calendar);
+                }, 1000);
+            }
+
+            // 웹페이지 로드 후에 실행되는 코드
+            $(() => {
+                $.ajax({
+                    url: '/cal',
+                    type: 'GET',
+                    success: function() {
+                        getCalendar();     // 필요한 데이터만 담는 dto 객체를 통해 데이터를 받아오는 함수
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            });
+
+            function getCalendar() {
+                $.ajax({
+                    url: '/getcal-with-remaintime', // API 엔드포인트
+                    method: 'GET',
+                    success: function(calendar) {
+                        const clientTime = new Date().getTime();                     // 클라이언트 시간
+                        const serverTime = new Date(calendar[0].serverTime).getTime();  // 서버 시간
+                        timeOffset = clientTime - serverTime;           // 서버와 클라이언트의 시간 차이
+
+                        console.log(`${clientTime} / ${serverTime} / ${timeOffset}`);
+
+                        updateCalendar(calendar);  // 1초마다 캘린더를 갱신하는 함수
+                    },
+                    error: function(err) {
+                        console.error("Error fetching calendar", err);
+                    }
+                });
+            };
+
+            function addCalendarHTML(data) {
+                console.log(data);
+                $('#calendar').empty();
+
+                data.forEach(calendar => {
+                    let itemsHTML = '';
+
+                    calendar.items.forEach(item => {
+                        itemsHTML += `
+                            <p>name === ${item.name}</p>
+                            <p>icon === ${item.icon}</p>
+                            <img src="${item.icon}" alt="itemIcon" />
+                            <p>grade === ${item.grade}</p>
+                        `;
+                    });
+
+                    const currentclientTime = new Date().getTime();             // 클라이언트 현재 시간
+                    const adjustedTime = currentclientTime - timeOffset;  // 서버 시간에 맞춘 현재 시간
+                    const nextStartTime = getValidStartTime(currentclientTime, calendar.startTimes);
+                    // const nextStartTime = new Date(calendar.startTimes[0]).getTime(); // 가장 가까운 시작 시간
+                    const remainTime = Math.floor((nextStartTime - adjustedTime) / 1000); // 남은 시간 계산
+
+                    let calendarHTML = `
+                        <p>categoryName --- ${calendar.categoryName}</p>
+                        <p>contentsIcon --- ${calendar.contentsIcon}</p>
+                        <img src="${calendar.contentsIcon}" alt=contentsIcon />
+                        <p>contentsName --- ${calendar.contentsName}</p>
+                        <div>
+                            ---------------------- items ------------------------
+                            ${itemsHTML}
+                            -------------------- items end ----------------------
+                        </div>
+                        <p>location --- ${calendar.location}</p>
+                        <p>minItemLevel --- ${calendar.minItemLevel}</p>
+                        <!-- <p>remainTime --- ${calendar.remainTime}</p> -->
+                        <p>serverTime --- ${calendar.serverTime}</p>
+                        <p>convertRemainTime --- ${convertRemainTime(remainTime)}</p>
+                        <p>startTimes --- ${calendar.startTimes}</p>
+                        <hr>
+                    `;
+                    $('#calendar').append(calendarHTML);
+                });
+            };
+
+            function convertRemainTime(totalSeconds) {
+                let hours = Math.floor(totalSeconds / 3600);
+                totalSeconds %= 3600;
+                let minutes = Math.floor(totalSeconds / 60);
+                totalSeconds %= 60;
+                let seconds = Math.floor(totalSeconds);
+
+                return `${hours}:${minutes}:${seconds}`;
+            }
+
+            function getValidStartTime(currentclientTime, startTimes) {
+                let prop;
+                let i = 0;
+                
+                for (prop in startTimes) {
+                    let startTime = new Date(startTimes[prop]).getDate();
+
+                    if(startTime - currentclientTime > 0) {
+                        console.log(`${startTime}
+                        ///
+                        ${currentclientTime}`)
+                        return startTime;
+                    }
+
+                    i++;
+                }
+
+                return 0;
+            }
+        </script>
     </head>
     <body>
         <div style="display: flex; justify-content: space-between;">
@@ -9,7 +128,13 @@
             <button type="button" onclick="window.location.href='/'">초기 화면으로</button>
         </div>
         <hr>
-        <!-- 여기에 remainTimes의 데이터 출력 -->
+
+        <div id="calendar"></div>
+
+
+
+
+        <!-- 여기에 remainTimes의 데이터 출력
         <h2>Remain Times</h2>
         <div th:each="entry : ${remainTimes}">
             <p th:text="'Key: ' + ${entry.key}"></p>
@@ -42,6 +167,6 @@
                 </ul>
             </div>
             <hr style="border: 20px solid #555;">
-        </div>
+        </div> -->
     </body>
 </html>

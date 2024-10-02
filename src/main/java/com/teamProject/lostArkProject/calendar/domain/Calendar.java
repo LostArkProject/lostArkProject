@@ -24,6 +24,5 @@ public class Calendar {
     private String location;
     @JsonProperty("RewardItems")
     private List<RewardItem> rewardItems;
-    private String remainTime;
 }
 

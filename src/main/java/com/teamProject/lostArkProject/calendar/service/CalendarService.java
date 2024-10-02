@@ -78,7 +78,8 @@ public class CalendarService {
         dto.setContentsIcon(calendar.getContentsIcon());
         dto.setMinItemLevel(calendar.getMinItemLevel());
         dto.setStartTimes(calendar.getStartTimes());
-        dto.setRemainTime(remainTime(calendar.getStartTimes()));
+        //dto.setRemainTime(remainTime(calendar.getStartTimes()));
+        dto.setServerTime(LocalDateTime.now());
         dto.setLocation(calendar.getLocation());
 
         List<ItemDTO> items = calendar.getRewardItems().stream()  // Calendar의 RewardItems를 stream 변환
@@ -91,7 +92,7 @@ public class CalendarService {
     }
 
     // 남은 시간 계산
-    private LocalDateTime remainTime(List<LocalDateTime> startTimes) {
+    private Duration remainTime(List<LocalDateTime> startTimes) {
         LocalDateTime now = LocalDateTime.now();
 
         LocalDateTime remainTime = startTimes.stream()
@@ -100,8 +101,7 @@ public class CalendarService {
                 .orElse(null);
 
         if (remainTime != null) {
-            Duration duration = Duration.between(now, remainTime);
-            return remainTime.plus(duration);
+            return Duration.between(now, remainTime);
         } else {
             return null;
         }
@@ -124,21 +124,6 @@ public class CalendarService {
         return Mono.just(remainTimes);
     }
 
-    public Mono<List<CharacterInfo>> getCharacterInfo(String characterName) {
-        return webClient.get()
-                .uri("/characters/" + characterName + "/siblings")
-                .retrieve()
-                .bodyToMono(String.class)
-                .flatMap(apiResponse -> {
-                    try {
-                        List<CharacterInfo> characterInfos = objectMapper.readValue(apiResponse, new TypeReference<List<CharacterInfo>>() {});
-                        return Mono.just(characterInfos);
-                    } catch (Exception e) {
-                        return Mono.error(e);
-                    }
-                });
-    }
-
     // 주간일정 가져오는 메소드
     public Mono<List<Calendar>> getCalendar() {
         // remainTimes 초기화 (남은 시간을 갱신하기 위함)
@@ -158,7 +143,7 @@ public class CalendarService {
                         for (Calendar calendar : calendars) {
                             List<LocalDateTime> startTimes = calendar.getStartTimes();
                             if (startTimes == null) {
-                                calendar.setRemainTime("출현 대기중");
+                                //calendar.setRemainTime("출현 대기중");
                                 continue;
                             }
 
@@ -173,9 +158,9 @@ public class CalendarService {
                                 long hours = duration.toHours();
                                 long minutes = duration.toMinutes() % 60;
                                 long seconds = duration.getSeconds() % 60;
-                                calendar.setRemainTime(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+                                //calendar.setRemainTime(String.format("%02d:%02d:%02d", hours, minutes, seconds));
                             } else {
-                                calendar.setRemainTime("출현 대기중");
+                                //calendar.setRemainTime("출현 대기중");
                             }
 
                             // 카테고리별로 가장 적은 remainTime 찾기
