@@ -78,25 +78,13 @@ public class MainController {
 
     // 캘린더
     @GetMapping("/calendar")
-    public Mono<String> calendar(Model model) {
-        return Mono.zip(
-                calendarService.getCalendar(),
-                calendarService.getRemainTimes()
-        ).doOnNext(tuple -> {
-            model.addAttribute("calendar", tuple.getT1());
-            model.addAttribute("remainTimes", tuple.getT2());
-        }).then(Mono.just("calendar"));
+    public String calendar() {
+        return "calendar";
     }
 
     @GetMapping("/index")
-    public Mono<String> home(Model model) {
-        return Mono.zip(
-                calendarService.getCalendar(),
-                calendarService.getRemainTimes()
-        ).doOnNext(tuple -> {
-            model.addAttribute("calendar", tuple.getT1());
-            model.addAttribute("remainTimes", tuple.getT2());
-        }).then(Mono.just("project/index"));
+    public String home() {
+        return "project/index";
     }
 
     // 내실

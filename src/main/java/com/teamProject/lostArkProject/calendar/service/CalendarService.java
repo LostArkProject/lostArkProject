@@ -78,7 +78,6 @@ public class CalendarService {
         dto.setContentsIcon(calendar.getContentsIcon());
         dto.setMinItemLevel(calendar.getMinItemLevel());
         dto.setStartTimes(calendar.getStartTimes());
-        //dto.setRemainTime(remainTime(calendar.getStartTimes()));
         dto.setServerTime(LocalDateTime.now());
         dto.setLocation(calendar.getLocation());
 
@@ -118,7 +117,7 @@ public class CalendarService {
     }
 
 
-    private Map<String, Calendar> remainTimes = new HashMap<>();
+/*    private Map<String, Calendar> remainTimes = new HashMap<>();
 
     public Mono<Map<String, Calendar>> getRemainTimes() {
         return Mono.just(remainTimes);
@@ -143,7 +142,7 @@ public class CalendarService {
                         for (Calendar calendar : calendars) {
                             List<LocalDateTime> startTimes = calendar.getStartTimes();
                             if (startTimes == null) {
-                                //calendar.setRemainTime("출현 대기중");
+                                calendar.setRemainTime("출현 대기중");
                                 continue;
                             }
 
@@ -158,9 +157,9 @@ public class CalendarService {
                                 long hours = duration.toHours();
                                 long minutes = duration.toMinutes() % 60;
                                 long seconds = duration.getSeconds() % 60;
-                                //calendar.setRemainTime(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+                                calendar.setRemainTime(String.format("%02d:%02d:%02d", hours, minutes, seconds));
                             } else {
-                                //calendar.setRemainTime("출현 대기중");
+                                calendar.setRemainTime("출현 대기중");
                             }
 
                             // 카테고리별로 가장 적은 remainTime 찾기
@@ -175,7 +174,7 @@ public class CalendarService {
                         throw new RuntimeException("Failed to parse calendar", e);
                     }
                 }));
-    }
+    }*/
 
     // remainTime 비교를 위한 메소드
     private boolean isLessRemainTime(Calendar calendar, Calendar existingCalendar, LocalDateTime now) {
