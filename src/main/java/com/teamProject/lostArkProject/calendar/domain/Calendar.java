@@ -10,18 +10,26 @@ import java.util.List;
 @Getter
 @Setter
 public class Calendar {
+    private long id;
+
     @JsonProperty("CategoryName")
     private String categoryName;
+
     @JsonProperty("ContentsName")
     private String contentsName;
+
     @JsonProperty("ContentsIcon")
     private String contentsIcon;
+
     @JsonProperty("MinItemLevel")
     private int minItemLevel;
+
     @JsonProperty("StartTimes")
-    private List<LocalDateTime> startTimes;
+    private List<StartTime> startTimes;
+
     @JsonProperty("Location")
     private String location;
+
     @JsonProperty("RewardItems")
     private List<RewardItem> rewardItems;
 }

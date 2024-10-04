@@ -6,9 +6,7 @@ import com.teamProject.lostArkProject.calendar.domain.Calendar;
 import com.teamProject.lostArkProject.calendar.domain.Item;
 import com.teamProject.lostArkProject.calendar.dto.ItemDTO;
 import com.teamProject.lostArkProject.calendar.dto.CalendarDTO;
-import com.teamProject.lostArkProject.calendar.mapper.CalendarMemoryRepository;
-import com.teamProject.lostArkProject.collectible.domain.CharacterInfo;
-import com.teamProject.lostArkProject.collectible.domain.CollectibleItem;
+import com.teamProject.lostArkProject.calendar.mapper.CalendarMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,20 +14,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CalendarService {
     private static final Logger logger = LoggerFactory.getLogger(CalendarService.class);
-    private final CalendarMemoryRepository calendarRepository;
+    private final CalendarMapper calendarMapper;
 
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
@@ -44,27 +37,27 @@ public class CalendarService {
                     try {
                         return objectMapper.readValue(apiResponse, new TypeReference<List<Calendar>>() {});
                     } catch (Exception e) {
-                        throw new RuntimeException("Failed to parse calendar", e);
+                        throw new RuntimeException(e);
                     }
                 })
                 .flatMap(calendars -> {
-                    logger.info("Saving calendar data: {}", calendars.size());
-                    return calendarRepository.saveCalendar(calendars);
+                    logger.info("(CalendarService) Saving calendar data: {}", calendars.size());
+                    return calendarMapper.saveCalendar(calendars);
                 })
                 .onErrorResume(e -> {
-                    logger.info("Error occured while saving calendar data: {}", e.getMessage());
+                    logger.info("(CalendarService) Error occured while saving calendar data: {}", e.getMessage());
                     return Mono.empty();
                 });
     }
 
     // 주간일정 데이터를 db에서 가져와서 반환
     public Mono<List<Calendar>> getCalendars() {
-        return calendarRepository.getCalendar();
+        return calendarMapper.getCalendar();
     }
 
     // 주간일정 데이터에 남은시간 데이터를 추가해서 반환
     public Mono<List<CalendarDTO>> getCalendarWithRemainTime() {
-        return calendarRepository.getCalendar() // Mono<List<Calendar>> 반환
+        return calendarMapper.getCalendar() // Mono<List<Calendar>> 반환
                 .flatMap(calendars -> {
                     List<CalendarDTO> calendarDTOs = calendars.stream()
                             .map(this::convertToDTO) // Calendar -> CalendarDTO 변환

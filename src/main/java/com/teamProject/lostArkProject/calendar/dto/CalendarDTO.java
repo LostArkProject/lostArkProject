@@ -1,5 +1,6 @@
 package com.teamProject.lostArkProject.calendar.dto;
 
+import com.teamProject.lostArkProject.calendar.domain.StartTime;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +15,7 @@ public class CalendarDTO {
     private String sanitizedContentsName;
     private String contentsIcon;
     private int minItemLevel;
-    private List<LocalDateTime> startTimes;
+    private List<StartTime> startTimes;
     private LocalDateTime serverTime;
     private String location;
     private List<ItemDTO> items;
