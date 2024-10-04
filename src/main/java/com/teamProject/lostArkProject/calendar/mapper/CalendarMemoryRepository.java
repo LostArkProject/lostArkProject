@@ -11,8 +11,9 @@ public class CalendarMemoryRepository implements CalendarMapper {
     private List<Calendar> calendars;
 
     @Override
-    public void saveCalendar(List<Calendar> calendar) {
+    public Mono<Void> saveCalendar(List<Calendar> calendar) {
         calendars = calendar;
+        return Mono.empty();
     }
 
     @Override

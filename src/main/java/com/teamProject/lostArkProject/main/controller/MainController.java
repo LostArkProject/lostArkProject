@@ -77,7 +77,7 @@ public class MainController {
     }
 
     // 캘린더
-    @GetMapping("/calendar")
+    @GetMapping("/cal")
     public String calendar() {
         return "calendar";
     }

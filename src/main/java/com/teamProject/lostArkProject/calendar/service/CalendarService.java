@@ -40,16 +40,19 @@ public class CalendarService {
                 .uri("/gamecontents/calendar")
                 .retrieve()
                 .bodyToMono(String.class)
-                .flatMap(apiResponse -> Mono.fromCallable(() -> {  // mapping 방식을 비동기 처리로 변경
+                .map(apiResponse -> {
                     try {
-                        List<Calendar> calendars = objectMapper.readValue(apiResponse, new TypeReference<>() {});
-                        return calendars;
+                        return objectMapper.readValue(apiResponse, new TypeReference<List<Calendar>>() {});
                     } catch (Exception e) {
                         throw new RuntimeException("Failed to parse calendar", e);
                     }
-                }))
+                })
                 .flatMap(calendars -> {
-                    calendarRepository.saveCalendar(calendars);
+                    logger.info("Saving calendar data: {}", calendars.size());
+                    return calendarRepository.saveCalendar(calendars);
+                })
+                .onErrorResume(e -> {
+                    logger.info("Error occured while saving calendar data: {}", e.getMessage());
                     return Mono.empty();
                 });
     }
@@ -75,6 +78,7 @@ public class CalendarService {
         CalendarDTO dto = new CalendarDTO();
         dto.setCategoryName(calendar.getCategoryName());
         dto.setContentsName(calendar.getContentsName());
+        dto.setSanitizedContentsName(sanitizeContentsName(calendar.getContentsName()));
         dto.setContentsIcon(calendar.getContentsIcon());
         dto.setMinItemLevel(calendar.getMinItemLevel());
         dto.setStartTimes(calendar.getStartTimes());
@@ -90,7 +94,23 @@ public class CalendarService {
         return dto;
     }
 
-    // 남은 시간 계산
+    // Calendar의 Item 객체를 CalendarDTO의 ItemDTO 객체로 변환
+    private ItemDTO convertToItemDTO(Item item) {
+        ItemDTO itemDTO = new ItemDTO();
+        itemDTO.setName(item.getName());
+        itemDTO.setIcon(item.getIcon());
+        itemDTO.setGrade(item.getGrade());
+
+        return itemDTO;
+    }
+
+    // contentsName의 모든 특수문자를 _로 변환
+    private String sanitizeContentsName(String contentsName) {
+        return contentsName.replaceAll("[^a-zA-Z0-9가-힣]", "_");
+    }
+
+
+/*    // 남은 시간 계산
     private Duration remainTime(List<LocalDateTime> startTimes) {
         LocalDateTime now = LocalDateTime.now();
 
@@ -106,18 +126,7 @@ public class CalendarService {
         }
     }
 
-    // Calendar의 Item 객체를 CalendarDTO의 ItemDTO 객체로 변환
-    private ItemDTO convertToItemDTO(Item item) {
-        ItemDTO itemDTO = new ItemDTO();
-        itemDTO.setName(item.getName());
-        itemDTO.setIcon(item.getIcon());
-        itemDTO.setGrade(item.getGrade());
-
-        return itemDTO;
-    }
-
-
-/*    private Map<String, Calendar> remainTimes = new HashMap<>();
+    private Map<String, Calendar> remainTimes = new HashMap<>();
 
     public Mono<Map<String, Calendar>> getRemainTimes() {
         return Mono.just(remainTimes);
@@ -174,7 +183,7 @@ public class CalendarService {
                         throw new RuntimeException("Failed to parse calendar", e);
                     }
                 }));
-    }*/
+    }
 
     // remainTime 비교를 위한 메소드
     private boolean isLessRemainTime(Calendar calendar, Calendar existingCalendar, LocalDateTime now) {
@@ -190,5 +199,5 @@ public class CalendarService {
                 .filter(startTime -> startTime.isAfter(now))
                 .findFirst()
                 .orElse(LocalDateTime.MAX);
-    }
+    }*/
 }

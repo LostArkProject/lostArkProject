@@ -11,6 +11,7 @@ import java.util.List;
 public class CalendarDTO {
     private String categoryName;
     private String contentsName;
+    private String sanitizedContentsName;
     private String contentsIcon;
     private int minItemLevel;
     private List<LocalDateTime> startTimes;
