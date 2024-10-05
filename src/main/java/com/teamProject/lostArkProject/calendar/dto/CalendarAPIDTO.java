@@ -1,5 +1,6 @@
 package com.teamProject.lostArkProject.calendar.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,14 +9,26 @@ import java.util.List;
 
 @Getter
 @Setter
-public class CalendarDTO {
+public class CalendarAPIDTO {
+    @JsonProperty("CategoryName")
     private String categoryName;
+
+    @JsonProperty("ContentsName")
     private String contentsName;
-    private String sanitizedContentsName;
+
+    @JsonProperty("ContentsIcon")
     private String contentsIcon;
+
+    @JsonProperty("MinItemLevel")
     private int minItemLevel;
+
+    @JsonProperty("StartTimes")
     private List<LocalDateTime> startTimes;
-    private LocalDateTime serverTime;
+
+    @JsonProperty("Location")
     private String location;
-    private List<ItemDTO> items;
+
+    @JsonProperty("RewardItems")
+    private List<RewardItemAPIDTO> rewardItems;
 }
+

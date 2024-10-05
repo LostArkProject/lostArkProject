@@ -4,14 +4,18 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teamProject.lostArkProject.calendar.domain.Calendar;
 import com.teamProject.lostArkProject.calendar.domain.Item;
+import com.teamProject.lostArkProject.calendar.domain.RewardItem;
+import com.teamProject.lostArkProject.calendar.domain.StartTime;
+import com.teamProject.lostArkProject.calendar.dto.CalendarAPIDTO;
 import com.teamProject.lostArkProject.calendar.dto.ItemDTO;
-import com.teamProject.lostArkProject.calendar.dto.CalendarDTO;
+import com.teamProject.lostArkProject.calendar.dto.CalendarWithServerTimeDTO;
 import com.teamProject.lostArkProject.calendar.mapper.CalendarMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -27,22 +31,26 @@ public class CalendarService {
     private final ObjectMapper objectMapper;
 
     // api에서 주간일정 데이터를 받아와서 db에 저장
-    public Mono<Integer> getAndSaveCalendar() {
+    public Mono<Void> getAndSaveCalendar() {
         return webClient.get()
                 .uri("/gamecontents/calendar")
                 .retrieve()
                 .bodyToMono(String.class)
                 .map(apiResponse -> {
                     try {
-                        return objectMapper.readValue(apiResponse, new TypeReference<List<Calendar>>() {});
+                        return objectMapper.readValue(apiResponse, new TypeReference<List<CalendarAPIDTO>>() {});
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 })
-                .flatMap(calendars -> {
-                    logger.info("(CalendarService) Saving calendar data: {}", calendars.size());
-                    return Mono.fromCallable(() -> calendarMapper.insertCalendar(calendars));
-                })
+                .flatMapMany(Flux::fromIterable)  // List를 Flux로 변환
+                .map(this::toEntity)  // CalendarAPIDTO를 Calendar 엔티티로 변환
+                .flatMap(calendar -> Mono.fromCallable(() -> {
+                    int result = calendarMapper.insertCalendar(calendar);  // insert문 실행
+                    logger.info("(CalendarService) Insert Query: {}", result);
+                    return result;
+                }))
+                .then()  // Mono로 변환 (doOnNext() 메서드로 result를 버리는 게 아니라 사용하도록 만들 수 있음)
                 .onErrorResume(e -> {
                     logger.info("(CalendarService) Error occured while saving calendar data: {}", e.toString());
                     return Mono.empty();
@@ -55,7 +63,7 @@ public class CalendarService {
     }
 
     // 주간일정 데이터에 남은시간 데이터를 추가해서 반환
-    public Mono<List<CalendarDTO>> getCalendarWithRemainTime() {
+    public Mono<List<CalendarWithServerTimeDTO>> getCalendarWithRemainTime() {
         return Mono.fromCallable(() -> {
             List<Calendar> calendars = calendarMapper.selectCalendar();
             return calendars.stream()
@@ -64,15 +72,54 @@ public class CalendarService {
         });
     }
 
-    // CalendarDTO 객체로 변환
-    private CalendarDTO convertToDTO(Calendar calendar) {
-        CalendarDTO dto = new CalendarDTO();
+    // api에서 받아온 데이터를 entity로 변환
+    private Calendar toEntity(CalendarAPIDTO apiDTO) {
+        Calendar calendar = new Calendar();
+        calendar.setCategoryName(apiDTO.getCategoryName());
+        calendar.setContentsName(apiDTO.getContentsName());
+        calendar.setContentsIcon(apiDTO.getContentsIcon());
+        calendar.setMinItemLevel(apiDTO.getMinItemLevel());
+        calendar.setLocation(apiDTO.getLocation());
+
+        List<RewardItem> rewardItems = apiDTO.getRewardItems().stream().map(rewardItemAPIDTO -> {
+            RewardItem rewardItem = new RewardItem();
+            rewardItem.setItemLevel(rewardItemAPIDTO.getItemLevel());
+
+            List<Item> items = rewardItemAPIDTO.getItems().stream().map(itemAPIDTO -> {
+                Item item = new Item();
+                item.setName(itemAPIDTO.getName());
+                item.setIcon(itemAPIDTO.getIcon());
+                item.setGrade(itemAPIDTO.getGrade());
+                return item;
+            }).toList();
+
+            rewardItem.setItems(items);
+            return rewardItem;
+        }).toList();
+
+        calendar.setRewardItems(rewardItems);
+
+        List<StartTime> startTimes = apiDTO.getStartTimes().stream().map(startTime -> {
+            StartTime start = new StartTime();
+            start.setStartTime(startTime);
+
+            return start;
+        }).toList();
+
+        calendar.setStartTimes(startTimes);
+
+        return calendar;
+    }
+
+    // CalendarWithServerTimeDTO 객체로 변환
+    private CalendarWithServerTimeDTO convertToDTO(Calendar calendar) {
+        CalendarWithServerTimeDTO dto = new CalendarWithServerTimeDTO();
         dto.setCategoryName(calendar.getCategoryName());
         dto.setContentsName(calendar.getContentsName());
         dto.setSanitizedContentsName(sanitizeContentsName(calendar.getContentsName()));
         dto.setContentsIcon(calendar.getContentsIcon());
         dto.setMinItemLevel(calendar.getMinItemLevel());
-        dto.setStartTimes(calendar.getStartTimes());
+        //dto.setStartTimes(calendar.getStartTimes());
         dto.setServerTime(LocalDateTime.now());
         dto.setLocation(calendar.getLocation());
 
@@ -85,7 +132,7 @@ public class CalendarService {
         return dto;
     }
 
-    // Calendar의 Item 객체를 CalendarDTO의 ItemDTO 객체로 변환
+    // Calendar의 Item 객체를 CalendarWithServerTimeDTO의 ItemDTO 객체로 변환
     private ItemDTO convertToItemDTO(Item item) {
         ItemDTO itemDTO = new ItemDTO();
         itemDTO.setName(item.getName());

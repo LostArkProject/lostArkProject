@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface CalendarMapper {
-    int insertCalendar(List<Calendar> calendar);
+    int insertCalendar(Calendar calendar);
     List<Calendar> selectCalendar();
 }
