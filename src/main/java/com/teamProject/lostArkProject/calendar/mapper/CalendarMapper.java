@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface CalendarMapper {
-    Mono<Void> saveCalendar(List<Calendar> calendar);
-    Mono<List<Calendar>> getCalendar();
+    int insertCalendar(List<Calendar> calendar);
+    List<Calendar> selectCalendar();
 }

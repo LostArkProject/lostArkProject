@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,7 +17,7 @@ public class CalendarRestController {
 
     // 외부 api에서 데이터를 가져와서 db에 저장
     @GetMapping("/calendar/fetch")
-    public Mono<Void> getAndSaveCalendar() {
+    public Mono<Integer> getAndSaveCalendar() {
         return calendarService.getAndSaveCalendar();
     }
 

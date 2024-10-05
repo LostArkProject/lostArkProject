@@ -5,7 +5,10 @@
 <mapper namespace="com.teamProject.lostArkProject.calendar.mapper.CalendarMapper">
     <insert id="insertCalendar" parameterType="com.teamProject.lostArkProject.calendar.domain.Calendar">
         INSERT INTO calendar (category_name, contents_name, contents_icon, min_item_level, location)
-        VALUES (#{categoryName}, #{contentsName}, #{contentsIcon}, #{minItemLevel}, #{location});
+        VALUES
+        <foreach collection="list" item="calendar" separator=",">
+            (#{calendar.categoryName}, #{calendar.contentsName}, #{calendar.contentsIcon}, #{calendar.minItemLevel}, #{calendar.location})
+        </foreach>
     </insert>
 
     <insert id="insertStartTime" parameterType="com.teamProject.lostArkProject.calendar.domain.StartTime">
@@ -25,32 +28,37 @@
     </insert>
 
 
-    <resultMap id="calendarResultMap" type="com.teamProject.lostArkProject.calendar.domain.Calendar">
-        <!-- Calendar의 필드 매핑 -->
-        <id property="id" column="id"/>
-        <result property="categoryName" column="category_name"/>
-        <result property="contentsName" column="contents_name"/>
-        <result property="contentsIcon" column="contents_icon"/>
-        <result property="minItemLevel" column="min_item_level"/>
-        <result property="location" column="location"/>
+    <!-- Calendar 테이블에서 데이터를 조회하는 기본 쿼리 -->
+<!--    <select id="selectCalendar" resultMap="CalendarResultMap">-->
+<!--        SELECT * FROM Calendar WHERE id = #{id}-->
+<!--    </select>-->
 
-        <!-- StartTimes의 컬렉션 매핑 -->
-        <collection property="startTimes" ofType="com.teamProject.lostArkProject.calendar.domain.StartTime">
-            <result property="startTime" column="start_time"/>
-        </collection>
+<!--    <resultMap id="calendarResultMap" type="com.teamProject.lostArkProject.calendar.domain.Calendar">-->
+<!--        &lt;!&ndash; Calendar의 필드 매핑 &ndash;&gt;-->
+<!--        <id property="id" column="id"/>-->
+<!--        <result property="categoryName" column="category_name"/>-->
+<!--        <result property="contentsName" column="contents_name"/>-->
+<!--        <result property="contentsIcon" column="contents_icon"/>-->
+<!--        <result property="minItemLevel" column="min_item_level"/>-->
+<!--        <result property="location" column="location"/>-->
 
-        <!-- RewardItems의 컬렉션 매핑 -->
-        <collection property="rewardItems" ofType="com.teamProject.lostArkProject.calendar.domain.RewardItem">
-            <result property="itemLevel" column="item_level"/>
+<!--        &lt;!&ndash; StartTimes의 컬렉션 매핑 &ndash;&gt;-->
+<!--        <collection property="startTimes" ofType="com.teamProject.lostArkProject.calendar.domain.StartTime">-->
+<!--            <result property="startTime" column="start_time"/>-->
+<!--        </collection>-->
 
-            <!-- RewardItem 안의 Items 컬렉션 매핑 -->
-            <collection property="items" ofType="com.teamProject.lostArkProject.calendar.domain.Item">
-                <result property="name" column="name"/>
-                <result property="icon" column="icon"/>
-                <result property="grade" column="grade"/>
-            </collection>
-        </collection>
-    </resultMap>
+<!--        &lt;!&ndash; RewardItems의 컬렉션 매핑 &ndash;&gt;-->
+<!--        <collection property="rewardItems" ofType="com.teamProject.lostArkProject.calendar.domain.RewardItem">-->
+<!--            <result property="itemLevel" column="item_level"/>-->
+
+<!--            &lt;!&ndash; RewardItem 안의 Items 컬렉션 매핑 &ndash;&gt;-->
+<!--            <collection property="items" ofType="com.teamProject.lostArkProject.calendar.domain.Item">-->
+<!--                <result property="name" column="name"/>-->
+<!--                <result property="icon" column="icon"/>-->
+<!--                <result property="grade" column="grade"/>-->
+<!--            </collection>-->
+<!--        </collection>-->
+<!--    </resultMap>-->
 
 
 <!--    <select id="selectUser" parameterType="com.example.springpractice.dto.User">-->

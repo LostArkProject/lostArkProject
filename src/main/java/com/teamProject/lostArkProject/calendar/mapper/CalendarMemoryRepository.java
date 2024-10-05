@@ -7,17 +7,17 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @Repository
-public class CalendarMemoryRepository implements CalendarMapper {
+public class CalendarMemoryRepository {
     private List<Calendar> calendars;
 
-    @Override
-    public Mono<Void> saveCalendar(List<Calendar> calendar) {
+    //@Override
+    public Mono<Void> insertCalendar(List<Calendar> calendar) {
         calendars = calendar;
         return Mono.empty();
     }
 
-    @Override
-    public Mono<List<Calendar>> getCalendar() {
+    //@Override
+    public Mono<List<Calendar>> selectCalendar() {
         return Mono.just(calendars);
     }
 }

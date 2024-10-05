@@ -25,7 +25,7 @@ public class Calendar {
     private int minItemLevel;
 
     @JsonProperty("StartTimes")
-    private List<StartTime> startTimes;
+    private List<LocalDateTime> startTimes;
 
     @JsonProperty("Location")
     private String location;

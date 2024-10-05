@@ -16,7 +16,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class CalendarService {
     private final ObjectMapper objectMapper;
 
     // api에서 주간일정 데이터를 받아와서 db에 저장
-    public Mono<Void> getAndSaveCalendar() {
+    public Mono<Integer> getAndSaveCalendar() {
         return webClient.get()
                 .uri("/gamecontents/calendar")
                 .retrieve()
@@ -42,28 +41,27 @@ public class CalendarService {
                 })
                 .flatMap(calendars -> {
                     logger.info("(CalendarService) Saving calendar data: {}", calendars.size());
-                    return calendarMapper.saveCalendar(calendars);
+                    return Mono.fromCallable(() -> calendarMapper.insertCalendar(calendars));
                 })
                 .onErrorResume(e -> {
-                    logger.info("(CalendarService) Error occured while saving calendar data: {}", e.getMessage());
+                    logger.info("(CalendarService) Error occured while saving calendar data: {}", e.toString());
                     return Mono.empty();
                 });
     }
 
     // 주간일정 데이터를 db에서 가져와서 반환
     public Mono<List<Calendar>> getCalendars() {
-        return calendarMapper.getCalendar();
+        return Mono.fromCallable(() -> calendarMapper.selectCalendar());
     }
 
     // 주간일정 데이터에 남은시간 데이터를 추가해서 반환
     public Mono<List<CalendarDTO>> getCalendarWithRemainTime() {
-        return calendarMapper.getCalendar() // Mono<List<Calendar>> 반환
-                .flatMap(calendars -> {
-                    List<CalendarDTO> calendarDTOs = calendars.stream()
-                            .map(this::convertToDTO) // Calendar -> CalendarDTO 변환
-                            .collect(Collectors.toList());
-                    return Mono.just(calendarDTOs); // DTO 리스트를 Mono로 반환
-                });
+        return Mono.fromCallable(() -> {
+            List<Calendar> calendars = calendarMapper.selectCalendar();
+            return calendars.stream()
+                    .map(this::convertToDTO)
+                    .toList();
+        });
     }
 
     // CalendarDTO 객체로 변환
