@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 public class Calendar {
-    private long id;
+    private long calendarId;
     private String categoryName;
     private String contentsName;
     private String contentsIcon;

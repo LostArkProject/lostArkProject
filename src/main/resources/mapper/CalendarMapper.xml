@@ -3,28 +3,36 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProject.lostArkProject.calendar.mapper.CalendarMapper">
-    <insert id="insertCalendar" parameterType="com.teamProject.lostArkProject.calendar.domain.Calendar">
+    <insert id="insertCalendar" parameterType="com.teamProject.lostArkProject.calendar.domain.Calendar"
+            useGeneratedKeys="true" keyProperty="calendarId">
         INSERT INTO calendar (category_name, contents_name, contents_icon, min_item_level, location)
-        VALUES
-        <foreach collection="list" item="calendar" separator=",">
-            (#{calendar.categoryName}, #{calendar.contentsName}, #{calendar.contentsIcon}, #{calendar.minItemLevel}, #{calendar.location})
-        </foreach>
+        VALUES (#{categoryName}, #{contentsName}, #{contentsIcon}, #{minItemLevel}, #{location})
     </insert>
 
     <insert id="insertStartTime" parameterType="com.teamProject.lostArkProject.calendar.domain.StartTime">
         INSERT INTO startTime (calendar_id, start_time)
-        VALUES (#{calendarId}, #{startTime});
+        VALUES
+            <foreach collection="list" item="startTime" separator=",">
+                (#{startTime.calendarId}, #{startTime.startTime})
+            </foreach>
     </insert>
 
-    <insert id="insertRewardItem" parameterType="com.teamProject.lostArkProject.calendar.domain.RewardItem">
+    <insert id="insertRewardItem" parameterType="com.teamProject.lostArkProject.calendar.domain.RewardItem"
+            useGeneratedKeys="true" keyProperty="rewardItemId">
         INSERT INTO rewardItem (calendar_id, item_level)
-        VALUES (#{calendarId}, #{itemLevel});
+        VALUES
+        <foreach collection="list" item="rewardItem" separator=",">
+            (#{rewardItem.calendarId}, #{rewardItem.itemLevel})
+        </foreach>
     </insert>
 
 
     <insert id="insertItem" parameterType="com.teamProject.lostArkProject.calendar.domain.Item">
         INSERT INTO item (reward_item_id, name, icon, grade)
-        VALUES (#{rewardItemId}, #{name}, #{icon}, #{grade});
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.rewardItemId}, #{item.name}, #{item.icon}, #{item.grade})
+        </foreach>
     </insert>
 
 

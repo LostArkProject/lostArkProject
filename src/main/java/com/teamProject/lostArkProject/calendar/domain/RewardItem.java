@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 public class RewardItem {
-    private long id;
+    private long rewardItemId;
     private long calendarId;
     private int itemLevel;
     private List<Item> items;

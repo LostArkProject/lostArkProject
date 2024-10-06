@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class StartTime {
-    private long id;
+    private long startTimeId;
     private long calendarId;
     private LocalDateTime startTime;
 }

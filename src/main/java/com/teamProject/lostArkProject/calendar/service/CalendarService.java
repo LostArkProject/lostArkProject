@@ -46,13 +46,31 @@ public class CalendarService {
                 .flatMapMany(Flux::fromIterable)  // List를 Flux로 변환
                 .map(this::toEntity)  // CalendarAPIDTO를 Calendar 엔티티로 변환
                 .flatMap(calendar -> Mono.fromCallable(() -> {
-                    int result = calendarMapper.insertCalendar(calendar);  // insert문 실행
-                    logger.info("(CalendarService) Insert Query: {}", result);
-                    return result;
+                    // Calendar 저장
+                    int calendarResult = calendarMapper.insertCalendar(calendar);
+                    logger.info("(CalendarService) Insert Calendar Data Result: {}", calendarResult);
+                    // Calendar의 calendar_id를 StartTime, RewardItem에 할당
+                    calendar.getStartTimes().forEach(startTime -> startTime.setCalendarId(calendar.getCalendarId()));
+                    calendar.getRewardItems().forEach(rewardItem -> rewardItem.setCalendarId(calendar.getCalendarId()));
+
+                    // Calendar의 StartTime 저장
+                    int startTimeResult = calendarMapper.insertStartTime(calendar.getStartTimes());
+                    logger.info("(CalendarService) Insert StartTime Data Result: {}", startTimeResult);
+
+                    // Calendar의 RewardItem 저장
+                    int RewardItemResult = calendarMapper.insertRewardItem(calendar.getRewardItems());
+                    logger.info("(CalendarService) Insert RewardItem Data Result: {}", RewardItemResult);
+
+                    // Calendar.RewardItem의 Item 저장
+                    calendar.getRewardItems()
+                            .forEach(rewardItem -> calendarMapper.insertItem(rewardItem.getItems()));
+                    logger.info("(CalendarService) Insert Item Data Result: {}", calendar.getRewardItems().size());
+
+                    return calendarResult;
                 }))
                 .then()  // Mono로 변환 (doOnNext() 메서드로 result를 버리는 게 아니라 사용하도록 만들 수 있음)
                 .onErrorResume(e -> {
-                    logger.info("(CalendarService) Error occured while saving calendar data: {}", e.toString());
+                    logger.error("(CalendarService) Error occured while saving calendar data", e);
                     return Mono.empty();
                 });
     }
@@ -81,10 +99,12 @@ public class CalendarService {
         calendar.setMinItemLevel(apiDTO.getMinItemLevel());
         calendar.setLocation(apiDTO.getLocation());
 
+        // 외부 api에서 받아온 데이터인 rewardItemAPIDTO를 Calendar의 RewardItem으로 변환
         List<RewardItem> rewardItems = apiDTO.getRewardItems().stream().map(rewardItemAPIDTO -> {
             RewardItem rewardItem = new RewardItem();
             rewardItem.setItemLevel(rewardItemAPIDTO.getItemLevel());
 
+            // 외부 api에서 받아온 데이터인 ItemAPIDTO를 Calendar.RewardItem의 Item으로 변환
             List<Item> items = rewardItemAPIDTO.getItems().stream().map(itemAPIDTO -> {
                 Item item = new Item();
                 item.setName(itemAPIDTO.getName());
@@ -99,6 +119,7 @@ public class CalendarService {
 
         calendar.setRewardItems(rewardItems);
 
+        // <LocalDate> 배열의 StartTimeAPIDTO의 startTimes를 <StartTime> 객체 배열의 startTimes로 변환
         List<StartTime> startTimes = apiDTO.getStartTimes().stream().map(startTime -> {
             StartTime start = new StartTime();
             start.setStartTime(startTime);
@@ -111,7 +132,7 @@ public class CalendarService {
         return calendar;
     }
 
-    // CalendarWithServerTimeDTO 객체로 변환
+    // db의 entity를 CalendarWithServerTimeDTO 객체로 변환
     private CalendarWithServerTimeDTO convertToDTO(Calendar calendar) {
         CalendarWithServerTimeDTO dto = new CalendarWithServerTimeDTO();
         dto.setCategoryName(calendar.getCategoryName());
@@ -119,7 +140,13 @@ public class CalendarService {
         dto.setSanitizedContentsName(sanitizeContentsName(calendar.getContentsName()));
         dto.setContentsIcon(calendar.getContentsIcon());
         dto.setMinItemLevel(calendar.getMinItemLevel());
-        //dto.setStartTimes(calendar.getStartTimes());
+
+        List<LocalDateTime> startTimes = calendar.getStartTimes()
+                .stream()
+                .map(StartTime::getStartTime)
+                .toList();
+        dto.setStartTimes(startTimes);
+
         dto.setServerTime(LocalDateTime.now());
         dto.setLocation(calendar.getLocation());
 
