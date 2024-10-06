@@ -1,6 +1,7 @@
-package com.teamProject.lostArkProject.calendar.service;
+package com.teamProject.lostArkProject.main.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 @PropertySource("classpath:config.properties")
-public class CalendarConfig {
+public class APIConfig {
     @Value("${lostArkAPIKey}")
     private String lostArkAPIKey;
 
@@ -28,6 +29,7 @@ public class CalendarConfig {
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);  // 클라이언트에서 받는 날짜 데이터 형식 수정
         return objectMapper;
     }
 }

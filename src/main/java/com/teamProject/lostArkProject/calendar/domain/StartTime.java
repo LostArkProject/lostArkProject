@@ -3,13 +3,12 @@ package com.teamProject.lostArkProject.calendar.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class RewardItem {
-    private long rewardItemId;
+public class StartTime {
+    private long startTimeId;
     private long calendarId;
-    private int itemLevel;
-    private List<Item> items;
+    private LocalDateTime startTime;
 }

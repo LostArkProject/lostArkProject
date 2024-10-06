@@ -11,18 +11,18 @@
         <input type="submit" value="확인">
     </form>
 
-    <button type="button" onclick="location.href='/calendar'">캘린더 확인</button>
+    <button type="button" onclick="location.href='/cal'">캘린더 확인</button>
     <button type="button" onclick="location.href='/index'">메인 페이지</button>
     <br><br>
-    <button type="button" id="savejson">캘린더 json</button>
-    <button type="button" id="getdb">db 캘린더 확인</button>
+    <button type="button" id="savedb">db에 캘린더 저장</button>
+    <button type="button" id="getdb">db에 저장된 캘린더 확인</button>
     <button type="button" id="mappingdto">남은시간 필드 추가</button>
 
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script>
-        $('#savejson').on('click', () => {
+        $('#savedb').on('click', () => {
             $.ajax({
-                url: '/cal',
+                url: '/calendar/fetch',
                 type: 'GET',
                 success: function (data) {
                     console.log(data);
@@ -35,7 +35,7 @@
 
         $('#getdb').on('click', () => {
             $.ajax({
-                url: '/getcal',
+                url: '/calendar/origin',
                 type: 'GET',
                 success: function (data) {
                     console.log(data);
@@ -48,7 +48,7 @@
 
         $('#mappingdto').on('click', () => {
             $.ajax({
-                url: '/getcal-with-remaintime',
+                url: '/calendar',
                 type: 'GET',
                 success: function (data) {
                     console.log(data);
