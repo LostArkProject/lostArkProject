@@ -49,9 +49,14 @@ public class CalendarService {
                     // Calendar 저장
                     int calendarResult = calendarMapper.insertCalendar(calendar);
                     logger.info("(CalendarService) Insert Calendar Data Result: {}", calendarResult);
+
                     // Calendar의 calendar_id를 StartTime, RewardItem에 할당
-                    calendar.getStartTimes().forEach(startTime -> startTime.setCalendarId(calendar.getCalendarId()));
-                    calendar.getRewardItems().forEach(rewardItem -> rewardItem.setCalendarId(calendar.getCalendarId()));
+                    calendar.getStartTimes().forEach(startTime ->
+                            startTime.setCalendarId(calendar.getCalendarId())
+                    );
+                    calendar.getRewardItems().forEach(rewardItem ->
+                            rewardItem.setCalendarId(calendar.getCalendarId())
+                    );
 
                     // Calendar의 StartTime 저장
                     int startTimeResult = calendarMapper.insertStartTime(calendar.getStartTimes());
@@ -60,6 +65,13 @@ public class CalendarService {
                     // Calendar의 RewardItem 저장
                     int RewardItemResult = calendarMapper.insertRewardItem(calendar.getRewardItems());
                     logger.info("(CalendarService) Insert RewardItem Data Result: {}", RewardItemResult);
+
+                    // RewardItem의 reward_item_id를 Item에 할당
+                    calendar.getRewardItems().forEach(rewardItem ->
+                            rewardItem.getItems().forEach(item ->
+                                    item.setRewardItemId(rewardItem.getRewardItemId())
+                            )
+                    );
 
                     // Calendar.RewardItem의 Item 저장
                     calendar.getRewardItems()
