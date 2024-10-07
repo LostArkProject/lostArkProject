@@ -93,7 +93,7 @@ public class CalendarService {
     }
 
     // 주간일정 데이터에 남은시간 데이터를 추가해서 반환
-    public Mono<List<CalendarWithServerTimeDTO>> getCalendarWithRemainTime() {
+    public Mono<List<CalendarWithServerTimeDTO>> getCalendarWithServerTime() {
         return Mono.fromCallable(() -> {
             List<Calendar> calendars = calendarMapper.selectCalendar();
             return calendars.stream()
