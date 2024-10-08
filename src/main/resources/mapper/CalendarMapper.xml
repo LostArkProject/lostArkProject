@@ -74,43 +74,6 @@
         </collection>
     </resultMap>
 
-    <!-- Calendar 테이블에서 remainTime을 추가한 dto를 반환하는 쿼리 -->
-    <select id="selectCalendarWithServerTime" resultMap="calendarWithServerTimeResultMap">
-        SELECT c.*, s.start_time, r.item_level, i.name, i.icon, i.grade
-        FROM Calendar AS c
-        LEFT JOIN startTime AS s ON c.calendar_id = s.calendar_id
-        LEFT JOIN rewardItem AS r ON c.calendar_id = r.calendar_id
-        LEFT JOIN item AS i ON r.reward_item_id = i.reward_item_id
-    </select>
-
-    <resultMap id="calendarWithServerTimeResultMap" type="com.teamProject.lostArkProject.calendar.dto.CalendarWithServerTimeDTO">
-        <!-- Calendar의 필드 매핑 -->
-        <id property="calendarId" column="calendar_id"/>
-        <result property="categoryName" column="category_name"/>
-        <result property="contentsName" column="contents_name"/>
-        <result property="contentsIcon" column="contents_icon"/>
-        <result property="minItemLevel" column="min_item_level"/>
-        <result property="location" column="location"/>
-
-        <!-- StartTimes의 컬렉션 매핑 -->
-        <collection property="startTimes" ofType="com.teamProject.lostArkProject.calendar.domain.StartTime">
-            <result property="startTime" column="start_time"/>
-        </collection>
-
-        <!-- RewardItems의 컬렉션 매핑 -->
-        <collection property="rewardItems" ofType="com.teamProject.lostArkProject.calendar.domain.RewardItem">
-            <result property="itemLevel" column="item_level"/>
-
-            <!-- RewardItem 안의 Items 컬렉션 매핑 -->
-            <collection property="items" ofType="com.teamProject.lostArkProject.calendar.domain.Item">
-                <result property="name" column="name"/>
-                <result property="icon" column="icon"/>
-                <result property="grade" column="grade"/>
-            </collection>
-        </collection>
-    </resultMap>
-
-
 <!--    <update id="updateUser" parameterType="com.example.springpractice.dto.User">-->
 <!--        update user set username = #{username}, password = #{password} , email = #{email} where id= #{id}-->
 <!--    </update>-->

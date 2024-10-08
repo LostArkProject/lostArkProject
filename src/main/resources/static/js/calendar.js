@@ -138,7 +138,7 @@ function updateRemainTime(calendar) {
 // 가장 가까운 시작 시간을 반환
 function getValidStartTime(currentclientTime, startTimes) {
     for (let element of startTimes) {
-        let startTime = element.getTime();
+        let startTime = new Date(element).getTime();
 
         if(startTime - currentclientTime > 0) {
             return startTime;
@@ -150,7 +150,7 @@ function getValidStartTime(currentclientTime, startTimes) {
 
 // 초 단위의 시간을 "hh:mm:ss"로 변환
 function convertRemainTime(totalSeconds) {
-    if (totalSeconds > 60 * 60 * 24 || totalSeconds == 0) {
+    if (totalSeconds > 60 * 60 * 24 || totalSeconds < 0) {
         return `출현 대기 중`;
     };
 
