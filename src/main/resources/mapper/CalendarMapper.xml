@@ -37,9 +37,13 @@
         </foreach>
     </insert>
 
+    <!-- Calendar 테이블을 조회하는 쿼리 -->
+    <select id="selectCalendar">
+        SELECT * FROM calendar
+    </select>
 
-    <!-- Calendar 테이블에서 데이터를 조회하는 쿼리 -->
-    <select id="selectCalendar" resultMap="calendarResultMap">
+    <!-- Calendar 테이블과 그 하위의 모든 테이블 데이터를 조회하는 쿼리 -->
+    <select id="selectAllCalendarTable" resultMap="calendarResultMap">
         SELECT c.*, s.start_time, r.item_level, i.name, i.icon, i.grade
         FROM calendar AS c
         LEFT JOIN starttime AS s ON c.calendar_id = s.calendar_id

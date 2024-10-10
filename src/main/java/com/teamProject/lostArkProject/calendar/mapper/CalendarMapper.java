@@ -13,4 +13,5 @@ public interface CalendarMapper {
     int insertRewardItem(List<RewardItem> rewardItems);
     int insertItem(List<Item> items);
     List<Calendar> selectCalendar();
+    List<Calendar> selectAllCalendarTable();
 }

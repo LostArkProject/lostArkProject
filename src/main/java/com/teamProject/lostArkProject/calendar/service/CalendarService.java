@@ -8,7 +8,7 @@ import com.teamProject.lostArkProject.calendar.domain.RewardItem;
 import com.teamProject.lostArkProject.calendar.domain.StartTime;
 import com.teamProject.lostArkProject.calendar.dto.CalendarAPIDTO;
 import com.teamProject.lostArkProject.calendar.dto.ItemDTO;
-import com.teamProject.lostArkProject.calendar.dto.CalendarWithServerTimeDTO;
+import com.teamProject.lostArkProject.calendar.dto.CalendarWithTimesDTO;
 import com.teamProject.lostArkProject.calendar.mapper.CalendarMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,7 +19,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -89,17 +91,16 @@ public class CalendarService {
 
     // 주간일정 데이터를 db에서 가져와서 반환
     public Mono<List<Calendar>> getCalendars() {
-        return Mono.fromCallable(() -> calendarMapper.selectCalendar());
+        return Mono.fromCallable(() -> calendarMapper.selectAllCalendarTable());
     }
 
-    // 주간일정 데이터에 남은시간 데이터를 추가해서 반환
-    public Mono<List<CalendarWithServerTimeDTO>> getCalendarWithServerTime() {
-        return Mono.fromCallable(() -> {
-            List<Calendar> calendars = calendarMapper.selectCalendar();
-            return calendars.stream()
-                    .map(this::convertToDTO)
-                    .toList();
-        });
+    // Calendar에 서버시간, 남은 시간을 추가해서 반환
+    public Mono<List<CalendarWithTimesDTO>> getCalendarWithServerTime() {
+        return Mono.fromCallable(() -> calendarMapper.selectCalendar()
+                    .stream()
+                    .map(this::convertToDTOWithTimes)
+                    .toList()
+        );
     }
 
     // api에서 받아온 데이터를 entity로 변환
@@ -144,29 +145,63 @@ public class CalendarService {
         return calendar;
     }
 
+    //// db의 entity를 CalendarWithServerTimeDTO 객체로 변환
+    //private CalendarWithServerTimeDTO convertToDTOWithServerTime(Calendar calendar) {
+    //    CalendarWithServerTimeDTO dto = new CalendarWithServerTimeDTO();
+    //    dto.setCategoryName(calendar.getCategoryName());
+    //    dto.setContentsName(calendar.getContentsName());
+    //    dto.setSanitizedContentsName(sanitizeContentsName(calendar.getContentsName()));
+    //    dto.setContentsIcon(calendar.getContentsIcon());
+    //    dto.setMinItemLevel(calendar.getMinItemLevel());
+    //
+    //    List<LocalDateTime> startTimes = calendar.getStartTimes()
+    //            .stream()
+    //            .map(StartTime::getStartTime)
+    //            .toList();
+    //    dto.setStartTimes(startTimes);
+    //
+    //    dto.setServerTime(LocalDateTime.now());
+    //    dto.setLocation(calendar.getLocation());
+    //
+    //    List<ItemDTO> items = calendar.getRewardItems().stream()  // Calendar의 RewardItems를 stream 변환
+    //            .flatMap(rewardItem -> rewardItem.getItems().stream())  // RewardItem의 Items를 stream 변환
+    //            .map(this::convertToItemDTO)  // Item 객체를 형변환하는 메서드
+    //            .toList();
+    //    dto.setItems(items);
+    //
+    //    return dto;
+    //}
+
     // db의 entity를 CalendarWithServerTimeDTO 객체로 변환
-    private CalendarWithServerTimeDTO convertToDTO(Calendar calendar) {
-        CalendarWithServerTimeDTO dto = new CalendarWithServerTimeDTO();
+    private CalendarWithTimesDTO convertToDTOWithTimes(Calendar calendar) {
+        CalendarWithTimesDTO dto = new CalendarWithTimesDTO();
+
+        LocalDateTime now = LocalDateTime.now();  // 현재 서버 시간을 저장
+
         dto.setCategoryName(calendar.getCategoryName());
         dto.setContentsName(calendar.getContentsName());
         dto.setSanitizedContentsName(sanitizeContentsName(calendar.getContentsName()));
         dto.setContentsIcon(calendar.getContentsIcon());
         dto.setMinItemLevel(calendar.getMinItemLevel());
+        dto.setServerTime(now.toEpochSecond(ZoneOffset.UTC));
 
-        List<LocalDateTime> startTimes = calendar.getStartTimes()
-                .stream()
-                .map(StartTime::getStartTime)
-                .toList();
-        dto.setStartTimes(startTimes);
+        try {
+            Optional<LocalDateTime> nextStartTimeOpt = calendar.getStartTimes()
+                    .stream()
+                    .map(StartTime::getStartTime)  // StartTime 객체에서 startTime 변수 데이터를 가져옴
+                    .filter(startTime -> startTime.isAfter(now))  // 서버시간 이후의 startTime을 필터링
+                    .findFirst();
 
-        dto.setServerTime(LocalDateTime.now());
-        dto.setLocation(calendar.getLocation());
-
-        List<ItemDTO> items = calendar.getRewardItems().stream()  // Calendar의 RewardItems를 stream 변환
-                .flatMap(rewardItem -> rewardItem.getItems().stream())  // RewardItem의 Items를 stream 변환
-                .map(this::convertToItemDTO)  // Item 객체를 형변환하는 메서드
-                .toList();
-        dto.setItems(items);
+            // 다음 시작 시간이 존재하면 남은 시간을 계산
+            if (nextStartTimeOpt.isPresent()) {
+                long startTime = nextStartTimeOpt.get().toEpochSecond(ZoneOffset.UTC);
+                dto.setRemainTime(startTime - now.toEpochSecond(ZoneOffset.UTC));
+            } else {
+                logger.warn("No upcoming start times available.");
+            }
+        } catch (Exception e) {
+            logger.error("Error calculating remain time: {}", e.getMessage());
+        }
 
         return dto;
     }
