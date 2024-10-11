@@ -37,10 +37,47 @@
         </foreach>
     </insert>
 
-    <!-- Calendar 테이블을 조회하는 쿼리 -->
-    <select id="selectCalendar">
+
+    <!-- calendar 테이블을 조회하는 쿼리 -->
+    <select id="selectCalendar" resultType="com.teamProject.lostArkProject.calendar.domain.Calendar">
         SELECT * FROM calendar
     </select>
+
+    <!-- startTime 테이블을 조회하는 쿼리 -->
+    <select id="selectStartTime" resultType="com.teamProject.lostArkProject.calendar.domain.StartTime">
+        SELECT * FROM starttime
+    </select>
+
+    <!-- rewardItem 테이블을 조회하는 쿼리 -->
+    <select id="selectRewardItem" resultType="com.teamProject.lostArkProject.calendar.domain.RewardItem">
+        SELECT * FROM rewarditem
+    </select>
+
+    <!-- item 테이블을 조회하는 쿼리 -->
+    <select id="selectItem" resultType="com.teamProject.lostArkProject.calendar.domain.Item">
+        SELECT * FROM item
+    </select>
+
+
+    <!-- Calendar 테이블과 StartTime 테이블 데이터를 조회하는 쿼리 -->
+    <select id="selectCalendarWithStartTime" resultMap="calendarWithStartTimeResultMap">
+        SELECT c.*, s.start_time
+        FROM calendar AS c
+        LEFT JOIN starttime AS s ON c.calendar_id = s.calendar_id
+    </select>
+
+    <resultMap id="calendarWithStartTimeResultMap" type="com.teamProject.lostArkProject.calendar.domain.Calendar">
+        <result property="categoryName" column="category_name"/>
+        <result property="contentsName" column="contents_name"/>
+        <result property="contentsIcon" column="contents_icon"/>
+        <result property="minItemLevel" column="min_item_level"/>
+
+        <!-- StartTimes의 컬렉션 매핑 -->
+        <collection property="startTimes" ofType="com.teamProject.lostArkProject.calendar.domain.StartTime">
+            <result property="startTime" column="start_time"/>
+        </collection>
+    </resultMap>
+
 
     <!-- Calendar 테이블과 그 하위의 모든 테이블 데이터를 조회하는 쿼리 -->
     <select id="selectAllCalendarTable" resultMap="calendarResultMap">
@@ -77,6 +114,8 @@
             </collection>
         </collection>
     </resultMap>
+
+
 
 <!--    <update id="updateUser" parameterType="com.example.springpractice.dto.User">-->
 <!--        update user set username = #{username}, password = #{password} , email = #{email} where id= #{id}-->

@@ -1,7 +1,7 @@
 package com.teamProject.lostArkProject.calendar.controller;
 
 import com.teamProject.lostArkProject.calendar.domain.Calendar;
-import com.teamProject.lostArkProject.calendar.dto.CalendarWithTimesDTO;
+import com.teamProject.lostArkProject.calendar.dto.CalendarWithServerTimeDTO;
 import com.teamProject.lostArkProject.calendar.service.CalendarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +29,7 @@ public class CalendarRestController {
 
     // calendar 데이터에서 calendarDTO 객체에 새로운 데이터를 담아서 반환 
     @GetMapping("/calendar")
-    public Mono<List<CalendarWithTimesDTO>> getCalendarsWithServerTime() {
+    public Mono<List<CalendarWithServerTimeDTO>> getCalendarsWithServerTime() {
        return calendarService.getCalendarWithServerTime();
     }
 }
