@@ -39,7 +39,7 @@
     <!-- Sidebar Start -->
     <div class="sidebar pe-4 pb-3">
         <nav class="navbar bg-secondary navbar-dark">
-            <a th:href="@{/main}" class="navbar-brand mx-4 mb-3">
+            <a th:href="@{/index}" class="navbar-brand mx-4 mb-3">
                 <h4 class="text-primary"><i class="fa fa-user-edit me-2"></i>LostArkProject</h4>
             </a>
             <div class="d-flex align-items-center ms-4 mb-4">
@@ -62,7 +62,7 @@
                 </div>
                 <a th:href="@{/alarm}" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>알림시스템</a>
                 <div class="nav-item dropdown">
-                    <a th:href="@{/teaching}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>멘토& 멘티</a>
+                    <a th:href="@{/teaching/main}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>멘토& 멘티</a>
                     <div class="dropdown-menu bg-transparent border-0">
                         <a th:href="@{/teaching/mentor}" class="dropdown-item">멘토(Mentor)</a>
                         <a th:href="@{/teaching/mentee}" class="dropdown-item">멘티(Mentee)</a>
@@ -99,21 +99,21 @@
                     </div>
 
                     <div class="nav-item dropdown">
-                        <a th:href="@{/myPage}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <a th:href="@{/user/myPage}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <img class="rounded-circle me-lg-2" th:src="@{/img/user.jpg}" alt="" style="width: 40px; height: 40px;">
                             <span class="d-none d-lg-inline-flex" th:text="${session.user.name}">John Doe</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                            <a th:href="@{/myPage}" class="dropdown-item">My Profile</a>
-                            <a th:href="@{/logout}" class="dropdown-item">Log Out</a>
+                            <a th:href="@{/user/myPage}" class="dropdown-item">My Profile</a>
+                            <a th:href="@{/user/logout}" class="dropdown-item">Log Out</a>
                         </div>
                     </div>
                 </div>
 
                 <div th:unless="${session.user != null}" class="d-flex">
                     <!-- 로그인되지 않은 상태 -->
-                    <a th:href="@{/login}" class="nav-link">로그인</a>
-                    <a th:href="@{/signup}" class="nav-link">회원 가입</a>
+                    <a th:href="@{/user/login}" class="nav-link">로그인</a>
+                    <a th:href="@{/user/signup}" class="nav-link">회원 가입</a>
                 </div>
             </div>
         </nav>

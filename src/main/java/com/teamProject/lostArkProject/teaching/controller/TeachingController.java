@@ -9,8 +9,20 @@ public class TeachingController {
 
     @GetMapping("/teaching/newMentor")
     public String newMentor(){
-        return "project/newMentor";
+        return "teaching/newMentor";
     }
+
+    @GetMapping("/teaching/newMentee")
+    public String newMentee(){
+        return "teaching/newMentee";
+    }
+
+    @GetMapping("/teaching/mentorList")
+    public String mentorList(){
+        return "teaching/mentorList";
+    }
+
+
 
 
 
