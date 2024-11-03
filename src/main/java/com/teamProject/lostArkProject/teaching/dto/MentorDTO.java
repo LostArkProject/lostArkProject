@@ -4,7 +4,4 @@ import lombok.Data;
 
 @Data
 public class MentorDTO {
-
-
-
 }

@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class userController {
+public class UserController {
 
     @GetMapping("/user/signup")
     public String signup(HttpSession session, Model model){

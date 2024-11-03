@@ -3,6 +3,8 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProject.lostArkProject.calendar.dao.CalendarDAO">
+
+    <!-- 외부 api의 데이터를 db에 삽입하는 쿼리 -->
     <insert id="insertCalendar" parameterType="com.teamProject.lostArkProject.calendar.domain.Calendar"
             useGeneratedKeys="true" keyProperty="calendarId">
         INSERT INTO calendar (category_name, contents_name, contents_icon, min_item_level, location)
@@ -36,47 +38,87 @@
     </insert>
 
 
-    <!-- Calendar 테이블에서 데이터를 조회하는 기본 쿼리 -->
-<!--    <select id="selectCalendar" resultMap="CalendarResultMap">-->
-<!--        SELECT * FROM Calendar WHERE id = #{id}-->
-<!--    </select>-->
+    <!-- calendar 테이블을 조회하는 쿼리 -->
+    <select id="selectCalendar" resultType="com.teamProject.lostArkProject.calendar.domain.Calendar">
+        SELECT * FROM calendar
+    </select>
 
-<!--    <resultMap id="calendarResultMap" type="com.teamProject.lostArkProject.calendar.domain.Calendar">-->
-<!--        &lt;!&ndash; Calendar의 필드 매핑 &ndash;&gt;-->
-<!--        <id property="id" column="id"/>-->
-<!--        <result property="categoryName" column="category_name"/>-->
-<!--        <result property="contentsName" column="contents_name"/>-->
-<!--        <result property="contentsIcon" column="contents_icon"/>-->
-<!--        <result property="minItemLevel" column="min_item_level"/>-->
-<!--        <result property="location" column="location"/>-->
+    <!-- startTime 테이블을 조회하는 쿼리 -->
+    <select id="selectStartTime" resultType="com.teamProject.lostArkProject.calendar.domain.StartTime">
+        SELECT * FROM starttime
+    </select>
 
-<!--        &lt;!&ndash; StartTimes의 컬렉션 매핑 &ndash;&gt;-->
-<!--        <collection property="startTimes" ofType="com.teamProject.lostArkProject.calendar.domain.StartTime">-->
-<!--            <result property="startTime" column="start_time"/>-->
-<!--        </collection>-->
+    <!-- rewardItem 테이블을 조회하는 쿼리 -->
+    <select id="selectRewardItem" resultType="com.teamProject.lostArkProject.calendar.domain.RewardItem">
+        SELECT * FROM rewarditem
+    </select>
 
-<!--        &lt;!&ndash; RewardItems의 컬렉션 매핑 &ndash;&gt;-->
-<!--        <collection property="rewardItems" ofType="com.teamProject.lostArkProject.calendar.domain.RewardItem">-->
-<!--            <result property="itemLevel" column="item_level"/>-->
-
-<!--            &lt;!&ndash; RewardItem 안의 Items 컬렉션 매핑 &ndash;&gt;-->
-<!--            <collection property="items" ofType="com.teamProject.lostArkProject.calendar.domain.Item">-->
-<!--                <result property="name" column="name"/>-->
-<!--                <result property="icon" column="icon"/>-->
-<!--                <result property="grade" column="grade"/>-->
-<!--            </collection>-->
-<!--        </collection>-->
-<!--    </resultMap>-->
+    <!-- item 테이블을 조회하는 쿼리 -->
+    <select id="selectItem" resultType="com.teamProject.lostArkProject.calendar.domain.Item">
+        SELECT * FROM item
+    </select>
 
 
-<!--    <select id="selectUser" parameterType="com.example.springpractice.dto.User">-->
-<!--        select * from user where email = #{email} and password = #{password}-->
-<!--    </select>-->
+    <!-- Calendar 테이블과 StartTime 테이블 데이터를 조회하는 쿼리 -->
+    <select id="selectCalendarWithStartTime" resultMap="calendarWithStartTimeResultMap">
+        SELECT c.*, s.start_time
+        FROM calendar AS c
+        LEFT JOIN starttime AS s ON c.calendar_id = s.calendar_id
+    </select>
+
+    <resultMap id="calendarWithStartTimeResultMap" type="com.teamProject.lostArkProject.calendar.domain.Calendar">
+        <result property="categoryName" column="category_name"/>
+        <result property="contentsName" column="contents_name"/>
+        <result property="contentsIcon" column="contents_icon"/>
+        <result property="minItemLevel" column="min_item_level"/>
+
+        <!-- StartTimes의 컬렉션 매핑 -->
+        <collection property="startTimes" ofType="com.teamProject.lostArkProject.calendar.domain.StartTime">
+            <result property="startTime" column="start_time"/>
+        </collection>
+    </resultMap>
+
+
+    <!-- Calendar 테이블과 그 하위의 모든 테이블 데이터를 조회하는 쿼리 -->
+    <select id="selectAllCalendarTable" resultMap="calendarResultMap">
+        SELECT c.*, s.start_time, r.item_level, i.name, i.icon, i.grade
+        FROM calendar AS c
+        LEFT JOIN starttime AS s ON c.calendar_id = s.calendar_id
+        LEFT JOIN rewarditem AS r ON c.calendar_id = r.calendar_id
+        LEFT JOIN item AS i ON r.reward_item_id = i.reward_item_id
+    </select>
+
+    <resultMap id="calendarResultMap" type="com.teamProject.lostArkProject.calendar.domain.Calendar">
+        <!-- Calendar의 필드 매핑 -->
+        <id property="calendarId" column="calendar_id"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="contentsName" column="contents_name"/>
+        <result property="contentsIcon" column="contents_icon"/>
+        <result property="minItemLevel" column="min_item_level"/>
+        <result property="location" column="location"/>
+
+        <!-- StartTimes의 컬렉션 매핑 -->
+        <collection property="startTimes" ofType="com.teamProject.lostArkProject.calendar.domain.StartTime">
+            <result property="startTime" column="start_time"/>
+        </collection>
+
+        <!-- RewardItems의 컬렉션 매핑 -->
+        <collection property="rewardItems" ofType="com.teamProject.lostArkProject.calendar.domain.RewardItem">
+            <result property="itemLevel" column="item_level"/>
+
+            <!-- RewardItem 안의 Items 컬렉션 매핑 -->
+            <collection property="items" ofType="com.teamProject.lostArkProject.calendar.domain.Item">
+                <result property="name" column="name"/>
+                <result property="icon" column="icon"/>
+                <result property="grade" column="grade"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+
+
 <!--    <update id="updateUser" parameterType="com.example.springpractice.dto.User">-->
 <!--        update user set username = #{username}, password = #{password} , email = #{email} where id= #{id}-->
-<!--    </update>-->
-<!--    <update id="updateUserAvatar" parameterType="com.example.springpractice.dto.User">-->
-<!--        update user set avatar_url = #{avatar_url} where id = #{id}-->
 <!--    </update>-->
 <!--    <delete id="deleteUser" parameterType="com.example.springpractice.dto.User">-->
 <!--        delete from user where email = #{email}-->

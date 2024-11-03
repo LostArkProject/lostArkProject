@@ -21,10 +21,4 @@ public class TeachingController {
     public String mentorList(){
         return "teaching/mentorList";
     }
-
-
-
-
-
-
 }

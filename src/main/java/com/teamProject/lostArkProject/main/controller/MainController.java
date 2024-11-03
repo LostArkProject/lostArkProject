@@ -40,7 +40,6 @@ public class MainController {
         return "main"; // 렌더링할 템플릿 이름
     }
 
-
     @GetMapping("/characters")
     public Mono<String> getCharacterInfo(@RequestParam String characterName, Model model,
                                          HttpServletRequest request) {

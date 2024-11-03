@@ -46,7 +46,6 @@ $(() => {
 // 초기화 함수 (비동기 함수의 순서를 제어)
 async function initFunction() {
     try {
-        await saveCalendar();   // 서버에서 외부 api 데이터를 받아서 db에 저장
         await fetchCalendar(); // 초기 캘린더 데이터 로드
     } catch(e) {
         console.error('initFunction() Error', e);
@@ -78,8 +77,6 @@ async function fetchCalendar() {
         response.forEach(calendar => {
             updateRemainTime(calendar);   // 남은 시간 갱신
         });
-
-        return response;
     } catch (e) {
         console.error('Error fetching calendar', e);
         return [];
@@ -140,8 +137,8 @@ function updateRemainTime(calendar) {
 
 // 가장 가까운 시작 시간을 반환
 function getValidStartTime(currentclientTime, startTimes) {
-    for (let prop in startTimes) {
-        let startTime = new Date(startTimes[prop]).getTime();
+    for (let element of startTimes) {
+        let startTime = new Date(element).getTime();
 
         if(startTime - currentclientTime > 0) {
             return startTime;
@@ -153,7 +150,7 @@ function getValidStartTime(currentclientTime, startTimes) {
 
 // 초 단위의 시간을 "hh:mm:ss"로 변환
 function convertRemainTime(totalSeconds) {
-    if (totalSeconds > 60 * 60 * 24) {
+    if (totalSeconds > 60 * 60 * 24 || totalSeconds < 0) {
         return `출현 대기 중`;
     };
 
