@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.teamProject.lostArkProject.calendar.mapper.CalendarMapper">
+<mapper namespace="com.teamProject.lostArkProject.calendar.dao.CalendarDAO">
     <insert id="insertCalendar" parameterType="com.teamProject.lostArkProject.calendar.domain.Calendar"
             useGeneratedKeys="true" keyProperty="calendarId">
         INSERT INTO calendar (category_name, contents_name, contents_icon, min_item_level, location)
