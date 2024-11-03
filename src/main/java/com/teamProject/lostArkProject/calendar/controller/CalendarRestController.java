@@ -29,7 +29,7 @@ public class CalendarRestController {
 
     // calendar 데이터에서 calendarDTO 객체에 새로운 데이터를 담아서 반환 
     @GetMapping("/calendar")
-    public Mono<List<CalendarWithServerTimeDTO>> getCalendarsWithServerTime() {
-       return calendarService.getCalendarWithServerTime();
+    public Mono<List<CalendarWithServerTimeDTO>> getCalendarDTOList() {
+       return calendarService.getCalendarWithRemainTime();
     }
 }
