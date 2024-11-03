@@ -112,7 +112,7 @@
 
                 <div th:unless="${session.user != null}" class="d-flex">
                     <!-- 로그인되지 않은 상태 -->
-                    <a th:href="@{/user/login}" class="nav-link">로그인</a>
+                    <a th:href="@{/user/signin}" class="nav-link">로그인</a>
                     <a th:href="@{/user/signup}" class="nav-link">회원 가입</a>
                 </div>
             </div>

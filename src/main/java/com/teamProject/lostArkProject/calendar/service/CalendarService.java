@@ -9,7 +9,7 @@ import com.teamProject.lostArkProject.calendar.domain.StartTime;
 import com.teamProject.lostArkProject.calendar.dto.CalendarAPIDTO;
 import com.teamProject.lostArkProject.calendar.dto.ItemDTO;
 import com.teamProject.lostArkProject.calendar.dto.CalendarWithServerTimeDTO;
-import com.teamProject.lostArkProject.calendar.mapper.CalendarMapper;
+import com.teamProject.lostArkProject.calendar.dao.CalendarDAO;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CalendarService {
     private static final Logger logger = LoggerFactory.getLogger(CalendarService.class);
-    private final CalendarMapper calendarMapper;
+    private final CalendarDAO calendarDAO;
 
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
@@ -47,23 +47,23 @@ public class CalendarService {
                 .map(this::toEntity)  // CalendarAPIDTO를 Calendar 엔티티로 변환
                 .flatMap(calendar -> Mono.fromCallable(() -> {
                     // Calendar 저장
-                    int calendarResult = calendarMapper.insertCalendar(calendar);
+                    int calendarResult = calendarDAO.insertCalendar(calendar);
                     logger.info("(CalendarService) Insert Calendar Data Result: {}", calendarResult);
                     // Calendar의 calendar_id를 StartTime, RewardItem에 할당
                     calendar.getStartTimes().forEach(startTime -> startTime.setCalendarId(calendar.getCalendarId()));
                     calendar.getRewardItems().forEach(rewardItem -> rewardItem.setCalendarId(calendar.getCalendarId()));
 
                     // Calendar의 StartTime 저장
-                    int startTimeResult = calendarMapper.insertStartTime(calendar.getStartTimes());
+                    int startTimeResult = calendarDAO.insertStartTime(calendar.getStartTimes());
                     logger.info("(CalendarService) Insert StartTime Data Result: {}", startTimeResult);
 
                     // Calendar의 RewardItem 저장
-                    int RewardItemResult = calendarMapper.insertRewardItem(calendar.getRewardItems());
+                    int RewardItemResult = calendarDAO.insertRewardItem(calendar.getRewardItems());
                     logger.info("(CalendarService) Insert RewardItem Data Result: {}", RewardItemResult);
 
                     // Calendar.RewardItem의 Item 저장
                     calendar.getRewardItems()
-                            .forEach(rewardItem -> calendarMapper.insertItem(rewardItem.getItems()));
+                            .forEach(rewardItem -> calendarDAO.insertItem(rewardItem.getItems()));
                     logger.info("(CalendarService) Insert Item Data Result: {}", calendar.getRewardItems().size());
 
                     return calendarResult;
@@ -77,13 +77,13 @@ public class CalendarService {
 
     // 주간일정 데이터를 db에서 가져와서 반환
     public Mono<List<Calendar>> getCalendars() {
-        return Mono.fromCallable(() -> calendarMapper.selectCalendar());
+        return Mono.fromCallable(() -> calendarDAO.selectCalendar());
     }
 
     // 주간일정 데이터에 남은시간 데이터를 추가해서 반환
     public Mono<List<CalendarWithServerTimeDTO>> getCalendarWithRemainTime() {
         return Mono.fromCallable(() -> {
-            List<Calendar> calendars = calendarMapper.selectCalendar();
+            List<Calendar> calendars = calendarDAO.selectCalendar();
             return calendars.stream()
                     .map(this::convertToDTO)
                     .toList();

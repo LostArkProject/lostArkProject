@@ -27,6 +27,7 @@ public class MainController {
         model.addAttribute("characterList", new ArrayList<CharacterInfo>());
         return "index";
     }
+
     @GetMapping("/main")
     public String main(HttpSession session, Model model) {
         Object user = session.getAttribute("user");
