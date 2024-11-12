@@ -1,4 +1,4 @@
-package com.teamProject.lostArkProject.user;
+package com.teamProject.lostArkProject.member.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
