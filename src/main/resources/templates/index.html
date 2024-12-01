@@ -14,50 +14,11 @@
     <button type="button" onclick="location.href='/cal'">캘린더 확인</button>
     <button type="button" onclick="location.href='/index'">메인 페이지</button>
     <br><br>
-    <button type="button" id="savedb">db에 캘린더 저장</button>
-    <button type="button" id="getdb">db에 저장된 캘린더 확인</button>
+    <button type="button" onclick="fetchCalendar()">db에 캘린더 저장</button>
+    <button type="button" onclick="getCalendar()">db에 저장된 캘린더 확인</button>
     <button type="button" id="mappingdto">남은시간 필드 추가</button>
 
     <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script>
-        $('#savedb').on('click', () => {
-            $.ajax({
-                url: '/calendar/fetch',
-                type: 'GET',
-                success: function (data) {
-                    console.log(data);
-                },
-                error: function (xhr, status, error) {
-                    console.log(error);
-                }
-            });
-        })
-
-        $('#getdb').on('click', () => {
-            $.ajax({
-                url: '/calendar/origin',
-                type: 'GET',
-                success: function (data) {
-                    console.log(data);
-                },
-                error: function (xhr, status, error) {
-                    console.log(error);
-                }
-            });
-        })
-
-        $('#mappingdto').on('click', () => {
-            $.ajax({
-                url: '/calendar',
-                type: 'GET',
-                success: function (data) {
-                    console.log(data);
-                },
-                error: function (xhr, status, error) {
-                    console.log(error);
-                }
-            });
-        })
-    </script>
+    <script src="/js/calendar.js"></script>
 </body>
 </html>

@@ -8,10 +8,10 @@ import java.util.List;
 
 @Getter
 @Setter
-public class RewardItemAPIDTO {
+public class RewardItemApiDTO {
     @JsonProperty("ItemLevel")
     private int itemLevel;
 
     @JsonProperty("Items")
-    private List<ItemAPIDTO> items;
+    private List<ItemApiDTO> items;
 }

@@ -4,12 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
-public class ItemAPIDTO {
+public class ItemApiDTO {
     @JsonProperty("Name")
     private String name;
 
@@ -20,5 +19,5 @@ public class ItemAPIDTO {
     private String grade;
 
     @JsonProperty("StartTimes")
-    private List<LocalDateTime> startTimes;
+    private List<String> startTimes;
 }

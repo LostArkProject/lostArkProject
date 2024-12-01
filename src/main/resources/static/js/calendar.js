@@ -39,44 +39,51 @@ $('#remain-time-list').on('click', (event) => {
  *************************/
 
 // 웹페이지 로드 후에 실행되는 코드
-$(() => {
-    initFunction();
-});
+// $(() => {
+//     initFunction();
+// });
 
-// 초기화 함수 (비동기 함수의 순서를 제어)
-async function initFunction() {
-    try {
-        await fetchCalendar(); // 초기 캘린더 데이터 로드
-    } catch(e) {
-        console.error('initFunction() Error', e);
-    }
-}
+// // 초기화 함수 (비동기 함수의 순서를 제어)
+// async function initFunction() {
+//     try {
+//         await fetchCalendar(); // 초기 캘린더 데이터 로드
+//     } catch(e) {
+//         console.error('initFunction() Error', e);
+//     }
+// }
 
 // 외부 api에서 데이터를 받아와서 db에 저장하라고 서버에 명령하는 함수
-async function saveCalendar() {
+function fetchCalendar() {
     try {
-        await $.ajax({
-            url: '/calendar/fetch',
+        $.ajax({
+            url: '/content/fetch',
             type: 'GET',
+        })
+        .success(function(data) {
+            console.log(`data: ${data}`);
         });
-        await fetchCalendar();
+        // await fetchCalendar();
     } catch(e) {
         console.error('saveCalendar() Error', e);
     }
 }
 
 // 서버에서 캘린더 데이터를 받아오는 함수
-async function fetchCalendar() {
+function getCalendar() {
     try {
-        const response = await $.ajax({
-            url: '/calendar',
+        const response = $.ajax({
+            url: '/content',
             method: 'GET',
         });
 
-        addCalendarHTML(response);  // 서버에서 받아온 캘린더 데이터로 최초 DOM 로드
-        response.forEach(calendar => {
-            updateRemainTime(calendar);   // 남은 시간 갱신
-        });
+        response.map(map => {
+            console.log(map.key + '///////////' + map.value);
+        })
+
+        // addCalendarHTML(response);  // 서버에서 받아온 캘린더 데이터로 최초 DOM 로드
+        // response.forEach(calendar => {
+        //     updateRemainTime(calendar);   // 남은 시간 갱신
+        // });
     } catch (e) {
         console.error('Error fetching calendar', e);
         return [];
