@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class TeachingController {
 
     @GetMapping("/teaching/newMentor")
-    public String newMentor(){
+    public String newMentor() {
         return "teaching/newMentor";
     }
 
