@@ -122,19 +122,24 @@ public class CalendarService {
         content.setStartTimes(startTimes);
 
         logger.info("rewards 파싱 시작");
+
         // api에서 받아온 RewardItems 데이터를 db의 reward 테이블에 맞게 가공
         List<Reward> rewards = calendarApiDTO.getRewardItems().stream()
-                .flatMap(rewardItem -> rewardItem.getItems().stream().map(item -> {
-                        Reward reward = new Reward();
+                .flatMap(rewardItem -> rewardItem.getItems().stream()
+                        // 아이템 이름이 실링이거나 전투 각인서이고, 컨텐츠 시작시간이 null이라면 매핑 제외
+                        .filter(item -> !((item.getName().equals("실링") || item.getName().equals("전투 각인서")) && item.getStartTimes() == null))
+                        .map(item -> {
+                            Reward reward = new Reward();
 
-                        reward.setContentName(content.getContentName());
-                        reward.setRewardItemName(item.getName());
-                        reward.setRewardItemLevel(rewardItem.getItemLevel());
-                        reward.setRewardItemIconLink(item.getIcon());
-                        reward.setRewardItemGrade(item.getGrade());
+                            reward.setContentName(content.getContentName());
+                            reward.setRewardItemName(item.getName());
+                            reward.setRewardItemLevel(rewardItem.getItemLevel());
+                            reward.setRewardItemIconLink(item.getIcon());
+                            reward.setRewardItemGrade(item.getGrade());
 
-                        return reward;
-                })).toList();
+                            return reward;
+                        })
+                ).toList();
         content.setRewards(rewards);
 
         return content;

@@ -15,4 +15,18 @@ public class Reward {
     private int rewardItemLevel;
     private String rewardItemIconLink;
     private String rewardItemGrade;
+
+    // 테스트 코드를 간결하게 작성하기 위한 생성자
+    public Reward(String contentName, String rewardItemName, int rewardItemLevel, String rewardItemIconLink, String rewardItemGrade) {
+        this.contentName = contentName;
+        this.rewardItemName = rewardItemName;
+        this.rewardItemLevel = rewardItemLevel;
+        this.rewardItemIconLink = rewardItemIconLink;
+        this.rewardItemGrade = rewardItemGrade;
+    }
+
+    // 데이터 매핑 시 빈 객체를 생성하기 위한 기본 생성자
+    public Reward() {
+
+    }
 }
