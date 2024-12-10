@@ -1,10 +1,8 @@
-package com.teamProject.lostArkProject.calendar.domain;
+package com.teamProject.lostArkProject.content.domain;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.ibatis.type.Alias;
-
-import java.util.List;
 
 @Getter
 @Setter

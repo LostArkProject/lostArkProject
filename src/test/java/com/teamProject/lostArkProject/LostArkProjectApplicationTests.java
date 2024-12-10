@@ -1,7 +1,7 @@
 package com.teamProject.lostArkProject;
 
-import com.teamProject.lostArkProject.calendar.dao.CalendarDAO;
-import com.teamProject.lostArkProject.calendar.domain.Reward;
+import com.teamProject.lostArkProject.content.dao.ContentDAO;
+import com.teamProject.lostArkProject.content.domain.Reward;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +14,7 @@ import java.util.List;
 class LostArkProjectApplicationTests {
 
 	@Autowired
-	private CalendarDAO calendarDAO;
+	private ContentDAO contentDAO;
 
 	@Test
 	public void save() {
@@ -33,7 +33,7 @@ class LostArkProjectApplicationTests {
 			return;
 		}
 
-		calendarDAO.saveReward(rewards);
+		contentDAO.saveReward(rewards);
 	}
 
 }

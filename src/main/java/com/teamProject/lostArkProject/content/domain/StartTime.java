@@ -1,4 +1,4 @@
-package com.teamProject.lostArkProject.calendar.domain;
+package com.teamProject.lostArkProject.content.domain;
 
 import lombok.Getter;
 import lombok.Setter;

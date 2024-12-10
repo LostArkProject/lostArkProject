@@ -1,29 +1,32 @@
-package com.teamProject.lostArkProject.calendar.controller;
+package com.teamProject.lostArkProject.content.controller;
 
-import com.teamProject.lostArkProject.calendar.service.CalendarService;
+import com.teamProject.lostArkProject.content.domain.Content;
+import com.teamProject.lostArkProject.content.service.ContentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
-public class CalendarRestController {
-    private final CalendarService calendarService;
+public class ContentRestController {
+    private final ContentService contentService;
 
     // 외부 api에서 데이터를 가져와서 db에 저장
     @GetMapping("/content/fetch")
-    public ResponseEntity<Mono<String>> getAndSaveContent() {
-        return ResponseEntity.ok(calendarService.saveContent());
+    public ResponseEntity<Mono<String>> fetchAndSaveContent() {
+        return ResponseEntity.ok(contentService.saveContent());
     }
 
-    //// calendar 데이터의 원본을 반환
-    //@GetMapping("/calendar/origin")
-    //public Mono<List<Calendar>> getCalendars() {
-    //    return calendarService.getCalendars();
-    //}
-    //
+    // content 데이터 조회
+    @GetMapping("/content")
+    public ResponseEntity<List<Content>> getContents() {
+        return ResponseEntity.ok(contentService.getContents());
+    }
+
     //// calendar 데이터에서 calendarDTO 객체에 새로운 데이터를 담아서 반환
     //@GetMapping("/calendar")
     //public Mono<List<CalendarWithServerTimeDTO>> getCalendarsWithServerTime() {

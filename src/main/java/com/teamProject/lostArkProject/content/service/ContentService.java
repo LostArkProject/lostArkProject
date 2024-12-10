@@ -1,11 +1,11 @@
-package com.teamProject.lostArkProject.calendar.service;
+package com.teamProject.lostArkProject.content.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.teamProject.lostArkProject.calendar.dao.CalendarDAO;
-import com.teamProject.lostArkProject.calendar.domain.Content;
-import com.teamProject.lostArkProject.calendar.domain.Reward;
-import com.teamProject.lostArkProject.calendar.domain.StartTime;
-import com.teamProject.lostArkProject.calendar.dto.CalendarApiDTO;
+import com.teamProject.lostArkProject.content.dao.ContentDAO;
+import com.teamProject.lostArkProject.content.domain.Content;
+import com.teamProject.lostArkProject.content.domain.Reward;
+import com.teamProject.lostArkProject.content.domain.StartTime;
+import com.teamProject.lostArkProject.content.dto.CalendarApiDTO;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +21,9 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CalendarService {
-    private static final Logger logger = LoggerFactory.getLogger(CalendarService.class);
-    private final CalendarDAO calendarDAO;
+public class ContentService {
+    private static final Logger logger = LoggerFactory.getLogger(ContentService.class);
+    private final ContentDAO contentDAO;
 
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
@@ -67,9 +67,9 @@ public class CalendarService {
     @Transactional
     public Mono<String> saveContent() {
         return Mono.fromRunnable(() -> {
-            calendarDAO.deleteStartTime();
-            calendarDAO.deleteReward();
-            calendarDAO.deleteContent();
+            contentDAO.deleteStartTime();
+            contentDAO.deleteReward();
+            contentDAO.deleteContent();
             logger.info("저장되어 있는 모든 Content 데이터 삭제");
         })
         .then(fetchCalendarsFromApi()) // Mono<List<...>>
@@ -83,17 +83,23 @@ public class CalendarService {
         });
     }
 
+    // content 테이블의 모든 데이터 조회
+    public List<Content> getContents() {
+
+        return contentDAO.getContents();
+    }
+
     // db에 저장하는 메서드
     @Transactional
     protected Mono<Void> saveToDatabase(Content content) {
         logger.info("saveToDatabase 메서드 호출");
         
         return Mono.fromRunnable(() -> {
-            calendarDAO.saveContent(content);
+            contentDAO.saveContent(content);
             logger.info("saveContent() 호출");
-            calendarDAO.saveStartTime(content.getStartTimes());
+            contentDAO.saveStartTime(content.getStartTimes());
             logger.info("saveStartTime() 호출");
-            calendarDAO.saveReward(content.getRewards());
+            contentDAO.saveReward(content.getRewards());
             logger.info("saveReward() 호출");
         });
     }
@@ -121,9 +127,9 @@ public class CalendarService {
             }).toList();
         content.setStartTimes(startTimes);
 
-        logger.info("rewards 파싱 시작");
 
         // api에서 받아온 RewardItems 데이터를 db의 reward 테이블에 맞게 가공
+        logger.info("rewards 파싱 시작");
         List<Reward> rewards = calendarApiDTO.getRewardItems().stream()
                 .flatMap(rewardItem -> rewardItem.getItems().stream()
                         // 아이템 이름이 실링이거나 전투 각인서이고, 컨텐츠 시작시간이 null이라면 매핑 제외
@@ -145,63 +151,6 @@ public class CalendarService {
         return content;
     }
 
-    //// api에서 주간일정 데이터를 받아와서 db에 저장
-    //public Mono<Void> getAndSaveCalendar() {
-    //    return webClient.get()
-    //            .uri("/gamecontents/calendar")
-    //            .retrieve()
-    //            .bodyToMono(String.class)
-    //            .map(apiResponse -> {
-    //                try {
-    //                    return objectMapper.readValue(apiResponse, new TypeReference<List<CalendarAPIDTO>>() {});
-    //                } catch (Exception e) {
-    //                    throw new RuntimeException(e);
-    //                }
-    //            })
-    //            .flatMapMany(Flux::fromIterable)  // List를 Flux로 변환
-    //            .map(this::toEntity)  // CalendarAPIDTO를 Calendar 엔티티로 변환
-    //            .flatMap(calendar -> Mono.fromCallable(() -> {
-    //                // Calendar 저장
-    //                int calendarResult = calendarDAO.insertCalendar(calendar);
-    //                logger.info("(CalendarService) Insert Calendar Data Result: {}", calendarResult);
-    //
-    //                // Calendar의 calendar_id를 StartTime, RewardItem에 할당
-    //                calendar.getStartTimes().forEach(startTime ->
-    //                        startTime.setCalendarId(calendar.getCalendarId())
-    //                );
-    //                calendar.getRewardItems().forEach(rewardItem ->
-    //                        rewardItem.setCalendarId(calendar.getCalendarId())
-    //                );
-    //
-    //                // Calendar의 StartTime 저장
-    //                int startTimeResult = calendarDAO.insertStartTime(calendar.getStartTimes());
-    //                logger.info("(CalendarService) Insert StartTime Data Result: {}", startTimeResult);
-    //
-    //                // Calendar의 RewardItem 저장
-    //                int RewardItemResult = calendarDAO.insertRewardItem(calendar.getRewardItems());
-    //                logger.info("(CalendarService) Insert RewardItem Data Result: {}", RewardItemResult);
-    //
-    //                // RewardItem의 reward_item_id를 Item에 할당
-    //                calendar.getRewardItems().forEach(rewardItem ->
-    //                        rewardItem.getItems().forEach(item ->
-    //                                item.setRewardItemId(rewardItem.getRewardItemId())
-    //                        )
-    //                );
-    //
-    //                // Calendar.RewardItem의 Item 저장
-    //                calendar.getRewardItems()
-    //                        .forEach(rewardItem -> calendarDAO.insertItem(rewardItem.getItems()));
-    //                logger.info("(CalendarService) Insert Item Data Result: {}", calendar.getRewardItems().size());
-    //
-    //                return calendarResult;
-    //            }))
-    //            .then()  // Mono로 변환 (doOnNext() 메서드로 result를 버리는 게 아니라 사용하도록 만들 수 있음)
-    //            .onErrorResume(e -> {
-    //                logger.error("(CalendarService) Error occured while saving calendar data", e);
-    //                return Mono.empty();
-    //            });
-    //}
-    //
     //// 주간일정 데이터를 db에서 가져와서 반환
     //public Mono<List<Calendar>> getCalendars() {
     //    return Mono.fromCallable(() -> calendarDAO.selectAllCalendarTable());

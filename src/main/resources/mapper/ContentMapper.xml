@@ -2,7 +2,8 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.teamProject.lostArkProject.calendar.dao.CalendarDAO">
+<mapper namespace="com.teamProject.lostArkProject.content.dao.ContentDAO">
+    <!-- content 테이블 저장 -->
     <insert id="saveContent" parameterType="content">
         INSERT INTO content(content_name, content_icon_link, min_item_level, content_location, content_category)
         VALUES (#{contentName},
@@ -12,6 +13,7 @@
                 #{contentCategory})
     </insert>
 
+    <!-- start_time 테이블 저장 -->
     <insert id="saveStartTime">
         INSERT INTO start_time(content_name, content_start_time)
         VALUES
@@ -21,6 +23,7 @@
         </foreach>
     </insert>
 
+    <!-- reward 테이블 저장 -->
     <insert id="saveReward">
         INSERT INTO reward(content_name, reward_item_name, reward_item_level, reward_item_icon_link, reward_item_grade)
         VALUES
@@ -33,6 +36,12 @@
         </foreach>
     </insert>
 
+    <!-- content 테이블 조회 -->
+    <select id="getContents" resultType="content">
+        SELECT * FROM content;
+    </select>
+
+    <!-- content 관련 테이블의 모든 데이터 삭제 -->
     <delete id="deleteAll">
         SET SQL_SAFE_UPDATES = 0;
         DELETE FROM content;
@@ -41,18 +50,21 @@
         SET SQL_SAFE_UPDATES = 1;
     </delete>
 
+    <!-- content 테이블의 모든 데이터 삭제 -->
     <delete id="deleteContent">
         SET SQL_SAFE_UPDATES = 0;
         DELETE FROM content;
         SET SQL_SAFE_UPDATES = 1;
     </delete>
 
+    <!-- start_time 테이블의 모든 데이터 삭제 -->
     <delete id="deleteStartTime">
         SET SQL_SAFE_UPDATES = 0;
         DELETE FROM start_time;
         SET SQL_SAFE_UPDATES = 1;
     </delete>
 
+    <!-- reward 테이블의 모든 데이터 삭제 -->
     <delete id="deleteReward">
         SET SQL_SAFE_UPDATES = 0;
         DELETE FROM reward;

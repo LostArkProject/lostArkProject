@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>Calendar</title>
+        <title>Content</title>
         <script src="http://code.jquery.com/jquery-latest.js"></script>
         <script>
             // 웹페이지 로드 후에 실행되는 코드
@@ -12,63 +12,63 @@
             // 초기화 함수 (비동기 함수의 순서를 제어)
             async function initFunction() {
                 try {
-                    await fetchCalendar(); // 초기 캘린더 데이터 로드
+                    await fetchContent(); // 초기 캘린더 데이터 로드
                 } catch(e) {
                     console.error('initFunction() Error', e);
                 }
             }
 
             // 서버에서 캘린더 데이터를 받아오는 함수
-            function fetchCalendar() {
+            function fetchContent() {
                 $.ajax({
-                    url: '/calendar',
+                    url: '/content',
                     method: 'GET',
                     success: (response) => {
-                        addCalendarHTML(response);  // 서버에서 받아온 캘린더 데이터로 최초 DOM 로드
-                        response.forEach(calendar => {
-                            updateRemainTime(calendar);   // 남은 시간 갱신
+                        addContentHTML(response);  // 서버에서 받아온 캘린더 데이터로 최초 DOM 로드
+                        response.forEach(content => {
+                            updateRemainTime(content);   // 남은 시간 갱신
                         });
                     },
                     error: (e) => {
-                        console.error('Error fetching calendar', e);
+                        console.error('Error fetching content', e);
                     }
                 });
             };
 
             // 캘린더 데이터로 DOM을 구성하는 함수
-            function addCalendarHTML(data) {
-                $('#calendar').empty();
+            function addContentHTML(data) {
+                $('#content').empty();
 
-                const calendarHTML = data.map(calendar => {
+                const contentHTML = data.map(content => {
                     return `
-                        <p>categoryName --- ${calendar.categoryName}</p>
-                        <p>contentsIcon --- ${calendar.contentsIcon}</p>
-                        <img src="${calendar.contentsIcon}" alt=contentsIcon />
-                        <p>contentsName --- ${calendar.contentsName}</p>
-                        <p>location --- ${calendar.location}</p>
-                        <p>minItemLevel --- ${calendar.minItemLevel}</p>
-                        <p>serverTime --- ${calendar.serverTime}</p>
-                        <p id="remain-time-${calendar.sanitizedContentsName}"></p>
-                        <p>startTimes --- ${calendar.startTimes.map(startTime => '<b>' + startTime + '</b>')}</p>
+                        <p>categoryName --- ${content.categoryName}</p>
+                        <p>contentsIcon --- ${content.contentsIcon}</p>
+                        <img src="${content.contentsIcon}" alt=contentsIcon />
+                        <p>contentsName --- ${content.contentsName}</p>
+                        <p>location --- ${content.location}</p>
+                        <p>minItemLevel --- ${content.minItemLevel}</p>
+                        <p>serverTime --- ${content.serverTime}</p>
+                        <p id="remain-time-${content.sanitizedContentsName}"></p>
+                        <p>startTimes --- ${content.startTimes.map(startTime => '<b>' + startTime + '</b>')}</p>
                         <hr>
                     `;
                 }).join('');
 
-                $('#calendar').append(calendarHTML);
+                $('#content').append(contentHTML);
             };
 
             // 남은 시간을 1초마다 갱신하는 함수
-            function updateRemainTime(calendar) {
+            function updateRemainTime(content) {
                 setInterval(() => {
                     const clientTime = new Date().getTime();  // 현재 클라이언트 시간
-                    // const serverTime = calendar.serverTime;      // 서버 시간
+                    // const serverTime = content.serverTime;      // 서버 시간
                     // const timeOffset = clientTime - serverTime;  // 서버와 클라이언트의 시간 차이
 
-                    const nextStartTime = getValidStartTime(clientTime, calendar.startTimes);  // 현재 시간과 가장 가까운 일정
+                    const nextStartTime = getValidStartTime(clientTime, content.startTimes);  // 현재 시간과 가장 가까운 일정
                     const remainTime = Math.floor((nextStartTime - clientTime) / 1000);  // 남은 시간 계산
 
                     // 각 컨텐츠의 남은 시간 태그를 갱신
-                    $(`#remain-time-${calendar.sanitizedContentsName}`).text(`RemainTime --- ${convertRemainTime(remainTime)}`);
+                    $(`#remain-time-${content.sanitizedContentsName}`).text(`RemainTime --- ${convertRemainTime(remainTime)}`);
                 }, 1000);
             }
 
@@ -109,11 +109,11 @@
     </head>
     <body>
         <div style="display: flex; justify-content: space-between;">
-            <p style="font-size: 24px; font-weight: bold; margin: 0;">Calendars</p>
+            <p style="font-size: 24px; font-weight: bold; margin: 0;">Contents</p>
             <button type="button" onclick="window.location.href='/'">초기 화면으로</button>
         </div>
         <hr>
 
-        <div id="calendar"></div>
+        <div id="content"></div>
     </body>
 </html>

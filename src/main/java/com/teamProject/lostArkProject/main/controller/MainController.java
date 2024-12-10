@@ -1,6 +1,6 @@
 package com.teamProject.lostArkProject.main.controller;
 
-import com.teamProject.lostArkProject.calendar.service.CalendarService;
+import com.teamProject.lostArkProject.content.service.ContentService;
 import com.teamProject.lostArkProject.collectible.domain.CharacterInfo;
 import com.teamProject.lostArkProject.collectible.domain.CollectibleItem;
 import com.teamProject.lostArkProject.collectible.service.CollectibleService;
@@ -19,7 +19,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 public class MainController {
-    private final CalendarService calendarService;
+    private final ContentService calendarService;
     private final CollectibleService collectibleService;
 
     @GetMapping("/")
