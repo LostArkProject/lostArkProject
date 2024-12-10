@@ -2,6 +2,7 @@ package com.teamProject.lostArkProject.calendar.controller;
 
 import com.teamProject.lostArkProject.calendar.service.CalendarService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -13,8 +14,8 @@ public class CalendarRestController {
 
     // 외부 api에서 데이터를 가져와서 db에 저장
     @GetMapping("/content/fetch")
-    public Mono<String> getAndSaveContent() {
-        return calendarService.saveContent();
+    public ResponseEntity<Mono<String>> getAndSaveContent() {
+        return ResponseEntity.ok(calendarService.saveContent());
     }
 
     //// calendar 데이터의 원본을 반환

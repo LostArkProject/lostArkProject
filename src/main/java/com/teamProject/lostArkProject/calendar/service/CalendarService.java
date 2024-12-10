@@ -64,16 +64,23 @@ public class CalendarService {
     }
 
     // 받아온 Calendar 데이터를 프로젝트의 도메인 형식으로 변환 후 db에 저장
+    @Transactional
     public Mono<String> saveContent() {
-        return fetchCalendarsFromApi()  // Mono<List<...>>
-                .flatMapMany(Flux::fromIterable) // Mono<List<...>>를 Flux<...>로 변환
-                .map(this::toDomain)  // api 객체를 도메인 객체로 변환하는 메서드 호출
-                .flatMap(this::saveToDatabase)  // 변환된 데이터를 db에 저장하는 메서드 호출
-                .then(Mono.just("Content 데이터가 성공적으로 저장되었습니다."))
-                .onErrorResume(e -> {
-                    logger.error("Content 데이터 저장 중 에러가 발생했습니다. \n{}", e.getMessage());
-                    return Mono.error(e);
-                });
+        return Mono.fromRunnable(() -> {
+            calendarDAO.deleteStartTime();
+            calendarDAO.deleteReward();
+            calendarDAO.deleteContent();
+            logger.info("저장되어 있는 모든 Content 데이터 삭제");
+        })
+        .then(fetchCalendarsFromApi()) // Mono<List<...>>
+        .flatMapMany(Flux::fromIterable) // Mono<List<...>>를 Flux<...>로 변환
+        .map(this::toDomain) // api 객체를 도메인 객체로 변환하는 메서드 호출
+        .flatMap(this::saveToDatabase) // 변환된 데이터를 db에 저장하는 메서드 호출
+        .then(Mono.just("Content 데이터가 성공적으로 저장되었습니다."))
+        .onErrorResume(e -> {
+            logger.error("Content 데이터 저장 중 에러가 발생했습니다. \n{}", e.getMessage());
+            return Mono.error(e);
+        });
     }
 
     // db에 저장하는 메서드
@@ -82,8 +89,6 @@ public class CalendarService {
         logger.info("saveToDatabase 메서드 호출");
         
         return Mono.fromRunnable(() -> {
-            calendarDAO.deleteAll();
-            logger.info("deleteAll() 호출");
             calendarDAO.saveContent(content);
             logger.info("saveContent() 호출");
             calendarDAO.saveStartTime(content.getStartTimes());

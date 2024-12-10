@@ -5,17 +5,32 @@
 <mapper namespace="com.teamProject.lostArkProject.calendar.dao.CalendarDAO">
     <insert id="saveContent" parameterType="content">
         INSERT INTO content(content_name, content_icon_link, min_item_level, content_location, content_category)
-        VALUES (#{contentName}, #{contentIconLink}, #{minItemLevel}, #{contentLocation}, #{contentCategory})
+        VALUES (#{contentName},
+                #{contentIconLink},
+                #{minItemLevel},
+                #{contentLocation},
+                #{contentCategory})
     </insert>
 
-    <insert id="saveStartTime" parameterType="startTime">
+    <insert id="saveStartTime">
         INSERT INTO start_time(content_name, content_start_time)
-        VALUES (#{contentName}, #{startTimes})
+        VALUES
+        <foreach collection="startTimes" item="startTime" separator=",">
+            (#{startTime.contentName},
+             #{startTime.contentStartTime})
+        </foreach>
     </insert>
 
     <insert id="saveReward">
         INSERT INTO reward(content_name, reward_item_name, reward_item_level, reward_item_icon_link, reward_item_grade)
-        VALUES (#{contentName}, #{rewardItemName}, #{rewardItemLevel}, #{rewardItemIconLink}, #{rewardItemGrade})
+        VALUES
+        <foreach collection="rewards" item="reward" separator=",">
+            (#{reward.contentName},
+             #{reward.rewardItemName},
+             #{reward.rewardItemLevel},
+             #{reward.rewardItemIconLink},
+             #{reward.rewardItemGrade})
+        </foreach>
     </insert>
 
     <delete id="deleteAll">
