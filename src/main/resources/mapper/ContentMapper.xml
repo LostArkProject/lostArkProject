@@ -37,9 +37,45 @@
     </insert>
 
     <!-- content 테이블 조회 -->
-    <select id="getContents" resultType="content">
-        SELECT * FROM content;
+    <select id="getContentsAll" resultMap="ContentAll">
+        SELECT c.*,
+               s.content_start_time,
+               r.reward_item_name,
+               r.reward_item_level,
+               r.reward_item_icon_link,
+               r.reward_item_grade
+        FROM content c
+        LEFT JOIN
+            start_time s
+            ON s.content_name = c.content_name
+        LEFT JOIN
+            reward r
+            ON r.content_name = c.content_name
     </select>
+    <resultMap id="ContentAll" type="contentDTO">
+        <!-- contentDTO 기본 컬럼 매핑 -->
+        <id property="contentId" column="content_id" />
+        <result property="contentName" column="content_name" />
+        <result property="contentIconLink" column="content_icon_link" />
+        <result property="minItemLevel" column="min_item_level" />
+        <result property="contentLocation" column="content_location" />
+        <result property="contentCategory" column="content_category" />
+
+        <!-- List<startTimeDTO> 매핑 -->
+        <collection property="startTimes" ofType="startTimeDTO" column="content_name" javaType="ArrayList">
+            <result property="contentName" column="content_name" />
+            <result property="contentStartTime" column="content_start_time" />
+        </collection>
+
+        <!-- List<rewardDTO> 매핑 -->
+        <collection property="rewards" ofType="rewardDTO" column="content_name" javaType="ArrayList">
+            <result property="contentName" column="content_name" />
+            <result property="rewardItemName" column="reward_item_name" />
+            <result property="rewardItemLevel" column="reward_item_level" />
+            <result property="rewardItemIconLink" column="reward_item_icon_link" />
+            <result property="rewardItemGrade" column="reward_item_grade" />
+        </collection>
+    </resultMap>
 
     <!-- content 관련 테이블의 모든 데이터 삭제 -->
     <delete id="deleteAll">

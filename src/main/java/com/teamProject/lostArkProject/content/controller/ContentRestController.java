@@ -1,6 +1,7 @@
 package com.teamProject.lostArkProject.content.controller;
 
 import com.teamProject.lostArkProject.content.domain.Content;
+import com.teamProject.lostArkProject.content.dto.ContentDTO;
 import com.teamProject.lostArkProject.content.service.ContentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,9 @@ public class ContentRestController {
     }
 
     // content 데이터 조회
-    @GetMapping("/content")
-    public ResponseEntity<List<Content>> getContents() {
-        return ResponseEntity.ok(contentService.getContents());
+    @GetMapping("/content/all")
+    public ResponseEntity<List<ContentDTO>> getContentsAll() {
+        return ResponseEntity.ok(contentService.getContentsAll());
     }
 
     //// calendar 데이터에서 calendarDTO 객체에 새로운 데이터를 담아서 반환

@@ -71,14 +71,16 @@ function fetchContent() {
 // 서버에서 캘린더 데이터를 받아오는 함수
 function getContent() {
     try {
-        const response = $.ajax({
-            url: '/content',
+        $.ajax({
+            url: '/content/all',
             method: 'GET',
+            success: (res) => {
+                console.log(res);
+            },
+            error: (xhr, status, error) => {
+                console.error(xhr.statusText + '\n\n' + xhr.responseText);
+            }
         });
-
-        response.map(map => {
-            console.log(map.key + '///////////' + map.value);
-        })
     } catch (e) {
         console.error('Error get content', e);
         return [];

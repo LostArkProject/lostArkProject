@@ -5,7 +5,8 @@ import com.teamProject.lostArkProject.content.dao.ContentDAO;
 import com.teamProject.lostArkProject.content.domain.Content;
 import com.teamProject.lostArkProject.content.domain.Reward;
 import com.teamProject.lostArkProject.content.domain.StartTime;
-import com.teamProject.lostArkProject.content.dto.CalendarApiDTO;
+import com.teamProject.lostArkProject.content.dto.ContentDTO;
+import com.teamProject.lostArkProject.content.dto.api.CalendarApiDTO;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,9 +85,9 @@ public class ContentService {
     }
 
     // content 테이블의 모든 데이터 조회
-    public List<Content> getContents() {
-
-        return contentDAO.getContents();
+    public List<ContentDTO> getContentsAll() {
+        logger.info("getContentsAll() 호출");
+        return contentDAO.getContentsAll();
     }
 
     // db에 저장하는 메서드
@@ -96,11 +97,8 @@ public class ContentService {
         
         return Mono.fromRunnable(() -> {
             contentDAO.saveContent(content);
-            logger.info("saveContent() 호출");
             contentDAO.saveStartTime(content.getStartTimes());
-            logger.info("saveStartTime() 호출");
             contentDAO.saveReward(content.getRewards());
-            logger.info("saveReward() 호출");
         });
     }
 
@@ -116,7 +114,6 @@ public class ContentService {
         content.setContentCategory(calendarApiDTO.getCategoryName());
 
         // api에서 받아온 StartTimes 데이터를 db의 start_times 테이블에 맞게 가공
-        logger.info("startTimes 파싱 시작");
         List<StartTime> startTimes = calendarApiDTO.getStartTimes().stream()
                 .map(startTime -> {
                     StartTime st = new StartTime();
@@ -129,11 +126,12 @@ public class ContentService {
 
 
         // api에서 받아온 RewardItems 데이터를 db의 reward 테이블에 맞게 가공
-        logger.info("rewards 파싱 시작");
         List<Reward> rewards = calendarApiDTO.getRewardItems().stream()
                 .flatMap(rewardItem -> rewardItem.getItems().stream()
                         // 아이템 이름이 실링이거나 전투 각인서이고, 컨텐츠 시작시간이 null이라면 매핑 제외
-                        .filter(item -> !((item.getName().equals("실링") || item.getName().equals("전투 각인서")) && item.getStartTimes() == null))
+                        .filter(item -> !((item.getName().equals("실링") ||
+                                           item.getName().equals("전투 각인서")) || 
+                                           item.getName().equals("해적 주화") && item.getStartTimes() == null))
                         .map(item -> {
                             Reward reward = new Reward();
 

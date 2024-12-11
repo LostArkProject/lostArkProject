@@ -1,4 +1,4 @@
-package com.teamProject.lostArkProject.content.domain;
+package com.teamProject.lostArkProject.content.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,8 +8,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@Alias("content")
-public class Content {
+@Alias("contentDTO")
+public class ContentDTO {
     private int contentId;
     private String contentName;
     private String contentIconLink;
@@ -17,7 +17,6 @@ public class Content {
     private String contentLocation;
     private String contentCategory;
 
-    private List<StartTime> startTimes;
-    private List<Reward> rewards;
+    private List<StartTimeDTO> startTimes;
+    private List<RewardDTO> rewards;
 }
-

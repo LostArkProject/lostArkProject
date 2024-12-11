@@ -1,4 +1,4 @@
-package com.teamProject.lostArkProject.content.dto;
+package com.teamProject.lostArkProject.content.dto.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

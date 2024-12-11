@@ -3,6 +3,7 @@ package com.teamProject.lostArkProject.content.dao;
 import com.teamProject.lostArkProject.content.domain.Content;
 import com.teamProject.lostArkProject.content.domain.Reward;
 import com.teamProject.lostArkProject.content.domain.StartTime;
+import com.teamProject.lostArkProject.content.dto.ContentDTO;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface ContentDAO {
     void saveReward(List<Reward> rewards);
 
     // 데이터 조회
-    List<Content> getContents();
+    List<ContentDTO> getContentsAll();
 
     // 데이터 삭제
     void deleteAll();
