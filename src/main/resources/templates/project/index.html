@@ -28,19 +28,19 @@
                             </div>
                             <div class="align-items-center border-bottom py-3 notice-preview" onclick="window.location.href='index'">
                                 <div class="d-flex justify-content-between mx-3">
-                                    <span>공지사항 제목1111112111111111</span>
+                                    <span>공지사항 전파합니다.</span>
                                     <span style="font-size: 14px; color: #CCC;">24.09.13</span>
                                 </div>
                             </div>
                             <div class="align-items-center border-bottom py-3 notice-preview" onclick="window.location.href='index'">
                                 <div class="d-flex justify-content-between mx-3">
-                                    <span>공지사항 제목222222222222222222</span>
+                                    <span>회원가입 시 보호자 무료 1회 이벤트!</span>
                                     <span style="font-size: 14px; color: #CCC;">24.09.06</span>
                                 </div>
                             </div>
                             <div class="align-items-center border-bottom py-3 notice-preview" onclick="window.location.href='index'">
                                 <div class="d-flex justify-content-between mx-3">
-                                    <span>공지사항 제목333333333333333333</span>
+                                    <span>타 유저 사칭 유저 단속 결과</span>
                                     <span style="font-size: 14px; color: #CCC;">24.08.31</span>
                                 </div>
                             </div>
@@ -140,15 +140,16 @@
                             </div>
                         </div>
 
-                        <!-- 컨텐츠까지 남은시간 리스트 (임시) -->
+                        <!-- 컨텐츠까지 남은시간 리스트 -->
                         <div class="bg-secondary text-center rounded p-4 mt-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">Remain Time</h6>
-                                <!-- 링크 이동은 무시하고 modal 창을 띄움 -->
-                                <a href="#" id="remain-time-list">Show All</a>
+                                <h6 class="mb-0">컨텐츠</h6>
+                                
+                                <!-- 컨텐츠의 Show All 클릭 시 나오는 Modal -->
+                                <a href="#" class="content-modal">Show All</a>
                             </div>
-                            <!-- "/js/content.js" 의 updateRemainTime() 메소드 -->
-                            <div id="calendar"></div>
+                            <!-- 컨텐츠 본문 -->
+                            <div class="content-container"></div>
                         </div>
                         <!-- 알림 설정 -->
                         <div class="bg-secondary rounded p-4 mt-4">

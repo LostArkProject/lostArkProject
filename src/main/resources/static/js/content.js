@@ -39,9 +39,9 @@ $('#remain-time-list').on('click', (event) => {
  *************************/
 
 // 웹페이지 로드 후에 실행되는 코드
-// $(() => {
-//     initFunction();
-// });
+$(() => {
+    getContent();
+});
 
 // // 초기화 함수 (비동기 함수의 순서를 제어)
 // async function initFunction() {
@@ -68,49 +68,51 @@ function fetchContent() {
     }
 }
 
-// 서버에서 캘린더 데이터를 받아오는 함수
+// 서버에서 content 데이터를 받아오는 함수
 function getContent() {
     try {
         $.ajax({
             url: '/content/all',
             method: 'GET',
             success: (res) => {
+                console.log('컨텐츠 데이터 조회');
                 console.log(res);
+                addContentHTML(res);
             },
             error: (xhr, status, error) => {
-                console.error(xhr.statusText + '\n\n' + xhr.responseText);
+                console.error(xhr.statusText);
             }
         });
     } catch (e) {
-        console.error('Error get content', e);
+        console.error(`컨텐츠 데이터를 가져오는 도중 예외가 발생했습니다
+            ${e}`);
         return [];
     }
 };
 
 // 캘린더 데이터로 DOM을 구성하는 함수
-function addContentHTML(data) {
-    const $contentDiv = $('#content');
-    const $remainTimeBody = $('#remain-time-modal-body');
+function addContentHTML(contents) {
+    const $contentContainer = $('.content-container');
 
-    $contentDiv.empty();
-    $remainTimeBody.empty();
+    $contentContainer.empty();
 
-    const contentHTML = data.map(content => {
-        let itemsHTML = content.items.map(item => `
-                <p>name === ${item.name}</p>
-                <p>icon === ${item.icon}</p>
-                <img src="${item.icon}" alt="itemIcon" />
-                <p>grade === ${item.grade}</p>
+    const contentsHTML = contents.map(content => {
+        const startTime = content.startTimes ? content.startTimes[0].contentStartTime : 'loading...';
+        console.log(`startTime: ${startTime}`);
+        const rewardsHTML = content.rewards.map(reward => `
+                <p>name === ${reward.rewardItemName}</p>
+                <img src="${reward.rewardItemIconLink}" alt="itemIcon" />
+                <p>grade === ${reward.rewardItemGrade}</p>
         `).join('');
 
         return `
             <div class="d-flex border-bottom py-3">
                 <div class="w-100 ms-3">
                     <div class="d-flex">
-                        <img class="rounded-circle flex-shrink-0" src="${content.contentsIcon}" alt="" style="width: 40px; height: 40px;">
+                        <img class="rounded-circle flex-shrink-0" src="${content.contentIconLink}" alt="" style="width: 40px; height: 40px;">
                         <div class="text-start ms-3">
-                            <h6 class="mb-0">${content.contentsName}</h6>
-                            <small id="remain-time-${content.sanitizedContentsName}"></small>
+                            <h6 class="mb-0">${content.contentName}</h6>
+                            <small id="remain-time-content.sanitizedContentsName">${startTime}</small>
                         </div>
                     </div>
                 </div>
@@ -118,8 +120,7 @@ function addContentHTML(data) {
         `;
     }).join('');
 
-    $contentDiv.append(contentHTML);
-    $remainTimeBody.append(contentHTML);
+    $contentContainer.append(contentsHTML);
 };
 
 // 남은 시간을 1초마다 갱신하는 함수
