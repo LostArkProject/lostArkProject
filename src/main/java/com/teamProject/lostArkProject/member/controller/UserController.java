@@ -8,33 +8,33 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class UserController {
 
-    @GetMapping("/member/signup")
+    @GetMapping("/user/signup")
     public String signup(HttpSession session, Model model){
-        Object member = session.getAttribute("member");
-        if (member != null) {
+        Object user = session.getAttribute("user");
+        if (user != null) {
             model.addAttribute("isLoggedIn", true);
-            model.addAttribute("username", member.toString()); // member 객체에 따라 다를 수 있음
+            model.addAttribute("username", user.toString()); // user 객체에 따라 다를 수 있음
         } else {
             model.addAttribute("isLoggedIn", false);
         }
-        return "member/signup";
+        return "user/signup";
     }
-    @GetMapping("/member/signin")
+    @GetMapping("/user/signin")
     public String signin(HttpSession session, Model model){
-        Object member = session.getAttribute("member");
-        if (member != null) {
+        Object user = session.getAttribute("user");
+        if (user != null) {
             model.addAttribute("isLoggedIn", true);
-            model.addAttribute("username", member.toString()); // member 객체에 따라 다를 수 있음
+            model.addAttribute("username", user.toString()); // user 객체에 따라 다를 수 있음
         } else {
             model.addAttribute("isLoggedIn", false);
         }
-        return "member/signin";
+        return "user/signin";
     }
 
-    @GetMapping("/member/changeinfo")
+    @GetMapping("/user/changeinfo")
     public String changeInfo(){
 
-        return "member/changeinfo";
+        return "user/changeinfo";
     }
 
 
