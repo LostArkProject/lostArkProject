@@ -84,20 +84,24 @@ public class ContentService {
         });
     }
 
-    // content 테이블의 모든 데이터 조회
-    public List<ContentDTO> getContentsAll() {
-        logger.info("getContentsAll() 호출");
-        return contentDAO.getContentsAll();
-    }
-
     // db에 저장하는 메서드
     @Transactional
     protected Mono<Void> saveToDatabase(Content content) {
         logger.info("saveToDatabase 메서드 호출");
-        
+
         return Mono.fromRunnable(() -> {
+            // content 테이블 저장
             contentDAO.saveContent(content);
-            contentDAO.saveStartTime(content.getStartTimes());
+            int contentId = content.getContentId();
+
+            // start_time 테이블 저장
+            List<StartTime> startTimes = content.getStartTimes();
+            startTimes.forEach(startTime -> startTime.setContentId(contentId)); // contentId 매핑
+            contentDAO.saveStartTime(startTimes);
+
+            // reward 테이블 저장
+            List<Reward> rewards = content.getRewards();
+            rewards.forEach(reward -> reward.setContentId(contentId)); // contentId 매핑
             contentDAO.saveReward(content.getRewards());
         });
     }
@@ -117,7 +121,6 @@ public class ContentService {
         List<StartTime> startTimes = calendarApiDTO.getStartTimes().stream()
                 .map(startTime -> {
                     StartTime st = new StartTime();
-                    st.setContentName(content.getContentName());
                     st.setContentStartTime(LocalDateTime.parse(startTime));
 
                     return st;
@@ -128,14 +131,9 @@ public class ContentService {
         // api에서 받아온 RewardItems 데이터를 db의 reward 테이블에 맞게 가공
         List<Reward> rewards = calendarApiDTO.getRewardItems().stream()
                 .flatMap(rewardItem -> rewardItem.getItems().stream()
-                        // 아이템 이름이 실링이거나 전투 각인서이고, 컨텐츠 시작시간이 null이라면 매핑 제외
-                        .filter(item -> !((item.getName().equals("실링") ||
-                                           item.getName().equals("전투 각인서")) || 
-                                           item.getName().equals("해적 주화") && item.getStartTimes() == null))
                         .map(item -> {
                             Reward reward = new Reward();
 
-                            reward.setContentName(content.getContentName());
                             reward.setRewardItemName(item.getName());
                             reward.setRewardItemLevel(rewardItem.getItemLevel());
                             reward.setRewardItemIconLink(item.getIcon());
@@ -147,6 +145,18 @@ public class ContentService {
         content.setRewards(rewards);
 
         return content;
+    }
+
+    // content 테이블의 모든 데이터 조회
+    public List<ContentDTO> getContentsAll() {
+        logger.info("getContentsAll() 호출");
+        return contentDAO.getContentsAll();
+    }
+
+    // content, start_time 테이블을 조회 후 매핑
+    public List<ContentDTO> getContentsAndStartTimes() {
+        logger.info("content, start_time 테이블을 조회합니다.");
+        return contentDAO.getContentStartTime();
     }
 
     //// 주간일정 데이터를 db에서 가져와서 반환

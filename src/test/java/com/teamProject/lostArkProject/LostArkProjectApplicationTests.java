@@ -19,8 +19,8 @@ class LostArkProjectApplicationTests {
 	@Test
 	public void save() {
 		List<Reward> rewards = List.of(
-			new Reward("Content A", "Reward 1", 10, "icon1.png", "High"),
-			new Reward("Content B", "Reward 2", 15, "icon2.png", "Medium")
+			new Reward(1, "Reward 1", 10, "icon1.png", "High"),
+			new Reward(2, "Reward 2", 15, "icon2.png", "Medium")
 		);
 
 		saveRewards(rewards);

@@ -8,15 +8,16 @@ import org.apache.ibatis.type.Alias;
 @Setter
 @Alias("reward")
 public class Reward {
-    private String contentName;
+    private int rewardId;
+    private int contentId;
     private String rewardItemName;
     private int rewardItemLevel;
     private String rewardItemIconLink;
     private String rewardItemGrade;
 
     // 테스트 코드를 간결하게 작성하기 위한 생성자
-    public Reward(String contentName, String rewardItemName, int rewardItemLevel, String rewardItemIconLink, String rewardItemGrade) {
-        this.contentName = contentName;
+    public Reward(int contentId, String rewardItemName, int rewardItemLevel, String rewardItemIconLink, String rewardItemGrade) {
+        this.contentId = contentId;
         this.rewardItemName = rewardItemName;
         this.rewardItemLevel = rewardItemLevel;
         this.rewardItemIconLink = rewardItemIconLink;

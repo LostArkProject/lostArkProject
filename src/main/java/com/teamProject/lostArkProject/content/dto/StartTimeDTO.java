@@ -10,6 +10,6 @@ import java.time.LocalDateTime;
 @Setter
 @Alias("startTimeDTO")
 public class StartTimeDTO {
-    private String contentName;
+    private int contentId;
     private LocalDateTime contentStartTime;
 }

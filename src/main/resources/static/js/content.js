@@ -40,7 +40,7 @@ $('#remain-time-list').on('click', (event) => {
 
 // 웹페이지 로드 후에 실행되는 코드
 $(() => {
-    getContent();
+    getContentStartTime();
 });
 
 // // 초기화 함수 (비동기 함수의 순서를 제어)
@@ -62,7 +62,6 @@ function fetchContent() {
         .success(function(data) {
             console.log(`data: ${data}`);
         });
-        // await fetchContent();
     } catch(e) {
         console.error('fetchContent() Error', e);
     }
@@ -90,6 +89,28 @@ function getContent() {
     }
 };
 
+// 서버에서 content, start_time 데이터를 받아오는 함수
+function getContentStartTime() {
+    try{
+        $.ajax({
+            url: '/content/start-time',
+            method: 'GET',
+            success: (res) => {
+                console.log('컨텐츠, 시작시간 데이터 조회: ');
+                console.log(res);
+                addContentHTML(res);
+            },
+            error: (xhr, status, error) => {
+                console.error(xhr.statusText);
+            }
+        })
+    } catch(e) {
+        console.error(`컨텐츠, 시작시간 데이터를 가져오는 도중 예외가 발생했습니다:
+             ${e}`);
+        return [];
+    }
+}
+
 // 캘린더 데이터로 DOM을 구성하는 함수
 function addContentHTML(contents) {
     const $contentContainer = $('.content-container');
@@ -98,12 +119,6 @@ function addContentHTML(contents) {
 
     const contentsHTML = contents.map(content => {
         const startTime = content.startTimes ? content.startTimes[0].contentStartTime : 'loading...';
-        console.log(`startTime: ${startTime}`);
-        const rewardsHTML = content.rewards.map(reward => `
-                <p>name === ${reward.rewardItemName}</p>
-                <img src="${reward.rewardItemIconLink}" alt="itemIcon" />
-                <p>grade === ${reward.rewardItemGrade}</p>
-        `).join('');
 
         return `
             <div class="d-flex border-bottom py-3">
