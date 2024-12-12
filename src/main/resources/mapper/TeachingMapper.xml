@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProject.lostArkProject.teaching.dao.TeachingDAO">
+
+    <!--새로운 멘토 입력 -->
+    <insert id="newMentor" parameterType="MentorDTO">
+        INSERT INTO MENTOR(
+            MENTOR_WANT_TO_SAY,
+            MENTOR_DISCORD_ID,
+            MENTOR_MEMBER_ID,
+            MENTOR_CONTENT_ID)
+        VALUES(
+            #{mentor_want_to_say},
+            #{mentor_discord_id},
+            #{mentor_member_id},
+            #{mentor_content_id}
+        )
+    </insert>
+
+    <!--새로운 멘티 입력 -->
+    <insert id="newMentee" parameterType="MenteeDTO">
+        INSERT INTO MENTEE(
+        MENTEE_WANT_TO_SAY,
+        MENTEE_MEMBER_ID,
+        MENTEE_CONTENT_ID)
+        VALUES(
+        #{mentee_want_to_say},
+        #{mentee_member_id},
+        #{mentee_content_id}
+        )
+    </insert>
+
+
+
+</mapper>
