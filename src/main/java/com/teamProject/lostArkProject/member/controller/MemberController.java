@@ -6,35 +6,35 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class UserController {
+public class MemberController {
 
-    @GetMapping("/user/signup")
+    @GetMapping("/member/signup")
     public String signup(HttpSession session, Model model){
-        Object user = session.getAttribute("user");
-        if (user != null) {
+        Object member = session.getAttribute("member");
+        if (member != null) {
             model.addAttribute("isLoggedIn", true);
-            model.addAttribute("username", user.toString()); // user 객체에 따라 다를 수 있음
+            model.addAttribute("membername", member.toString()); // member 객체에 따라 다를 수 있음
         } else {
             model.addAttribute("isLoggedIn", false);
         }
-        return "user/signup";
+        return "member/signup";
     }
-    @GetMapping("/user/signin")
+    @GetMapping("/member/signin")
     public String signin(HttpSession session, Model model){
-        Object user = session.getAttribute("user");
-        if (user != null) {
+        Object member = session.getAttribute("member");
+        if (member != null) {
             model.addAttribute("isLoggedIn", true);
-            model.addAttribute("username", user.toString()); // user 객체에 따라 다를 수 있음
+            model.addAttribute("membername", member.toString()); // member 객체에 따라 다를 수 있음
         } else {
             model.addAttribute("isLoggedIn", false);
         }
-        return "user/signin";
+        return "member/signin";
     }
 
-    @GetMapping("/user/changeinfo")
+    @GetMapping("/member/changeinfo")
     public String changeInfo(){
 
-        return "user/changeinfo";
+        return "member/changeinfo";
     }
 
 

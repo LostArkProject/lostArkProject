@@ -4,8 +4,17 @@
 
     <!--새로운 멘토 입력 -->
     <insert id="newMentor" parameterType="MentorDTO">
-
-
+        INSERT INTO MENTOR(
+            MENTOR_WANT_TO_SAY,
+            MENTOR_DISCORD_ID,
+            MENTOR_MEMBER_ID,
+            MENTOR_CONTENT_ID)
+        VALUES(
+            #{mentor_want_to_say},
+            #{mentor_discord_id},
+            #{mentor_member_id},
+            #{mentor_content_id}
+        )
     </insert>
 
 
