@@ -10,31 +10,31 @@
 <body>
 <div layout:fragment="content">
         <!-- Blank Start -->
-        <div class="container-fluid pt-4 px-4">
-            <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
-                <div class="col-md-6 text-center">
-                    <h3 >멘티 신청 페이지</h3>
+    <div class="container-fluid pt-4 px-4" style="height: 100vh; display: flex; justify-content: center; align-items: center;">
+        <div class="col-md-8 text-center" style="width: 100%; max-width: 800px;">
+                    <h1 style="text-align: center;">멘티 신청 페이지</h1>
+            <form action="/teaching/newMentee" method="post">
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-secondary rounded h-100 p-4">
                             <div class="form-floating mb-3" style="width: 200%;">
-                                <input class="form-control" id="floatingInput" type="text" >
-                                <label for="floatingInput">대표 캐릭터명</label>
+                                <input class="form-control" id="mentee_member_id" name ="menteeMemberId" type="text" >
+                                <label for="mentee_member_id">멘티 신청 아이디</label>
                             </div>
                             <div class="form-floating" style="width: 200%;">
-                                <textarea class="form-control" id="floatingTextarea" style="height: 150px; resize: none;"></textarea>
-                                <label for="floatingTextarea">멘토에게 도움을 받고싶은 컨텐츠 (예: 내실, 레이드 등)</label>
+                                <textarea class="form-control" id="mentee_content_id" name="menteeContentId" style="height: 150px; resize: none;"></textarea>
+                                <label for="mentee_content_id">멘토에게 도움을 받고싶은 컨텐츠 (예: 내실, 레이드 등)</label>
                             </div>
                             <hr/>
-                            <div class="form-floating " style="width: 200%;">
-                                <textarea class="form-control" id="floatingTextarea1" style="height: 150px; resize: none;"></textarea>
-                                <label for="floatingTextarea">남기고 싶은 한마디</label>
+                            <div class="form-floating mb-3" style="width: 100%;">
+                                <textarea class="form-control" id="mentee_want_to_say" name="menteeWantToSay" style="height: 150px; resize: vertical;"></textarea>
+                                <label for="mentee_want_to_say">남기고 싶은 한마디</label>
                             </div>
-
+                            <button type="submit" class="btn btn-primary py-3 w-100 mb-4" id="newMentee">신청하기</button>
 
                         </div>
                     </div>
 
-
+            </form>
                 </div>
             </div>
         </div>

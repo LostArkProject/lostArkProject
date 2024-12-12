@@ -7,29 +7,36 @@
 <body>
 <div layout:fragment="content">
     <!-- Blank Start -->
-    <div class="container-fluid pt-4 px-4">
-            <div class="col-md-6 text-center">
-                <h3>멘토 신청 페이지</h3>
-                <div class="col-sm-12 col-xl-6">
-                    <div class="bg-secondary rounded h-100 p-4">
-                        <div class="form-floating" style="width: 100%;">
-                            <textarea class="form-control" id="floatingTextarea" style="height: 150px; resize: none;"></textarea>
-                            <label for="floatingTextarea">주로 하는 컨텐츠</label>
-                        </div>
-                        <hr />
-                        <div class="form-floating" style="width: 100%;">
-                            <textarea class="form-control" id="floatingTextarea1" style="height: 150px; resize: none;"></textarea>
-                            <label for="floatingTextarea1">남기고 싶은 한마디</label>
-                        </div>
-                        <div class="form-floating mb-3" style="width: 100%;">
-                            <input class="form-control" id="floatingInput1" type="text">
-                            <label for="floatingInput1">디스코드 아이디</label>
-                        </div>
-                    </div>
+    <div class="container-fluid pt-4 px-4" style="height: 100vh; display: flex; justify-content: center; align-items: center;">
+        <div class="col-md-8 text-center" style="width: 100%; max-width: 800px;">
+            <h1 style="text-align: center;">멘토 신청 페이지</h1>
+            <form action="/teaching/newMentor" method="post">
+            <div class="bg-secondary rounded h-100 p-4">
+                <!--resize : both는 상하좌우로 늘일수 있고 vertical은 위아래로만 늘릴 수 있다 -->
+                <div class="form-floating mb-3" style="width: 100%;">
+                    <textarea class="form-control" id="mentor_member_id" name="mentorMemberId" style="height: 150px; resize: vertical;"></textarea>
+                    <label for="mentor_member_id">멘토 아이디</label>
                 </div>
+                <!--content_id가 숫자로 받아지면 선택식으로 나와야 하지 않나...? 이걸 글로 되어있는데 숫자로 받아지는게 가능한건가? -->
+                <div class="form-floating mb-3" style="width: 100%;">
+                    <textarea class="form-control" id="mentor_content_id" name="mentorContent" style="height: 150px; resize: vertical;"></textarea>
+                    <label for="mentor_content_id">주로 하는 컨텐츠</label>
+                </div>
+                <div class="form-floating mb-3" style="width: 100%;">
+                    <textarea class="form-control" id="mentor_want_to_say" name="mentorWantToSay" style="height: 150px; resize: vertical;"></textarea>
+                    <label for="mentor_want_to_say">남기고 싶은 한마디</label>
+                </div>
+                <div class="form-floating mb-3" style="width: 100%;">
+                    <input class="form-control" id="mentor_discord_id"  name="mentorDiscordId" type="text" style="height: 50px; resize: both;">
+                    <label for="mentor_discord_id">디스코드 아이디</label>
+                </div>
+                <button type="submit" class="btn btn-primary py-3 w-100 mb-4" id="newMentor">신청하기</button>
             </div>
+            </form>
         </div>
     </div>
+
+</div>
     <!-- Blank End -->
 
 </body>
