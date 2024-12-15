@@ -1,13 +1,45 @@
 /********************
- * modal 관련 로직 
+ * DOM Templates 
  *******************/
-// 웹페이지 로드 후 알림 설정 modal 로직을 동적으로 추가
-(($) => {
-    'use strict';
+const domTemplates = {
+    contentDom: (content, startTime) => `
+        <div class="d-flex border-bottom py-3">
+            <div class="w-100 ms-3">
+                <div class="d-flex">
+                    <img class="rounded-circle flex-shrink-0" src="${content.contentIconLink}" alt="" style="width: 40px; height: 40px;">
+                    <div class="text-start ms-3">
+                        <h6 class="mb-0">${content.contentName}</h6>
+                        <small id="remain-time-content.sanitizedContentsName">${startTime}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+    modalDom: (bodyDom) => `
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">알림 설정</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="remain-time-modal-body">
+                        ${bodyDom}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        <button type="button" class="btn btn-primary">저장</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+}
+function contentModal() {
     const modalHTML = `
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content" style="background-color: #4f4f4f;">
+                <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="staticBackdropLabel">알림 설정</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -25,11 +57,22 @@
     `;
 
     $('body').append(modalHTML);
-})(jQuery);
+}
 
 // Show all 버튼 클릭할 시 modal 창 띄움
-$('#remain-time-list').on('click', (event) => {
-    event.preventDefault();
+$('.content-modal-link').on('click', (event) => {
+    async function createModalDom() {
+        event.preventDefault();
+
+        const contents = await getData('/content/start-time');
+        const validStartTime = await getValidStartTimes(contents);
+        const modalBodyHtml = await contents.map(content => domTemplates.contentDom(content, validStartTime)).join('');
+        const modalHtml = await domTemplates.modalDom(modalBodyHtml);
+
+        $('body').append(modalHtml);
+    }
+    createModalDom();
+
     $('#staticBackdrop').modal('show');
 });
 
@@ -40,17 +83,18 @@ $('#remain-time-list').on('click', (event) => {
 
 // 웹페이지 로드 후에 실행되는 코드
 $(() => {
-    getContentStartTime();
+    initFunction();
 });
 
-// // 초기화 함수 (비동기 함수의 순서를 제어)
-// async function initFunction() {
-//     try {
-//         await fetchContent(); // 초기 캘린더 데이터 로드
-//     } catch(e) {
-//         console.error('initFunction() Error', e);
-//     }
-// }
+// 초기화 함수 (비동기 함수의 순서를 제어)
+async function initFunction() {
+    try {
+        const contents = await getData('/content/start-time');
+        await makeHtmlDom(contents, '.content-container', contentHtml);
+    } catch(e) {
+        console.error('initFunction() Error', e);
+    }
+}
 
 // 외부 api에서 데이터를 받아와서 db에 저장하라고 서버에 명령하는 함수
 function fetchContent() {
@@ -67,58 +111,71 @@ function fetchContent() {
     }
 }
 
-// 서버에서 content 데이터를 받아오는 함수
-function getContent() {
+/** 
+ * 서버에 데이터를 요청하는 함수입니다.
+ * 
+ * @param {String} url 요청을 보낼 절대 경로를 입력합니다.
+ * @returns {Object} 요청에 따른 결과가 반환됩니다.
+ */ 
+async function getData(url) {
     try {
-        $.ajax({
-            url: '/content/all',
-            method: 'GET',
-            success: (res) => {
-                console.log('컨텐츠 데이터 조회');
-                console.log(res);
-                addContentHTML(res);
-            },
-            error: (xhr, status, error) => {
-                console.error(xhr.statusText);
-            }
+        const res = await new Promise((resolve, reject) => {
+            $.ajax({
+                url: `${url}`,
+                method: 'GET',
+                success: (res) => {
+                    console.log('반환된 데이터: ');
+                    console.log(res);
+                    resolve(res); // 성공 시 데이터 반환
+                },
+                error: (xhr, status, error) => {
+                    console.error(xhr.statusText);
+                    reject(error); // 실패 시 에러 반환
+                }
+            });
         });
+        return res;
     } catch (e) {
-        console.error(`컨텐츠 데이터를 가져오는 도중 예외가 발생했습니다
-            ${e}`);
-        return [];
-    }
-};
-
-// 서버에서 content, start_time 데이터를 받아오는 함수
-function getContentStartTime() {
-    try{
-        $.ajax({
-            url: '/content/start-time',
-            method: 'GET',
-            success: (res) => {
-                console.log('컨텐츠, 시작시간 데이터 조회: ');
-                console.log(res);
-                addContentHTML(res);
-            },
-            error: (xhr, status, error) => {
-                console.error(xhr.statusText);
-            }
-        })
-    } catch(e) {
-        console.error(`컨텐츠, 시작시간 데이터를 가져오는 도중 예외가 발생했습니다:
-             ${e}`);
-        return [];
+        console.error(`컨텐츠 데이터를 가져오는 도중 예외가 발생했습니다: ${e}`);
+        return null; // 에러 발생 시 null 반환
     }
 }
 
-// 캘린더 데이터로 DOM을 구성하는 함수
-function addContentHTML(contents) {
-    const $contentContainer = $('.content-container');
+/**
+ *  입력받은 데이터와 함수로 DOM을 구성하는 함수입니다.
+ * 
+ *  @param {Object} data 객체를 입력합니다.
+ *  @param {HTMLElement} htmlElement DOM을 구성할 html 요소를 입력합니다.
+ *  @param {Function} callback DOM을 반환하는 함수를 입력합니다.
+ */
+function makeHtmlDom(data, htmlElement, callback) {
+    const $htmlElement = $(`${htmlElement}`);
 
-    $contentContainer.empty();
+    // 선택한 DOM 초기화
+    $htmlElement.empty();
 
-    const contentsHTML = contents.map(content => {
-        const startTime = content.startTimes ? content.startTimes[0].contentStartTime : 'loading...';
+    // DOM 삽입
+    const htmlDom = callback(data);
+    $htmlElement.append(htmlDom);
+};
+
+// content.startTimes[]에서 유효한 startTime를 찾아서 return
+function getValidStartTimes(contents) {
+    // 시작시간 예외처리
+    const validStartTime = contents.map(content => {
+        const startTime = content.startTimes? content.startTimes[0].contentStartTime : 'loading...';
+
+        return startTime;
+    })
+    
+    return validStartTime;
+}
+
+// content.startTimes[]에서 유효한 startTime를 찾아서 return
+function contentHtml(contents) {
+    // 시작시간 예외처리
+    const contentsHtml = contents.map(content => {
+        const startTime = content.startTimes? content.startTimes[0].contentStartTime : 'loading...';
 
         return `
             <div class="d-flex border-bottom py-3">
@@ -135,8 +192,8 @@ function addContentHTML(contents) {
         `;
     }).join('');
 
-    $contentContainer.append(contentsHTML);
-};
+    return contentsHtml;
+}
 
 // 남은 시간을 1초마다 갱신하는 함수
 function updateRemainTime(content) {
