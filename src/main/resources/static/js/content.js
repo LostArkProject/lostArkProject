@@ -1,3 +1,5 @@
+import { getRequest } from './api.js';
+
 /********************
  * DOM Templates 
  *******************/
@@ -64,10 +66,10 @@ $('.content-modal-link').on('click', (event) => {
     async function createModalDom() {
         event.preventDefault();
 
-        const contents = await getData('/content/start-time');
-        const validStartTime = await getValidStartTimes(contents);
-        const modalBodyHtml = await contents.map(content => domTemplates.contentDom(content, validStartTime)).join('');
-        const modalHtml = await domTemplates.modalDom(modalBodyHtml);
+        const contents = await getRequest('/content/start-time');
+        const validStartTime = getValidStartTimes(contents);
+        const modalBodyHtml = contents.map(content => domTemplates.contentDom(content, validStartTime)).join('');
+        const modalHtml = domTemplates.modalDom(modalBodyHtml);
 
         $('body').append(modalHtml);
     }
@@ -89,55 +91,10 @@ $(() => {
 // 초기화 함수 (비동기 함수의 순서를 제어)
 async function initFunction() {
     try {
-        const contents = await getData('/content/start-time');
-        await makeHtmlDom(contents, '.content-container', contentHtml);
+        const contents = await getRequest('/content/start-time');
+        makeHtmlDom(contents, '.content-container', contentHtml);
     } catch(e) {
         console.error('initFunction() Error', e);
-    }
-}
-
-// 외부 api에서 데이터를 받아와서 db에 저장하라고 서버에 명령하는 함수
-function fetchContent() {
-    try {
-        $.ajax({
-            url: '/content/fetch',
-            type: 'GET',
-        })
-        .success(function(data) {
-            console.log(`data: ${data}`);
-        });
-    } catch(e) {
-        console.error('fetchContent() Error', e);
-    }
-}
-
-/** 
- * 서버에 데이터를 요청하는 함수입니다.
- * 
- * @param {String} url 요청을 보낼 절대 경로를 입력합니다.
- * @returns {Object} 요청에 따른 결과가 반환됩니다.
- */ 
-async function getData(url) {
-    try {
-        const res = await new Promise((resolve, reject) => {
-            $.ajax({
-                url: `${url}`,
-                method: 'GET',
-                success: (res) => {
-                    console.log('반환된 데이터: ');
-                    console.log(res);
-                    resolve(res); // 성공 시 데이터 반환
-                },
-                error: (xhr, status, error) => {
-                    console.error(xhr.statusText);
-                    reject(error); // 실패 시 에러 반환
-                }
-            });
-        });
-        return res;
-    } catch (e) {
-        console.error(`컨텐츠 데이터를 가져오는 도중 예외가 발생했습니다: ${e}`);
-        return null; // 에러 발생 시 null 반환
     }
 }
 
