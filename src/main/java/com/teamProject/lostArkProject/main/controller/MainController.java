@@ -4,6 +4,7 @@ import com.teamProject.lostArkProject.content.service.ContentService;
 import com.teamProject.lostArkProject.collectible.domain.CharacterInfo;
 import com.teamProject.lostArkProject.collectible.domain.CollectibleItem;
 import com.teamProject.lostArkProject.collectible.service.CollectibleService;
+import com.teamProject.lostArkProject.member.domain.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -22,25 +23,28 @@ public class MainController {
     private final ContentService calendarService;
     private final CollectibleService collectibleService;
 
-    @GetMapping("/")
-    public String character(Model model) {
-        model.addAttribute("characterList", new ArrayList<CharacterInfo>());
-        return "index";
-    }
 
-    @GetMapping("/main")
-    public String main(HttpSession session, Model model) {
-        Object user = session.getAttribute("user");
-        if (user != null) {
+    @GetMapping("/")
+    public String home(HttpSession session, Model model) {
+        Member member = (Member) session.getAttribute("member");
+        if (member != null) {
             model.addAttribute("isLoggedIn", true);
-            model.addAttribute("username", user.toString()); // user 객체에 따라 다를 수 있음
+            model.addAttribute("username", member); // user 객체에 따라 다를 수 있음
         } else {
             model.addAttribute("isLoggedIn", false);
         }
-        return "main"; // 렌더링할 템플릿 이름
+        return "index"; // 렌더링할 템플릿 이름
     }
 
-    @GetMapping("/characters")
+
+    // 테스트 페이지
+    @GetMapping("/test")
+    public String character(Model model) {
+        model.addAttribute("characterList", new ArrayList<CharacterInfo>());
+        return "test/index";
+    }
+
+    @GetMapping("/test/characters")
     public Mono<String> getCharacterInfo(@RequestParam String characterName, Model model,
                                          HttpServletRequest request) {
         // 클라이언트가 입력한 캐릭터 닉네임을 http 세션에 저장
@@ -49,19 +53,8 @@ public class MainController {
         Mono<List<CharacterInfo>> characterInfoMono = collectibleService.getCharacterInfo(characterName);
         return characterInfoMono.flatMap(characterInfoList -> {
             model.addAttribute("characterList", characterInfoList);
-            return Mono.just("characters");
+            return Mono.just("test/characters");
         });
-    }
-
-    // 캘린더
-    @GetMapping("/cal")
-    public String calendar() {
-        return "calendar";
-    }
-
-    @GetMapping("/index")
-    public String home() {
-        return "project/index";
     }
 
     // 내실
@@ -71,7 +64,7 @@ public class MainController {
         Mono<List<CollectibleItem>> collectibleItemMono = collectibleService.getCharacterCollectible(characterName);
         return collectibleItemMono.flatMap(collectibleItemList -> {
             model.addAttribute("collectibleItemList", collectibleItemList);
-            return Mono.just("project/collectible"); // 결과 뷰로 이동
+            return Mono.just("collectible/collectible"); // 결과 뷰로 이동
         });
     }
 }
