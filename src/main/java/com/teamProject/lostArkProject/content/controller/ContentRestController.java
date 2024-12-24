@@ -15,12 +15,6 @@ import java.util.List;
 public class ContentRestController {
     private final ContentService contentService;
 
-    // 외부 api에서 데이터를 가져와서 db에 저장
-    @GetMapping("/content/fetch")
-    public ResponseEntity<Mono<String>> fetchAndSaveContent() {
-        return ResponseEntity.ok(contentService.saveContent());
-    }
-
     // content 데이터 조회
     @GetMapping("/content/all")
     public ResponseEntity<List<ContentDTO>> getContentsAll() {
@@ -32,10 +26,4 @@ public class ContentRestController {
     public ResponseEntity<List<ContentDTO>> getContentsAndStartTimes() {
         return ResponseEntity.ok(contentService.getContentsAndStartTimes());
     }
-
-    //// calendar 데이터에서 calendarDTO 객체에 새로운 데이터를 담아서 반환
-    //@GetMapping("/calendar")
-    //public Mono<List<CalendarWithServerTimeDTO>> getCalendarsWithServerTime() {
-    //   return calendarService.getCalendarWithServerTime();
-    //}
 }

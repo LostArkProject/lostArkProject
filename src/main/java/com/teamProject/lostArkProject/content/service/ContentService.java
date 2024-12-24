@@ -1,6 +1,5 @@
 package com.teamProject.lostArkProject.content.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teamProject.lostArkProject.content.dao.ContentDAO;
 import com.teamProject.lostArkProject.content.domain.Content;
 import com.teamProject.lostArkProject.content.domain.Reward;
@@ -11,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,11 +25,50 @@ import java.util.List;
 public class ContentService {
     private static final Logger logger = LoggerFactory.getLogger(ContentService.class);
     private final ContentDAO contentDAO;
-
     private final WebClient webClient;
-    private final ObjectMapper objectMapper;
+    private volatile boolean running = false; // 플래그 변수
 
-    // 외부 api에서 Calendar 데이터를 받아서 CalendarApiDTO 객체에 매핑하는 메서드
+    // 외부 api의 Calendar 데이터를 프로젝트의 도메인 형식으로 변환 후 db에 저장
+    @Transactional
+    @Scheduled(cron = "0 0 4 ? * WED") // 매주 수요일 오전 4시에 로직 실행
+    public void saveContent() {
+        // 이미 실행 중이라면 메서드 호출 방지
+        if(running) {
+            logger.warn("saveContent 작업이 이미 실행 중입니다.");
+            return;
+        }
+        running = true;
+
+        // db 저장 파이프라인
+        Mono.fromRunnable(() -> {
+            contentDAO.deleteStartTime();
+            contentDAO.deleteReward();
+            contentDAO.deleteContent();
+            logger.info("저장되어 있는 모든 Content 데이터 삭제");
+        })
+        .then(fetchCalendarsFromApi()) // Mono<List<...>>
+        .flatMapMany(Flux::fromIterable) // Mono<List<...>>를 Flux<...>로 변환
+        .map(this::toDomain) // api 객체를 도메인 객체로 변환하는 메서드 호출
+        .flatMap(this::saveToDatabase) // 변환된 데이터를 db에 저장하는 메서드 호출
+        .then(Mono.just("Content 데이터가 성공적으로 저장되었습니다."))
+        .doOnSuccess(logger::info)
+        .doOnError(e -> logger.error("Content 데이터 저장 중 에러가 발생했습니다. \n{}", e.getMessage()))
+        .doFinally(signalType -> running = false) // 플래그 변수 초기화
+        .subscribe(); // 등록 (구독)
+        /**
+         *  reactive stream은 선언적 프로그래밍 모델입니다.
+         *  map(), flatmap() 등의 메서드는 작업의 파이프라인을 설정할 뿐 로직이 실행되지는 않습니다.
+         *  따라서 파이프라인만 정의하고 로직을 실행하면 아무런 작업도 수행하지 않습니다.
+         *
+         *  subscribe()는 파이프라인의 모든 연산자를 실행하고 데이터 처리를 하는 역할을 합니다.
+         *  파이프라인을 "구축"해둔 후, subscribe()로 "실행"하는 개념이고, 이를 구독이라 합니다.
+         *
+         *  @Scheduled로 메서드를 호출할 때는 subscribe() 메서드 없이 작업이 실행되지 않습니다.
+         *  컨트롤러에서 호출할 때는 Mono 반환 시점에 Spring Webflux가 내부적으로 subscribe()를 호출하기 때문입니다.
+         */
+    }
+
+    // 외부 api의 Calendar 데이터를 CalendarApiDTO 객체에 매핑
     public Mono<List<CalendarApiDTO>> fetchCalendarsFromApi() {
         logger.info("fetchCalendarsFromApi 메서드 호출");
 
@@ -64,31 +103,9 @@ public class ContentService {
          */
     }
 
-    // 받아온 Calendar 데이터를 프로젝트의 도메인 형식으로 변환 후 db에 저장
-    @Transactional
-    public Mono<String> saveContent() {
-        return Mono.fromRunnable(() -> {
-            contentDAO.deleteStartTime();
-            contentDAO.deleteReward();
-            contentDAO.deleteContent();
-            logger.info("저장되어 있는 모든 Content 데이터 삭제");
-        })
-        .then(fetchCalendarsFromApi()) // Mono<List<...>>
-        .flatMapMany(Flux::fromIterable) // Mono<List<...>>를 Flux<...>로 변환
-        .map(this::toDomain) // api 객체를 도메인 객체로 변환하는 메서드 호출
-        .flatMap(this::saveToDatabase) // 변환된 데이터를 db에 저장하는 메서드 호출
-        .then(Mono.just("Content 데이터가 성공적으로 저장되었습니다."))
-        .onErrorResume(e -> {
-            logger.error("Content 데이터 저장 중 에러가 발생했습니다. \n{}", e.getMessage());
-            return Mono.error(e);
-        });
-    }
-
-    // db에 저장하는 메서드
+    // db 저장
     @Transactional
     protected Mono<Void> saveToDatabase(Content content) {
-        logger.info("saveToDatabase 메서드 호출");
-
         return Mono.fromRunnable(() -> {
             // content 테이블 저장
             contentDAO.saveContent(content);
@@ -108,7 +125,6 @@ public class ContentService {
 
     // api 데이터를 도메인 객체 형식으로 변환하는 메서드
     private Content toDomain(CalendarApiDTO calendarApiDTO) {
-        logger.info("toDomain 호출");
         Content content = new Content();
 
         content.setContentName(calendarApiDTO.getContentsName());
