@@ -12,10 +12,33 @@
             <div class="row g-4">
                 <div th:each="item : ${collectibleItemList}" class="col-sm-6 col-xl-3">
                     <div class="bg-secondary rounded d-flex align-items-center justify-content-left p-4">
-                        <img class="fa fa-chart-line fa-3x text-primary" th:src="${item.icon}" style="width: 60px; height: 60px;">
+                        <img class="fa fa-chart-line fa-3x text-primary" th:src="${item.collectibleIconLink}" style="width: 60px; height: 60px;">
                         <div class="ms-4">
-                            <p th:text="${item.type}" class="mb-2">Type</p>
-                            <h6 class="mb-0"><span th:text="${item.point}"></span> / <span th:text="${item.maxPoint}"></span></h6>
+                            <!-- 모든 아이템이 동일한 모달을 트리거하지만, 클릭한 아이템에 따라 내용이 동적으로 변경됨 -->
+                            <span th:text="${item.collectibleTypeName}" class="mb-2 text-primary" style="cursor: pointer;"
+                                  onclick="openModal('${item.collectibleTypeName}', '${item.totalCollectedTypePoint}', '${item.totalCollectibleTypePoint}')">Type</span>
+                            <h6 class="mb-0"><span th:text="${item.totalCollectedTypePoint}"></span> / <span th:text="${item.totalCollectibleTypePoint}"></span></h6>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 모달 (고유 ID 필요 없음, 하나만 사용) -->
+                <div class="modal fade" id="myReusableModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel">Modal Title</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- 모달 본문에 동적으로 내용이 바뀔 부분 -->
+                                <p id="modal-content"></p>
+                                <h6 id="modal-points"></h6>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
                         </div>
                     </div>
                 </div>
