@@ -1,5 +1,6 @@
 package com.teamProject.lostArkProject.member.controller;
 
+import com.teamProject.lostArkProject.member.domain.Member;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,34 +9,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class MemberController {
 
+    // 회원가입
     @GetMapping("/member/signup")
-    public String signup(HttpSession session, Model model){
-        Object member = session.getAttribute("member");
-        if (member != null) {
-            model.addAttribute("isLoggedIn", true);
-            model.addAttribute("membername", member.toString()); // member 객체에 따라 다를 수 있음
-        } else {
-            model.addAttribute("isLoggedIn", false);
-        }
+    public String signup(HttpSession session, Model model) {
+        Member member = (Member) session.getAttribute("member");
+        model.addAttribute("member", member);
         return "member/signup";
     }
+    
+    // 로그인
     @GetMapping("/member/signin")
-    public String signin(HttpSession session, Model model){
-        Object member = session.getAttribute("member");
-        if (member != null) {
-            model.addAttribute("isLoggedIn", true);
-            model.addAttribute("membername", member.toString()); // member 객체에 따라 다를 수 있음
-        } else {
-            model.addAttribute("isLoggedIn", false);
-        }
+    public String signin(HttpSession session, Model model) {
+        Member member = (Member) session.getAttribute("member");
+        model.addAttribute("member", member);
         return "member/signin";
     }
 
-    @GetMapping("/member/changeinfo")
+    // 정보 변경
+    @GetMapping("/member/changeInfo")
     public String changeInfo(){
 
-        return "member/changeinfo";
+        return "member/changeInfo";
     }
-
-
 }
