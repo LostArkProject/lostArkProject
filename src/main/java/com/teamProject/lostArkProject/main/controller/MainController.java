@@ -2,7 +2,9 @@ package com.teamProject.lostArkProject.main.controller;
 
 import com.teamProject.lostArkProject.content.service.ContentService;
 import com.teamProject.lostArkProject.collectible.domain.CharacterInfo;
-import com.teamProject.lostArkProject.collectible.domain.CollectibleItem;
+import com.teamProject.lostArkProject.collectible.domain.CollectiblePoint;
+import com.teamProject.lostArkProject.collectible.dto.CollectiblePointDTO;
+import com.teamProject.lostArkProject.collectible.dto.CollectiblePointSummaryDTO;
 import com.teamProject.lostArkProject.collectible.service.CollectibleService;
 import com.teamProject.lostArkProject.member.domain.Member;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,16 +34,12 @@ public class MainController {
 
     // 내실
     @GetMapping("/collectible")
-    public Mono<String> getCharacterCollectable(Model model, HttpSession session) {
-        //Member member = (Member) session.getAttribute("member");
-        //String characterName = member.getRepresentativeCharacterNickname();
-
-        String characterName = (String) session.getAttribute("nickname");
-        Mono<List<CollectibleItem>> collectibleItemMono = collectibleService.getCharacterCollectible(characterName);
-        return collectibleItemMono.flatMap(collectibleItemList -> {
-            model.addAttribute("collectibleItemList", collectibleItemList);
-            return Mono.just("collectible/collectible"); // 결과 뷰로 이동
-        });
+    public String getCharacterCollectable(Model model, HttpSession session) {
+        String characterName = (String) session.getAttribute("nickname"); // http 세션에서 가져온 닉네임
+        //collectibleService.saveCollectiblePoint(characterName); //회원가입 후 즉시 적용
+        List<CollectiblePointSummaryDTO> collectibleItemList = collectibleService.getCollectiblePointSummary(characterName);
+        model.addAttribute("collectibleItemList", collectibleItemList);
+        return "collectible/collectible"; // 결과 뷰로 이동
     }
 
     // 테스트 페이지
