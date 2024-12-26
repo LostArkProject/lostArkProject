@@ -2,6 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProject.lostArkProject.teaching.dao.TeachingDAO">
 
+    <resultMap id="mentorMap" type="hashMap">
+        <result column="MENTOR_ID" property="mentorId"/>
+        <result column="CHARACTER_NICKNAME" property="characterNickname"/>
+        <result column="ITEM_LEVEL" property="itemLevel"/>
+        <result column="SERVER_NAME" property="serverName"/>
+        <result column="MENTOR_CONTENT_ID" property="mentorContentId"/>
+        <result column="MENTOR_WANT_TO_SAY" property="mentorWantToSay"/>
+    </resultMap>
+
     <!--새로운 멘토 입력 -->
     <insert id="newMentor" parameterType="MentorDTO">
         INSERT INTO MENTOR(
@@ -29,7 +38,25 @@
         #{mentee_content_id}
         )
     </insert>
+    <!--
+    멘티 신청 페이지 > 멘토에게 전송되는 페이지
+    <insert id="newMenteeApply" parameterMap="MenteeApplyDTO">
+        INSERT INTO MENTEE_APPLY(
+        )VALUES(
+        )
+    </insert>
 
+    멘토리스트 조회페이지
 
+    <select id="getMentorList" parameterMap="hashMap" resultMap="mentorMap">
+        SELECT
+
+    </select>
+
+    멘토리스트 상세조회
+    <select id="getMentorListDetail" parameterMap="hashMap" resultMap="mentorMap">
+
+    </select>
+    -->
 
 </mapper>
