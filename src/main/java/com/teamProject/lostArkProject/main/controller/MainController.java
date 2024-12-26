@@ -34,7 +34,7 @@ public class MainController {
 
     // 내실
     @GetMapping("/collectible")
-    public String getCharacterCollectable(Model model, HttpSession session) {
+    public String getCharacterCollectible(Model model, HttpSession session) {
         String characterName = (String) session.getAttribute("nickname"); // http 세션에서 가져온 닉네임
         //collectibleService.saveCollectiblePoint(characterName); //회원가입 후 즉시 적용
         List<CollectiblePointSummaryDTO> collectibleItemList = collectibleService.getCollectiblePointSummary(characterName);
