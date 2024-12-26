@@ -13,7 +13,7 @@ import java.util.Map;
 public interface TeachingDAO {
     public void newMentor(MentorDTO mentorDTO);
     public void newMentee(MenteeDTO menteeDTO);
-    public void newMenteeApply(MenteeApplyDTO menteeApplyDTO);
+    //public void newMenteeApply(MenteeApplyDTO menteeApplyDTO);
     public List<Map<String,Object>> getMentorList();
-    public Map<String,Object> getMentorListDetail(long mentorId);
+    //public Map<String,Object> getMentorListDetail(long mentorId);
 }

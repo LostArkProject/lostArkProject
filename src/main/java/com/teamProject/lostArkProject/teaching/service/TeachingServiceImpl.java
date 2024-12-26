@@ -26,10 +26,10 @@ public class TeachingServiceImpl implements TeachingService {
         teachingDAO.newMentee(menteeDTO);
     }
 
-    @Override
-    public void newMenteeApply(MenteeApplyDTO menteeApplyDTO){
+    //@Override
+    //public void newMenteeApply(MenteeApplyDTO menteeApplyDTO){
 
-    }
+   // }
 
     @Override
     public List<Map<String, Object>> getMentorList() {
