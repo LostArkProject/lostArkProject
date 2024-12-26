@@ -1,15 +1,14 @@
-package com.teamProject.lostArkProject.calendar.dto;
+package com.teamProject.lostArkProject.content.dto.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
-public class CalendarAPIDTO {
+public class CalendarApiDTO {
     @JsonProperty("CategoryName")
     private String categoryName;
 
@@ -23,12 +22,12 @@ public class CalendarAPIDTO {
     private int minItemLevel;
 
     @JsonProperty("StartTimes")
-    private List<LocalDateTime> startTimes;
+    private List<String> startTimes;
 
     @JsonProperty("Location")
     private String location;
 
     @JsonProperty("RewardItems")
-    private List<RewardItemAPIDTO> rewardItems;
+    private List<RewardItemApiDTO> rewardItems;
 }
 

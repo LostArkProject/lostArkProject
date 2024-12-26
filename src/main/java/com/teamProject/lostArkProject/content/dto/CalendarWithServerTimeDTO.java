@@ -1,6 +1,5 @@
-package com.teamProject.lostArkProject.calendar.dto;
+package com.teamProject.lostArkProject.content.dto;
 
-import com.teamProject.lostArkProject.calendar.domain.StartTime;
 import lombok.Getter;
 import lombok.Setter;
 
