@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE
+        mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProject.lostArkProject.collectible.dao.CollectibleDAO">
+
+    <!--수집형 포인트 데이터 삽입 -->
+    <insert id="insertCollectiblePoint" parameterType="com.teamProject.lostArkProject.collectible.domain.CollectiblePoint">
+        INSERT INTO COLLECTIBLE_POINT (collectible_Type_Name, collectible_Point_Name, member_Id, collected_Point,
+        collectible_Max_Point, collectible_Icon_Link)
+        VALUES (#{collectibleTypeName}, #{collectiblePointName}, #{memberId}, #{collectedPoint},
+        #{collectibleMaxPoint}, #{collectibleIconLink})
+    </insert>
+
+    <!-- 수집형 포인트 테이블을 요약 조회하는 쿼리 -->
+    <select id="getCollectiblePointSummary" resultType="com.teamProject.lostArkProject.collectible.dto.CollectiblePointSummaryDTO">
+        SELECT collectible_Type_Name, collectible_Icon_Link, SUM(collected_Point) AS total_Collected_Type_Point,
+        SUM(collectible_Max_Point) AS total_Collectible_Type_Point FROM COLLECTIBLE_POINT
+        WHERE member_ID = #{memberId}
+        GROUP BY member_ID, collectible_Type_Name, collectible_Icon_Link
+    </select>
+
+    <!-- 수집형 포인트 테이블을 전체 조회하는 쿼리 -->
+    <resultMap id="CollectiblePointMap" type="com.teamProject.lostArkProject.collectible.dto.CollectiblePointDTO">
+        <id property="collectibleTypeName" column="collectible_Type_Name"/>
+        <result property="memberId" column="member_Id"/>
+        <result property="collectibleIconLink" column="collectible_Icon_Link"/>
+        <!-- 중첩 객체 매핑 -->
+        <collection property="collectiblePoints" ofType="com.teamProject.lostArkProject.collectible.dto.CollectiblePointDetailDTO">
+            <result property="collectiblePointName" column="collectible_Point_Name"/>
+            <result property="collectedPoint" column="collected_Point"/>
+            <result property="collectibleMaxPoint" column="collectible_Max_Point"/>
+        </collection>
+    </resultMap>
+
+    <select id="getCollectiblesByNickname" resultMap="CollectiblePointMap" parameterType="String">
+        SELECT
+        cp.collectible_Type_Name,
+        cp.member_Id,
+        cp.collectible_Icon_Link,
+        cpd.collectible_Point_Name,
+        cpd.collected_Point,
+        cpd.collectible_Max_Point
+        FROM collectible_point cp
+        LEFT JOIN collectible_point_detail cpd ON cp.member_Id = cpd.member_Id
+        WHERE cp.nickname = #{nickname}
+    </select>
+
+
+
+</mapper>

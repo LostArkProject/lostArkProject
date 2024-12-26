@@ -18,8 +18,8 @@
 
     function collectibleChart(collectibleItemList) {
         // collectibleItemList에서 Labels와 데이터 추출 (Type과 비율 계산)
-        window.collectibleLabels = collectibleItemList.map(item => item.Type);
-        window.collectibleData = collectibleItemList.map(item => (item.Point / item.MaxPoint) * 100);
+        window.collectibleLabels = collectibleItemList.map(item => item.collectibleTypeName);
+        window.collectibleData = collectibleItemList.map(item => (item.totalCollectedTypePoint / item.totalCollectibleTypePoint) * 100);
     
         // 콘솔에 전역 변수 출력
         console.log("Labels:", window.collectibleLabels);
