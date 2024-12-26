@@ -87,7 +87,7 @@
                 <i class="fa fa-bars"></i>
             </a>
             <div class="navbar-nav align-items-center ms-auto">
-                <div th:if="${session.user != null}">
+                <div th:if="${session.member}">
                     <!-- 로그인된 상태 -->
                     <div class="nav-item dropdown">
                         <a th:href="@{/teaching/message}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
@@ -113,7 +113,7 @@
                     </div>
                 </div>
 
-                <div th:unless="${session.user != null}" class="d-flex">
+                <div th:unless="${session.member}" class="d-flex">
                     <!-- 로그인되지 않은 상태 -->
                     <a th:href="@{/member/signin}" class="nav-link">로그인</a>
                     <a th:href="@{/member/signup}" class="nav-link">회원가입</a>

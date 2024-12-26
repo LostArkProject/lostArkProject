@@ -23,19 +23,26 @@ public class MainController {
     private final ContentService calendarService;
     private final CollectibleService collectibleService;
 
-
+    // 메인페이지
     @GetMapping("/")
-    public String home(HttpSession session, Model model) {
-        Member member = (Member) session.getAttribute("member");
-        if (member != null) {
-            model.addAttribute("isLoggedIn", true);
-            model.addAttribute("username", member); // user 객체에 따라 다를 수 있음
-        } else {
-            model.addAttribute("isLoggedIn", false);
-        }
-        return "index"; // 렌더링할 템플릿 이름
+    public String home() {
+
+        return "index";
     }
 
+    // 내실
+    @GetMapping("/collectible")
+    public Mono<String> getCharacterCollectable(Model model, HttpSession session) {
+        //Member member = (Member) session.getAttribute("member");
+        //String characterName = member.getRepresentativeCharacterNickname();
+
+        String characterName = (String) session.getAttribute("nickname");
+        Mono<List<CollectibleItem>> collectibleItemMono = collectibleService.getCharacterCollectible(characterName);
+        return collectibleItemMono.flatMap(collectibleItemList -> {
+            model.addAttribute("collectibleItemList", collectibleItemList);
+            return Mono.just("collectible/collectible"); // 결과 뷰로 이동
+        });
+    }
 
     // 테스트 페이지
     @GetMapping("/test")
@@ -54,17 +61,6 @@ public class MainController {
         return characterInfoMono.flatMap(characterInfoList -> {
             model.addAttribute("characterList", characterInfoList);
             return Mono.just("test/characters");
-        });
-    }
-
-    // 내실
-    @GetMapping("/collectible")
-    public Mono<String> getCharacterCollectable(Model model, HttpSession session) {
-        String characterName = (String) session.getAttribute("nickname"); // http 세션에서 가져온 닉네임
-        Mono<List<CollectibleItem>> collectibleItemMono = collectibleService.getCharacterCollectible(characterName);
-        return collectibleItemMono.flatMap(collectibleItemList -> {
-            model.addAttribute("collectibleItemList", collectibleItemList);
-            return Mono.just("collectible/collectible"); // 결과 뷰로 이동
         });
     }
 }
