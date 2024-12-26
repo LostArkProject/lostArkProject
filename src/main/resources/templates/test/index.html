@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form id="characterForm" th:action="@{/test/characters}" method="get">
+        <h1>조회 닉네임 입력</h1>
+        <input type="text" name="characterName" placeholder="닉네임 입력" required>
+        <input type="submit" value="확인">
+    </form>
+
+    <button type="button" onclick="location.href='/cal'">캘린더 확인</button>
+    <button type="button" onclick="location.href='/index'">메인 페이지</button>
+    <br><br>
+    <button type="button" onclick="fetchContent()">db에 캘린더 저장</button>
+    <button type="button" onclick="getContent()">db에 저장된 캘린더 확인</button>
+    <button type="button" onclick="getContentStartTime()">남은시간 필드 추가</button>
+
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="/js/content.js"></script>
+</body>
+</html>

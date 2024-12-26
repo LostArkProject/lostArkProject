@@ -1,13 +1,47 @@
+import { getRequest } from './api.js';
+
 /********************
- * modal 관련 로직 
+ * DOM Templates 
  *******************/
-// 웹페이지 로드 후 알림 설정 modal 로직을 동적으로 추가
-(($) => {
-    'use strict';
+const domTemplates = {
+    contentDom: (content, startTime) => `
+        <div class="d-flex border-bottom py-3">
+            <div class="w-100 ms-3">
+                <div class="d-flex">
+                    <img class="rounded-circle flex-shrink-0" src="${content.contentIconLink}" alt="" style="width: 40px; height: 40px;">
+                    <div class="text-start ms-3">
+                        <h6 class="mb-0">${content.contentName}</h6>
+                        <small id="remain-time-content.sanitizedContentsName">${startTime}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+    modalDom: (bodyDom) => `
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">알림 설정</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="remain-time-modal-body">
+                        ${bodyDom}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        <button type="button" class="btn btn-primary">저장</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `,
+}
+function contentModal() {
     const modalHTML = `
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content" style="background-color: #4f4f4f;">
+                <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="staticBackdropLabel">알림 설정</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -25,11 +59,22 @@
     `;
 
     $('body').append(modalHTML);
-})(jQuery);
+}
 
 // Show all 버튼 클릭할 시 modal 창 띄움
-$('#remain-time-list').on('click', (event) => {
-    event.preventDefault();
+$('.content-modal-link').on('click', (event) => {
+    async function createModalDom() {
+        event.preventDefault();
+
+        const contents = await getRequest('/content/start-time');
+        const validStartTime = getValidStartTimes(contents);
+        const modalBodyHtml = contents.map(content => domTemplates.contentDom(content, validStartTime)).join('');
+        const modalHtml = domTemplates.modalDom(modalBodyHtml);
+
+        $('body').append(modalHtml);
+    }
+    createModalDom();
+
     $('#staticBackdrop').modal('show');
 });
 
@@ -46,67 +91,57 @@ $(() => {
 // 초기화 함수 (비동기 함수의 순서를 제어)
 async function initFunction() {
     try {
-        await fetchCalendar(); // 초기 캘린더 데이터 로드
+        const contents = await getRequest('/content/start-time');
+        makeHtmlDom(contents, '.content-container', contentHtml);
     } catch(e) {
         console.error('initFunction() Error', e);
     }
 }
 
-// 외부 api에서 데이터를 받아와서 db에 저장하라고 서버에 명령하는 함수
-async function saveCalendar() {
-    try {
-        await $.ajax({
-            url: '/calendar/fetch',
-            type: 'GET',
-        });
-        await fetchCalendar();
-    } catch(e) {
-        console.error('saveCalendar() Error', e);
-    }
-}
+/**
+ *  입력받은 데이터와 함수로 DOM을 구성하는 함수입니다.
+ * 
+ *  @param {Object} data 객체를 입력합니다.
+ *  @param {HTMLElement} htmlElement DOM을 구성할 html 요소를 입력합니다.
+ *  @param {Function} callback DOM을 반환하는 함수를 입력합니다.
+ */
+function makeHtmlDom(data, htmlElement, callback) {
+    const $htmlElement = $(`${htmlElement}`);
 
-// 서버에서 캘린더 데이터를 받아오는 함수
-async function fetchCalendar() {
-    try {
-        const response = await $.ajax({
-            url: '/calendar',
-            method: 'GET',
-        });
+    // 선택한 DOM 초기화
+    $htmlElement.empty();
 
-        addCalendarHTML(response);  // 서버에서 받아온 캘린더 데이터로 최초 DOM 로드
-        response.forEach(calendar => {
-            updateRemainTime(calendar);   // 남은 시간 갱신
-        });
-    } catch (e) {
-        console.error('Error fetching calendar', e);
-        return [];
-    }
+    // DOM 삽입
+    const htmlDom = callback(data);
+    $htmlElement.append(htmlDom);
 };
 
-// 캘린더 데이터로 DOM을 구성하는 함수
-function addCalendarHTML(data) {
-    const $calendarDiv = $('#calendar');
-    const $remainTimeBody = $('#remain-time-modal-body');
+// content.startTimes[]에서 유효한 startTime를 찾아서 return
+function getValidStartTimes(contents) {
+    // 시작시간 예외처리
+    const validStartTime = contents.map(content => {
+        const startTime = content.startTimes? content.startTimes[0].contentStartTime : 'loading...';
 
-    $calendarDiv.empty();
-    $remainTimeBody.empty();
+        return startTime;
+    })
+    
+    return validStartTime;
+}
 
-    const calendarHTML = data.map(calendar => {
-        let itemsHTML = calendar.items.map(item => `
-                <p>name === ${item.name}</p>
-                <p>icon === ${item.icon}</p>
-                <img src="${item.icon}" alt="itemIcon" />
-                <p>grade === ${item.grade}</p>
-        `).join('');
+// content.startTimes[]에서 유효한 startTime를 찾아서 return
+function contentHtml(contents) {
+    // 시작시간 예외처리
+    const contentsHtml = contents.map(content => {
+        const startTime = content.startTimes? content.startTimes[0].contentStartTime : 'loading...';
 
         return `
             <div class="d-flex border-bottom py-3">
                 <div class="w-100 ms-3">
                     <div class="d-flex">
-                        <img class="rounded-circle flex-shrink-0" src="${calendar.contentsIcon}" alt="" style="width: 40px; height: 40px;">
+                        <img class="rounded-circle flex-shrink-0" src="${content.contentIconLink}" alt="" style="width: 40px; height: 40px;">
                         <div class="text-start ms-3">
-                            <h6 class="mb-0">${calendar.contentsName}</h6>
-                            <small id="remain-time-${calendar.sanitizedContentsName}"></small>
+                            <h6 class="mb-0">${content.contentName}</h6>
+                            <small id="remain-time-content.sanitizedContentsName">${startTime}</small>
                         </div>
                     </div>
                 </div>
@@ -114,24 +149,23 @@ function addCalendarHTML(data) {
         `;
     }).join('');
 
-    $calendarDiv.append(calendarHTML);
-    $remainTimeBody.append(calendarHTML);
-};
+    return contentsHtml;
+}
 
 // 남은 시간을 1초마다 갱신하는 함수
-function updateRemainTime(calendar) {
+function updateRemainTime(content) {
     const clientTime = new Date().getTime();                        // 클라이언트 시간
-    const serverTime = new Date(calendar.serverTime).getTime();  // 서버 시간
+    const serverTime = new Date(content.serverTime).getTime();  // 서버 시간
     let timeOffset = clientTime - serverTime;           // 서버와 클라이언트의 시간 차이
 
     setInterval(() => {
         const currentclientTime = new Date().getTime();       // 클라이언트 현재 시간
         const adjustedTime = currentclientTime - timeOffset;  // 서버 시간에 맞춘 현재 시간
-        const nextStartTime = getValidStartTime(currentclientTime, calendar.startTimes);  // 현재 시간과 가장 가까운 일정
+        const nextStartTime = getValidStartTime(currentclientTime, content.startTimes);  // 현재 시간과 가장 가까운 일정
         const remainTime = Math.floor((nextStartTime - adjustedTime) / 1000);  // 남은 시간 계산
 
         // 각 컨텐츠의 남은 시간 태그를 갱신
-        $(`#remain-time-${calendar.sanitizedContentsName}`).text(`Remain Time: ${convertRemainTime(remainTime)}`);
+        $(`#remain-time-${content.sanitizedContentsName}`).text(`Remain Time: ${convertRemainTime(remainTime)}`);
     }, 1000);
 }
 
@@ -172,19 +206,19 @@ function convertRemainTime(totalSeconds) {
 // let timeOffset;   // 서버와 클라이언트의 시간 차이
 
 // // 1초마다 갱신
-// function updateCalendar(calendar) {
+// function updateContent(content) {
 //     setInterval(() => {
-//         addCalendarHTML(calendar);
+//         addContentHTML(content);
 //     }, 1000);
 // }
 
 // // 웹페이지 로드 후에 실행되는 코드
 // $(() => {
 //     $.ajax({
-//         url: '/calendar/fetch',
+//         url: '/content/fetch',
 //         type: 'GET',
 //         success: function() {
-//             getCalendar();     // 필요한 데이터만 담는 dto 객체를 통해 데이터를 받아오는 함수
+//             getContent();     // 필요한 데이터만 담는 dto 객체를 통해 데이터를 받아오는 함수
 //         },
 //         error: function(xhr, status, error) {
 //             console.log(error);
@@ -192,36 +226,36 @@ function convertRemainTime(totalSeconds) {
 //     });
 // });
 
-// function getCalendar() {
+// function getContent() {
 //     $.ajax({
-//         url: '/calendar', // API 엔드포인트
+//         url: '/content', // API 엔드포인트
 //         method: 'GET',
-//         success: function(calendar) {
+//         success: function(content) {
 //             const clientTime = new Date().getTime();                        // 클라이언트 시간
-//             const serverTime = new Date(calendar[0].serverTime).getTime();  // 서버 시간
+//             const serverTime = new Date(content[0].serverTime).getTime();  // 서버 시간
 //             timeOffset = clientTime - serverTime;           // 서버와 클라이언트의 시간 차이
 
-//             addCalendarHTML(calendar); // 캘린더 데이터로 DOM 구성
-//             updateCalendar(calendar);  // 1초마다 캘린더를 갱신하는 함수
-//             updateNotice(calendar);
+//             addContentHTML(content); // 캘린더 데이터로 DOM 구성
+//             updateContent(content);  // 1초마다 캘린더를 갱신하는 함수
+//             updateNotice(content);
 //         },
 //         error: function(err) {
-//             console.error("Error fetching calendar", err);
+//             console.error("Error fetching content", err);
 //         }
 //     });
 // };
 
-// function addCalendarHTML(data) {
-//     const $calendarDiv = $('#calendar');
+// function addContentHTML(data) {
+//     const $contentDiv = $('#content');
 //     const $remainTimeBody = $('#remain-time-modal-body');
 
-//     $calendarDiv.empty();
+//     $contentDiv.empty();
 //     $remainTimeBody.empty();
 
-//     data.forEach(calendar => {
+//     data.forEach(content => {
 //         let itemsHTML = '';
 
-//         calendar.items.forEach(item => {
+//         content.items.forEach(item => {
 //             itemsHTML += `
 //                 <p>name === ${item.name}</p>
 //                 <p>icon === ${item.icon}</p>
@@ -232,24 +266,24 @@ function convertRemainTime(totalSeconds) {
 
 //         const currentclientTime = new Date().getTime();       // 클라이언트 현재 시간
 //         const adjustedTime = currentclientTime - timeOffset;  // 서버 시간에 맞춘 현재 시간
-//         const nextStartTime = getValidStartTime(currentclientTime, calendar.startTimes);  // 현재 시간과 가장 가까운 일정
+//         const nextStartTime = getValidStartTime(currentclientTime, content.startTimes);  // 현재 시간과 가장 가까운 일정
 //         const remainTime = Math.floor((nextStartTime - adjustedTime) / 1000);  // 남은 시간 계산
 
-//         let calendarHTML = `
+//         let contentHTML = `
 //             <div class="d-flex border-bottom py-3">
 //                 <div class="w-100 ms-3">
 //                     <div class="d-flex">
-//                         <img class="rounded-circle flex-shrink-0" src="${calendar.contentsIcon}" alt="" style="width: 40px; height: 40px;">
+//                         <img class="rounded-circle flex-shrink-0" src="${content.contentsIcon}" alt="" style="width: 40px; height: 40px;">
 //                         <div class="text-start ms-3">
-//                             <h6 class="mb-0">${calendar.contentsName}</h6>
+//                             <h6 class="mb-0">${content.contentsName}</h6>
 //                             <small>Remain Time: ${convertRemainTime(remainTime)}</small>
 //                         </div>
 //                     </div>
 //                 </div>
 //             </div>
 //         `;
-//         $calendarDiv.append(calendarHTML);
-//         $remainTimeBody.append(calendarHTML);
+//         $contentDiv.append(contentHTML);
+//         $remainTimeBody.append(contentHTML);
 //     });
 // };
 
@@ -314,13 +348,13 @@ function convertRemainTime(totalSeconds) {
 
 
 // $(document).ready(function() {
-//     fetchCalendar();
+//     fetchContent();
 
 //     // 1초마다 데이터 갱신
-//     setInterval(fetchCalendar, 1000);
+//     setInterval(fetchContent, 1000);
 // });
 
-// function fetchCalendar() {
+// function fetchContent() {
 //     $.ajax({
 //         url: '/getcal-with-remaintimes', // API 엔드포인트
 //         method: 'GET',
@@ -331,7 +365,7 @@ function convertRemainTime(totalSeconds) {
 //             updateNotice(data);
 //         },
 //         error: function(err) {
-//             console.error("Error fetching calendar", err);
+//             console.error("Error fetching content", err);
 //         }
 //     });
 // }
@@ -339,11 +373,11 @@ function convertRemainTime(totalSeconds) {
 // // Remain Time 함수
 // function updateRemainTime(remainTimes) {
 //     // 메인 페이지의 Remain Time 칸에 출력되는 남은 시간
-//     const $calendarDiv = $('#calendar');
-//     $calendarDiv.empty();
+//     const $contentDiv = $('#content');
+//     $contentDiv.empty();
 
 //     Object.entries(remainTimes).forEach(([key, value]) => {
-//         $calendarDiv.append(`
+//         $contentDiv.append(`
 //             <div class="d-flex border-bottom py-3">
 //                 <div class="w-100 ms-3">
 //                     <div class="d-flex">
