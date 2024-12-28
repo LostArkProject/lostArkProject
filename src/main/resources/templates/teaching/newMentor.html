@@ -7,20 +7,133 @@
 <body>
 <div layout:fragment="content">
     <!-- Blank Start -->
-    <div class="container-fluid pt-4 px-4" style="height: 100vh; display: flex; justify-content: center; align-items: center;">
+    <div class="container-fluid pt-4 px-4" style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
         <h1 style="text-align: center;">멘토 신청 페이지</h1>
         <div class="col-md-8 text-center" style="width: 100%; max-width: 800px;">
             <form action="/teaching/newMentor" method="post">
-            <div class="bg-secondary rounded h-100 p-4">
+                <div class="bg-secondary rounded h-100 p-4">
                 <!--resize : both는 상하좌우로 늘일수 있고 vertical은 위아래로만 늘릴 수 있다 -->
                 <div class="form-floating mb-3" style="width: 100%;">
-                    <textarea class="form-control" id="mentor_member_id" name="mentorMemberId" style="height: 150px; resize: vertical;"></textarea>
+                    <input class="form-control" id="mentor_member_id" name="mentorMemberId" style="height: 50px; resize: both;">
                     <label for="mentor_member_id">멘토 아이디</label>
                 </div>
+                    <!--
                 <div class="form-floating mb-3" style="width: 100%;">
-                    <textarea class="form-control" id="mentor_content_id" name="mentorContent" style="height: 150px; resize: vertical;"></textarea>
+                    <textarea class="form-control" id="mentor_content_id" name="mentorContentId" style="height: 150px; resize: vertical;"></textarea>
                     <label for="mentor_content_id">주로 하는 컨텐츠</label>
-                </div>
+                </div>-->
+                    <!--
+                    <div class="col-sm-12 col-xl-6">
+                        <div class="bg-secondary rounded h-100 p-4">
+                            <h6 class="mb-4">주로하는 컨텐츠</h6>
+                            <div class="form-check form-check-inline" id="mentor_content_id" name="mentorContentId">
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="1">
+                                <label class="form-check-label" for="inlineCheckbox1">3티어 군단장레이드(발탄,비아키스,쿠크세이튼,카멘)</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="2">
+                                <label class="form-check-label" for="inlineCheckbox2">군단장레이드(카멘)</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="3">
+                                <label class="form-check-label" for="inlineCheckbox3">카제로스레이드(에키드나)</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox4" value="4">
+                                <label class="form-check-label" for="inlineCheckbox3">카베로스레이드()</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox5" value="5">
+                                <label class="form-check-label" for="inlineCheckbox3">에픽레이드(베히모스)</label>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+                        <h6 class="mb-4" style="text-align : left;">주로 하는 콘텐츠(다중 선택 가능)</h6>
+                         <div class="d-flex align-items-start">
+                             <div class="nav nav-pills flex-column me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                <button class="nav-link active" id="avyss-match-tab" data-bs-toggle="pill" data-bs-target="#avyss-match" type="button" role="tab"
+                                        aria-controls="avyss-match" aria-selected="true">어비스 던전</button>
+                                <button class="nav-link" id="commander-raid-tab" data-bs-toggle="pill"
+                                        data-bs-target="#commander-raid" type="button" role="tab"
+                                        aria-controls="commander-raid" aria-selected="false">군단장 레이드</button>
+                                <button class="nav-link" id="epic-raid-tab" data-bs-toggle="pill"
+                                        data-bs-target="#epic-raid" type="button" role="tab"
+                                        aria-controls="epic-raid" aria-selected="false">에픽레이드</button>
+                                <button class="nav-link" id="caseros-raid-tab" data-bs-toggle="pill"
+                                        data-bs-target="#caseros-raid" type="button" role="tab"
+                                        aria-controls="caseros-raid" aria-selected="false">카제로스 레이드</button>
+                                <button class="nav-link" id="others-tab" data-bs-toggle="pill"
+                                        data-bs-target="#others" type="button" role="tab"
+                                        aria-controls="others" aria-selected="false">기타 내실등</button>
+                            </div>
+                            <div class="tab-content" id="v-pills-tabContent">
+                                <div class="tab-pane fade show active" id="avyss-match" role="tabpanel" aria-labelledby="avyss-match-tab">
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input m-0" type="checkbox" id="1" name="mentorContentId[]" value="1">
+                                        <span class="ms-2">카양겔</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input m-0" type="checkbox" id="2" name="mentorContentId[]" value="2">
+                                        <span class="ms-2">혼돈의 상아탑</span>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="commander-raid" role="tabpanel" aria-labelledby="commander-raid-tab">
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input m-0" type="checkbox" id="3" name="mentorContentId[]" value="3">
+                                        <span class="ms-2">부활한 마수의 심장(발탄)</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input m-0" type="checkbox" id="4" name="mentorContentId[]" value="4">
+                                        <span class="ms-2">목마른 쾌락의 정원(비아키스)</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input m-0" type="checkbox" id="5" name="mentorContentId[]" value="5">
+                                        <span class="ms-2">한밤중의 서커스(쿠크세이튼)</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input m-0" type="checkbox" id="6" name="mentorContentId[]" value="6">
+                                        <span class="ms-2">몽환의 아스텔지어(아브렐슈드)</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input m-0" type="checkbox" id="7" name="mentorContentId[]" value="7">
+                                        <span class="ms-2">부패한 군주의 판데모니움(일리아칸)</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input m-0" type="checkbox" id="8" name="mentorContentId[]" value="8">
+                                        <span class="ms-2">어둠의 바라트론(카멘)</span>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="epic-raid" role="tabpanel" aria-labelledby="epic-raid-tab">
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input m-0" type="checkbox" id="9" name="mentorContentId[]" value="9">
+                                        <span class="ms-2">폭풍의 지휘관, 베히모스</span>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="caseros-raid" role="tabpanel" aria-labelledby="caseros-raid-tab">
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input m-0" type="checkbox" id="10" name="mentorContentId[]" value="10">
+                                        <span class="ms-2">서막:붉어진 백야의 나선(에키드나)</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input m-0" type="checkbox" id="11" name="mentorContentId[]" value="11">
+                                        <span class="ms-2">1막: 대지를 부수는 업화의 궤적(에기르)</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input m-0" type="checkbox" id="12" name="mentorContentId[]" value="12">
+                                        <span class="ms-2">2막: 부유하는 악몽의 진혼곡(아브렐슈드)</span>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="others" role="tabpanel" aria-labelledby="others-tab">
+                                    <div class="d-flex align-items-center py-2">
+                                        <div class="d-flex align-items-center">
+                                            <input class="form-check-input m-0" type="checkbox" id="13" name="mentorContentId[]" value="13">
+                                            <span class="ms-2">기타 내실</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                         </div>
                 <div class="form-floating mb-3" style="width: 100%;">
                     <textarea class="form-control" id="mentor_want_to_say" name="mentorWantToSay" style="height: 150px; resize: vertical;"></textarea>
                     <label for="mentor_want_to_say">남기고 싶은 한마디</label>
@@ -29,7 +142,9 @@
                     <input class="form-control" id="mentor_discord_id"  name="mentorDiscordId" type="text" style="height: 50px; resize: both;">
                     <label for="mentor_discord_id">디스코드 아이디</label>
                 </div>
-                <button type="submit" class="btn btn-primary py-3 w-100 mb-4" id="newMentor">신청하기</button>
+                <button type="submit" class="btn btn-outline-primary w-100 mb-4" id="newMentor">
+                    신청하기
+                </button>
             </div>
             </form>
         </div>

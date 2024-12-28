@@ -14,15 +14,24 @@
     <!--새로운 멘토 입력 -->
     <insert id="newMentor" parameterType="MentorDTO">
         INSERT INTO MENTOR(
-            MENTOR_WANT_TO_SAY,
-            MENTOR_DISCORD_ID,
             MENTOR_MEMBER_ID,
-            MENTOR_CONTENT_ID)
+            MENTOR_WANT_TO_SAY,
+            MENTOR_DISCORD_ID
+            )
         VALUES(
-            #{mentor_want_to_say},
-            #{mentor_discord_id},
-            #{mentor_member_id},
-            #{mentor_content_id}
+            #{mentorMemberId},
+            #{mentorWantToSay},
+            #{mentorDiscordId}
+        )
+    </insert>
+    <insert id="insertMentorContent" parameterType="map">
+        INSERT INTO MENTOR_CONTENT (
+        MENTOR_MEMBER_ID,
+        MENTOR_CONTENT_ID
+        )
+        VALUES (
+        #{mentorMemberId},
+        #{mentorContentId}
         )
     </insert>
 

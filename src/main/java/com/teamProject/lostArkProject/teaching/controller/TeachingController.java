@@ -16,16 +16,16 @@ public class TeachingController {
     @Autowired
     private TeachingService teachingService;
 
-    @GetMapping("teaching/newMentor")
+    @GetMapping("/teaching/newMentor")
     public String newMentor(){
         return "teaching/newMentor";
     }
 
     @PostMapping("/teaching/newMentor")
     public String newMentor(@ModelAttribute MentorDTO mentorDTO) {
-        System.out.println(mentorDTO);
+        System.out.println("recieved : " + mentorDTO);
         teachingService.newMentor(mentorDTO);
-        return "redirect:/index";
+        return "redirect:/teaching/mentorList";
     }
 
     @GetMapping("/teaching/newMentee")
@@ -44,4 +44,8 @@ public class TeachingController {
     public String mentorList(){
         return "teaching/mentorList";
     }
+
+    @GetMapping("/teaching/mentorListDetail")
+    public String mentorListDetail() { return "teaching/mentorListDetail";}
+
 }

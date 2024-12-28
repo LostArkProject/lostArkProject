@@ -7,6 +7,7 @@ import com.teamProject.lostArkProject.teaching.dto.MentorDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,8 +19,19 @@ public class TeachingServiceImpl implements TeachingService {
 
     @Override
     public void newMentor(MentorDTO mentorDTO) {
+        // 1. MENTOR 테이블에 멘토 기본 정보 저장
         teachingDAO.newMentor(mentorDTO);
+
+        // 2. MENTOR_CONTENT 테이블에 콘텐츠 정보 저장
+        if (mentorDTO.getMentorContentId() != null) {
+            for (Integer mentorContentId : mentorDTO.getMentorContentId()) {
+                teachingDAO.insertMentorContent(mentorDTO.getMentorMemberId(), mentorContentId);
+            }
+        }
     }
+
+
+
 
     @Override
     public void newMentee(MenteeDTO menteeDTO) {
