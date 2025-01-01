@@ -74,24 +74,24 @@
     </resultMap>
 
     <!-- content, start_time 테이블 join -->
-    <select id="getContentStartTime" resultMap="ContentStartTime">
-        SELECT c.content_name,
+    <select id="getContentStartTimes" resultMap="contentStartTime">
+        SELECT c.content_id,
+               c.content_name,
                c.content_icon_link,
                c.content_category,
                s.content_start_time
         FROM content c
-                 LEFT JOIN
-             start_time s
-             ON s.content_id = c.content_id
+        LEFT JOIN start_time s
+        ON s.content_id = c.content_id
     </select>
-    <resultMap id="ContentStartTime" type="contentStartTimeDTO">
-        <!-- contentDTO 기본 컬럼 매핑 -->
+    <resultMap id="contentStartTime" type="contentStartTimeDTO">
+        <result property="contentId" column="content_id" />
         <result property="contentName" column="content_name" />
         <result property="contentIconLink" column="content_icon_link" />
         <result property="contentCategory" column="content_category" />
 
-        <!-- List<startTimeDTO> 매핑 -->
-        <collection property="startTimes" ofType="startTimeDTO" column="content_name" javaType="ArrayList">
+        <collection property="contentStartTimes" ofType="startTimeDTO" column="content_id" javaType="ArrayList">
+            <result property="contentId" column="content_id" />
             <result property="contentStartTime" column="content_start_time" />
         </collection>
     </resultMap>

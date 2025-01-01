@@ -5,10 +5,10 @@ import com.teamProject.lostArkProject.content.domain.Content;
 import com.teamProject.lostArkProject.content.domain.Reward;
 import com.teamProject.lostArkProject.content.domain.StartTime;
 import com.teamProject.lostArkProject.content.dto.ContentDTO;
+import com.teamProject.lostArkProject.content.dto.ContentStartTimeDTO;
 import com.teamProject.lostArkProject.content.dto.api.CalendarApiDTO;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -22,8 +22,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ContentService {
-    private static final Logger logger = LoggerFactory.getLogger(ContentService.class);
     private final ContentDAO contentDAO;
     private final WebClient webClient;
     private volatile boolean running = false; // 플래그 변수
@@ -34,7 +34,7 @@ public class ContentService {
     public void saveContent() {
         // 이미 실행 중이라면 메서드 호출 방지
         if(running) {
-            logger.warn("saveContent 작업이 이미 실행 중입니다.");
+            log.warn("saveContent 작업이 이미 실행 중입니다.");
             return;
         }
         running = true;
@@ -44,15 +44,15 @@ public class ContentService {
             contentDAO.deleteStartTime();
             contentDAO.deleteReward();
             contentDAO.deleteContent();
-            logger.info("저장되어 있는 모든 Content 데이터 삭제");
+            log.info("저장되어 있는 모든 Content 데이터 삭제");
         })
         .then(fetchCalendarsFromApi()) // Mono<List<...>>
         .flatMapMany(Flux::fromIterable) // Mono<List<...>>를 Flux<...>로 변환
         .map(this::toDomain) // api 객체를 도메인 객체로 변환하는 메서드 호출
         .flatMap(this::saveToDatabase) // 변환된 데이터를 db에 저장하는 메서드 호출
         .then(Mono.just("Content 데이터가 성공적으로 저장되었습니다."))
-        .doOnSuccess(logger::info)
-        .doOnError(e -> logger.error("Content 데이터 저장 중 에러가 발생했습니다. \n{}", e.getMessage()))
+        .doOnSuccess(log::info)
+        .doOnError(e -> log.error("Content 데이터 저장 중 에러가 발생했습니다. \n{}", e.getMessage()))
         .doFinally(signalType -> running = false) // 플래그 변수 초기화
         .subscribe(); // 등록 (구독)
         /**
@@ -70,7 +70,7 @@ public class ContentService {
 
     // 외부 api의 Calendar 데이터를 CalendarApiDTO 객체에 매핑
     public Mono<List<CalendarApiDTO>> fetchCalendarsFromApi() {
-        logger.info("fetchCalendarsFromApi 메서드 호출");
+        log.info("fetchCalendarsFromApi 메서드 호출");
 
         return webClient.get()
                 .uri("/gamecontents/calendar")
@@ -165,14 +165,14 @@ public class ContentService {
 
     // content 테이블의 모든 데이터 조회
     public List<ContentDTO> getContentsAll() {
-        logger.info("getContentsAll() 호출");
+        log.info("getContentsAll() 호출");
         return contentDAO.getContentsAll();
     }
 
     // content, start_time 테이블을 조회 후 매핑
-    public List<ContentDTO> getContentsAndStartTimes() {
-        logger.info("content, start_time 테이블을 조회합니다.");
-        return contentDAO.getContentStartTime();
+    public List<ContentStartTimeDTO> getContentStartTimes() {
+        log.info("content, start_time 테이블을 조회합니다.");
+        return contentDAO.getContentStartTimes();
     }
 
     //// 주간일정 데이터를 db에서 가져와서 반환
