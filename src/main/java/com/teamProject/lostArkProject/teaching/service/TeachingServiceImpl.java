@@ -45,7 +45,7 @@ public class TeachingServiceImpl implements TeachingService {
 
     @Override
     public List<Map<String, Object>> getMentorList() {
-        return List.of();
+        return teachingDAO.getMentorList();
     }
 
 

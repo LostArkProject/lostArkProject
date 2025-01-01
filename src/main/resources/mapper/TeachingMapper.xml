@@ -3,7 +3,7 @@
 <mapper namespace="com.teamProject.lostArkProject.teaching.dao.TeachingDAO">
 
     <resultMap id="mentorMap" type="hashMap">
-        <result column="MENTOR_ID" property="mentorId"/>
+        <result column="MENTOR_MEMBER_ID" property="mentorMemberId"/>
         <result column="CHARACTER_NICKNAME" property="characterNickname"/>
         <result column="ITEM_LEVEL" property="itemLevel"/>
         <result column="SERVER_NAME" property="serverName"/>
@@ -47,6 +47,26 @@
         #{mentee_content_id}
         )
     </insert>
+
+    <!--멘토리스트 조회페이지-->
+
+    <select id="getMentorList" parameterType="java.util.HashMap" resultMap="mentorMap">
+        SELECT
+                m.mentorMemberId,
+                c.characterNickName,
+                c.itemLevel,
+                c.serverName,
+                m.mentorWantToSay,
+                mc.mentorContentId
+        FROM mentor m
+        RIGHT JOIN
+             mentorContent mc
+             ON mc.mentorMemberId = m.mentorMemberId
+        LEFT JOIN
+             character c
+             ON c.memberId = m.mentorMemberId
+    </select>
+
     <!--
     멘티 신청 페이지 > 멘토에게 전송되는 페이지
     <insert id="newMenteeApply" parameterMap="MenteeApplyDTO">
@@ -55,12 +75,7 @@
         )
     </insert>
 
-    멘토리스트 조회페이지
 
-    <select id="getMentorList" parameterMap="hashMap" resultMap="mentorMap">
-        SELECT
-
-    </select>
 
     멘토리스트 상세조회
     <select id="getMentorListDetail" parameterMap="hashMap" resultMap="mentorMap">

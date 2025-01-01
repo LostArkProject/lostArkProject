@@ -33,7 +33,16 @@
                                     <td th:text="${mentorMap.mentorContentId}"></td>
                                     <td th:text="${mentorMap.mentorWantToSay}"></td>
                                 </tr>
-
+                                <!--현재 로그인 로직 부재로 인해 블록 막아둠 -->
+                                <!--
+                                <th:block th:if="${session.memberId != null}">
+                                    <tr>
+                                        <td colspan="6">
+                                            <input type="button" value="멘토 신청하러 가기" th:onclick="|location.href='@{/teaching/newMentor}'|">
+                                        </td>
+                                    </tr>
+                                </th:block>
+                                -->
                             </table>
                         </div>
                     </div>

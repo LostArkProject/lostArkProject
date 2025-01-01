@@ -42,6 +42,7 @@ public class TeachingController {
 
     @GetMapping("/teaching/mentorList")
     public String mentorList(){
+
         return "teaching/mentorList";
     }
 
