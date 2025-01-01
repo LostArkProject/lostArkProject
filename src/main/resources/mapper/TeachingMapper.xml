@@ -49,23 +49,21 @@
     </insert>
 
     <!--멘토리스트 조회페이지-->
-
     <select id="getMentorList" parameterType="java.util.HashMap" resultMap="mentorMap">
         SELECT
-                m.mentorMemberId,
-                c.characterNickName,
-                c.itemLevel,
-                c.serverName,
-                m.mentorWantToSay,
-                mc.mentorContentId
-        FROM mentor m
-        RIGHT JOIN
-             mentorContent mc
-             ON mc.mentorMemberId = m.mentorMemberId
-        LEFT JOIN
-             character c
-             ON c.memberId = m.mentorMemberId
+            M.MENTOR_MEMBER_ID       AS mentorMemberId,
+            M.MENTOR_WANT_TO_SAY   AS mentorWantToSay,
+            C.CHARACTER_NICKNAME    AS characterNickname,
+            C.ITEM_LEVEL           AS itemLevel,
+            C.SERVER_NAME           AS serverName,
+            MC.MENTOR_CONTENT_ID     AS mentorContentId
+        FROM MENTOR M
+        JOIN MENTOR_CONTENT MC
+             ON MC.MENTOR_MEMBER_ID = M.MENTOR_MEMBER_ID
+        LEFT JOIN MEMBER_CHARACTER C
+             ON C.MEMBER_ID = M.MENTOR_MEMBER_ID
     </select>
+
 
     <!--
     멘티 신청 페이지 > 멘토에게 전송되는 페이지

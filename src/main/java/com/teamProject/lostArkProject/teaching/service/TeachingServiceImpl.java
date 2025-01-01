@@ -30,9 +30,6 @@ public class TeachingServiceImpl implements TeachingService {
         }
     }
 
-
-
-
     @Override
     public void newMentee(MenteeDTO menteeDTO) {
         teachingDAO.newMentee(menteeDTO);
@@ -45,7 +42,9 @@ public class TeachingServiceImpl implements TeachingService {
 
     @Override
     public List<Map<String, Object>> getMentorList() {
-        return teachingDAO.getMentorList();
+        List<Map<String, Object>> result = teachingDAO.getMentorList();
+        System.out.println("Mentor List: " + result);
+        return result;
     }
 
 
