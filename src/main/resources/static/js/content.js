@@ -198,7 +198,7 @@ function isToday(time) {
 
     // 현재 시간이 오전 6시 이후인 경우
     if (now.getHours() >= 6) {
-        nextDay.setDate(today.getDate() + 1); // 익일 오전 6시
+        nextDay.setDate(now.getDate() + 1); // 익일 오전 6시
     }
 
     // 입력 시간이 범위 내에 있는지 확인
