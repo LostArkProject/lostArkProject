@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html layout:decorate="~{/layout.html}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>LostArkProject</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <!-- Blank Start -->
+    <div class="container-fluid pt-4 px-4">
+        <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
+            <div class="col-md-6 text-center">
+                <h2 class="mb-4">상세 정보</h2>
+                <table class="table table-striped">
+                    <tr>
+                        <td>대표캐릭터명</td>
+                        <td th:text="${mentorMap.characterNickname}"></td>
+                        <td>캐릭터 레벨</td>
+                        <td th:text="${mentorMap.itemLevel}"></td>
+                        <td>서버</td>
+                        <td th:text="${mentorMap.serverName}"></td>
+                        <td>주로 하는 컨텐츠</td>
+                        <td th:text="${mentorMap.mentorContentId}"></td>
+                        <td>한마디</td>
+                        <td th:text="${mentorMap.mentorWantToSay}"></td>
+                    </tr>
+                </table>
+
+                <input class="btn btn-outline-primary w-100 m-2" type="button">신청하기</input>
+            </div>
+        </div>
+    </div>
+    <!-- Blank End -->
+
+
+</div>
+</body>
+</html>
