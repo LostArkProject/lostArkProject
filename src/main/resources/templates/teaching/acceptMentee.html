@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html layout:decorate="~{/layout.html}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>LostArkProject</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+  <!-- Blank Start -->
+  <div class="container-fluid pt-4 px-4">
+    <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
+      <div class="col-md-6 text-center">
+        <h2 class="mb-4">멘티 신청</h2>
+          <p><span>멘티 신청을 받겠습니까? (수락하시면 멘티에게 디스코드 아이디가 전송됩니다)</span></p>
+          <form th:action="@{/teaching/acceptMentee}" method="post">
+            <input type="hidden" name="menteeMemberId" th:value="${menteeMemeberId }">
+            <input type="submit" value="수락하기">
+            <input type="button" value="거절하기" th:onclick="|location.href='@{/member/myPage}'|">
+          </form>
+
+      </div>
+    </div>
+  </div>
+  <!-- Blank End -->
+
+
+</div>
+</body>
+</html>

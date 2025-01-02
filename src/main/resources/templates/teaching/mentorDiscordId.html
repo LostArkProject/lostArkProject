@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html layout:decorate="~{/layout.html}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>LostArkProject</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+  <!-- Blank Start -->
+  <div class="container-fluid pt-4 px-4">
+    <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
+      <div class="col-md-6 text-center">
+        <h2 class="mb-4">멘토 디스코드 아이디 도착</h2>
+        <p><span>멘토 디스코드 아이디 입니다(개인적으로 연락하시고 다른곳에 유포하지 않으시길 바랍니다)</span></p>
+        <form th:action="@{/teaching/mentorDiscordId}" method="get">
+          <tr>
+            <td>멘토 디스코드 아이디</td>
+            <td th:text="${mentorMap.mentorDiscordId}"></td>
+          </tr>
+        </form>
+
+      </div>
+    </div>
+  </div>
+  <!-- Blank End -->
+
+
+</div>
+</body>
+</html>
