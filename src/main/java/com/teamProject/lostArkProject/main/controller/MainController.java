@@ -28,7 +28,6 @@ public class MainController {
     // 메인페이지
     @GetMapping("/")
     public String home() {
-
         return "index";
     }
 

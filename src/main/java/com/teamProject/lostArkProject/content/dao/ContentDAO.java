@@ -4,6 +4,7 @@ import com.teamProject.lostArkProject.content.domain.Content;
 import com.teamProject.lostArkProject.content.domain.Reward;
 import com.teamProject.lostArkProject.content.domain.StartTime;
 import com.teamProject.lostArkProject.content.dto.ContentDTO;
+import com.teamProject.lostArkProject.content.dto.ContentStartTimeDTO;
 import com.teamProject.lostArkProject.content.dto.RewardDTO;
 import com.teamProject.lostArkProject.content.dto.StartTimeDTO;
 
@@ -17,7 +18,7 @@ public interface ContentDAO {
 
     // 데이터 조회
     List<ContentDTO> getContentsAll();
-    List<ContentDTO> getContentStartTime();
+    List<ContentStartTimeDTO> getContentStartTimes();
     List<ContentDTO> getContents();
     List<StartTimeDTO> getstartTimes();
     List<RewardDTO> getRewards();
