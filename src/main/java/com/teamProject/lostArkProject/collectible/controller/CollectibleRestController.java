@@ -1,8 +1,6 @@
 package com.teamProject.lostArkProject.collectible.controller;
 
 import com.teamProject.lostArkProject.collectible.domain.CharacterInfo;
-import com.teamProject.lostArkProject.collectible.domain.CollectiblePoint;
-import com.teamProject.lostArkProject.collectible.dto.CollectiblePointDTO;
 import com.teamProject.lostArkProject.collectible.dto.CollectiblePointSummaryDTO;
 import com.teamProject.lostArkProject.collectible.service.CollectibleService;
 import jakarta.servlet.http.HttpSession;
