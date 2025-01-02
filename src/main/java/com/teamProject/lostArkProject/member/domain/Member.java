@@ -1,11 +1,15 @@
 package com.teamProject.lostArkProject.member.domain;
 
-import lombok.Data;
+import lombok.*;
 import org.apache.ibatis.type.Alias;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Alias("member")
 public class Member {
     private String memberId;

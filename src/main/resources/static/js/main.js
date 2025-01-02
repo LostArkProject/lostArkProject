@@ -49,6 +49,76 @@
         }); 
     }
 
+    //회원가입
+    window.checkSignup = function() {
+        var form = document.signupForm;
+        var emailTest =  /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+        var passwdTest = /^(?=.*[a-zA-Z])(?=.*[0-9])/;
+        if(form.signupId.value=="") {
+            alert("이메일을 입력해주세요.");
+            form.signupId.focus();
+            return false;
+        } else if (!emailTest.test(form.signupId.value)) {
+            alert("이메일 형식으로 입력해주세요.");
+            form.signupId.focus();
+            return false;
+        } else if (form.signupPW.value=="") {
+            alert("비밀번호를 입력해주세요.");
+            form.signupPW.focus();
+            return false;
+        } else if (!passwdTest.test(form.signupPW.value)) {
+            alert("비밀번호는 영문+숫자로 구성하여야 합니다.");
+            form.signupPW.focus();
+            return false;
+        } else if (form.signupPWCheck.value=="") {
+            alert("비밀번호를 다시 입력해주세요.");
+            form.signupPWCheck.focus();
+            return false;
+        } else if (form.signupPW.value!=form.signupPWCheck.value) {
+            alert("비밀번호가 일치x.");
+            form.signupPWCheck.focus();
+            return false;
+        } else if (form.signupRepresentativeCharacter.value=="") {
+            alert("대표 캐릭터 닉네임을 입력해주세요.");
+            form.signupRepresentativeCharacter.focus();
+            return false;
+        } else if (!form.signupAgreement.checked) {
+            alert("개인정보 이용에 동의해주세요.");
+            form.signupAgreement.focus();
+            return false;
+        }
+        form.submit();
+    }
+
+    //로그인
+        window.checkSignin = function() {
+            var form = document.signinForm;
+            var emailTest =  /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+            var passwdTest = /^(?=.*[a-zA-Z])(?=.*[0-9])/;
+            if(form.signinId.value=="") {
+                alert("이메일을 입력해주세요.");
+                form.signinId.focus();
+                return false;
+            } else if (!emailTest.test(form.signinId.value)) {
+                alert("이메일 형식으로 입력해주세요.");
+                form.signinId.focus();
+                return false;
+            } else if (form.signinPW.value=="") {
+                alert("비밀번호를 입력해주세요.");
+                form.signinPW.focus();
+                return false;
+            } else if (!passwdTest.test(form.signinPW.value)) {
+                alert("비밀번호는 영문+숫자로 구성하여야 합니다.");
+                form.signinPW.focus();
+                return false;
+            }
+            form.submit();
+        }
+
+    //알람 띄우기
+    function showAlert(message) {
+        alert(message);
+    }
     /* -------------------------------------------------------------
                     * Themewagon Template functions
     --------------------------------------------------------------*/
