@@ -38,8 +38,9 @@ const modalManager = {
     },
 
     // 모달 닫기
-    closeModal() {
+    async closeModal() {
         $('#staticBackdrop').modal('hide');
+        await initializeContentContainer('.content-container', 'main');
     }
 };
 
@@ -50,46 +51,20 @@ const modalManager = {
 // 페이지 초기화
 $(() => {
     initFunction();
+    $('.content-modal-link').on('click', handleModalClick);
+    $('[data-bs-dismiss="modal"]').on('click', modalManager.closeModal);
 });
-
-// 이벤트 핸들러 등록
-$('.content-modal-link').on('click', handleModalClick);
 
 // 페이지 로드 시 실행되는 초기화 함수
 async function initFunction() {
-    const contents = await fetchContentData('/contents/start-time');
-
-    // content 컨테이너 초기 렌더링
-    renderContentsToContainer(contents, '.content-container');
-
-    // 유효한 데이터만 필터링
-    const validContents = contents.filter(content => {
-        if (!(content.contentStartTimes instanceof Date)) {
-            updateContentTime(content.contentId, content.contentStartTimes);
-            return false;
-        }
-        return true;
-    });
-
-    startTimer(
-        validContents,
-        (id, formattedTime) => {
-            updateContentTime(id, formattedTime); // 매초마다 호출
-        },
-        (id, finalTime) => {
-            console.log(`Timer for content ${id} completed with final time: ${finalTime}`);
-        }
-    );
+    await initializeContentContainer('.content-container', 'main');
 }
 
 // modal 링크(전체) 클릭 시 실행되는 함수
 async function handleModalClick(event) {
     event.preventDefault();
 
-    const contents = await fetchContentData('/contents/start-time');
-
-    // 모달 내용 업데이트
-    renderContentsToContainer(contents, '#remain-time-modal-body');
+    await initializeContentContainer('#remain-time-modal-body', 'modal');
 
     modalManager.openModal();
 }
@@ -123,6 +98,40 @@ function renderContentsToContainer(contents, selector) {
     $(selector).html(contentsDom);
 }
 
+/** 
+ * 콘텐츠를 렌더링하고 타이머를 설정하는 함수
+ * 
+ * @param {string} selector - 렌더링할 컨테이너의 dom 선택자
+ * @param {string} [timerName='main'] - 실행하는 타이머의 종류 (초기값: 'main')
+ */
+async function initializeContentContainer(selector, timerName = 'main') {
+    const contents = await fetchContentData('/contents/start-time');
+
+    // 컨테이너 렌더링
+    renderContentsToContainer(contents, selector);
+
+    // 유효한 데이터만 필터링
+    const validContents = contents.filter(content => {
+        if (!(content.contentStartTimes instanceof Date)) {
+            updateContentTime(content.contentId, content.contentStartTimes);
+            return false;
+        }
+        return true;
+    });
+
+    // 타이머 시작
+    startTimer(
+        validContents,
+        (id, formattedTime) => {
+            updateContentTime(id, formattedTime, selector);
+        },
+        (id, finalTime) => {
+            updateContentTime(id, finalTime, selector);
+        },
+        timerName
+    );
+}
+
 /**********************
  *  Utility functions
 **********************/
@@ -134,23 +143,16 @@ function renderContentsToContainer(contents, selector) {
  * @returns {Array} 유효 시간이 분류된 contents 배열
 */ 
 function getValidStartTime(contents) {
-    // 1. 유효한 시간 필터링
-    const newContents = contents.map(content => {
+    return contents.map(content => {
         const validStartTimes = content.contentStartTimes
-        .map(contentStartTime => new Date(contentStartTime.contentStartTime)) // 시간 데이터를 Date 객체로 변환
-        .filter(contentStartTime => contentStartTime > new Date()) // 유효한 시간 필터링
+        .map(contentStartTime => new Date(contentStartTime.contentStartTime)) // Date 객체 변환
+        .filter(contentStartTime => contentStartTime > new Date()) // 유효 시간 필터링
         
-        // 2. 유효한 시간이 없는 경우의 처리
         return {
             ...content,
             contentStartTimes: getRemainingTime(validStartTimes),
         };
     });
-    
-    console.log(newContents);
-    
-    // 3. 새로운 배열 반환
-    return newContents;
 }
 
 /**
@@ -160,8 +162,6 @@ function getValidStartTime(contents) {
  * @returns {String | Date} '출현 대기 중...' || 유효 시간
  */
 function getRemainingTime(timeArray) {
-    console.log(timeArray);
-
     // 1. 남은 일정이 없을 경우
     if (!timeArray || timeArray.length === 0) {
         return '출현 대기 중...';
@@ -234,13 +234,19 @@ function isNextDay(time) {
  * 
  * @param {int} contentId - content의 id
  * @param {String} formattedTime - 00:00:00 형식의 문자열
+ * @param {String} selector - 렌더링할 컨테이너의 dom 선택자
  */
-function updateContentTime(contentId, formattedTime) {
-    const $remainTimeDom = $(`#content-${contentId} .remain-time`);
+function updateContentTime(contentId, formattedTime, selector = '.content-container') {
+    const $remainTimeDom = $(`${selector} #content-${contentId} .remain-time`);
     if ($remainTimeDom) {
         $remainTimeDom.text(formattedTime);
     }
 }
+
+/** @type {Function | null} */
+let mainTimer = null;
+/** @type {Function | null} */
+let modalTimer = null;
 
 /**
  *  타이머 함수
@@ -248,8 +254,23 @@ function updateContentTime(contentId, formattedTime) {
  * @param {Array} contents - 초기 데이터 배열
  * @param {Function} onTick - 매초 호출되는 dom 업데이트 함수
  * @param {Function} onComplete - 타이머 종료 시 호출되는 함수
+ * @param {string} [timerName='main'] - 실행하는 타이머의 종류 (초기값: 'main')
  */
-function startTimer(contents, onTick, onComplete) {
+function startTimer(contents, onTick, onComplete, timerName) {
+    // 기존 타이머 확인 및 중지
+    if (timerName === 'main') {
+        if (mainTimer) {
+            console.log('실행 중인 메인 타이머를 중지합니다.');
+            clearInterval(mainTimer);
+            mainTimer = null;
+        }
+    }
+    if (modalTimer) {
+        console.log('실행 중인 모달 타이머를 중지합니다.');
+        clearInterval(modalTimer);
+        modalTimer = null;
+    }
+
     const timer = setInterval(() => {
         const now = new Date();
         contents.forEach(content => {
@@ -258,10 +279,20 @@ function startTimer(contents, onTick, onComplete) {
             if (diff > 1000) {
                 onTick(content.contentId, formatTime(decrementTime(diff)));
             } else {
-                onComplete(content.contentName, '00:00:00');
+                onComplete(content.contentId, '---출현 중---');
             }
         });
     }, 1000);
+
+    // 새로운 타이머 실행
+    if (timerName === 'main') {
+        console.log('메인 타이머를 실행합니다.');
+        mainTimer = timer;
+    }
+    if (timerName === 'modal') {
+        console.log('모달 타이머를 실행합니다.');
+        modalTimer = timer;
+    }
 }
 
 /** 
