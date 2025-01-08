@@ -85,19 +85,6 @@ async function fetchContentData(url) {
     }
 }
 
-/**
- * 데이터를 렌더링하는 함수
- * 
- * @param {Array} contents - 렌더링할 content 데이터
- * @param {string} selector - 렌더링할 컨테이너의 dom 선택자
- */
-function renderContentsToContainer(contents, selector) {
-    const contentsDom = contents.map(content =>
-        domTemplates.contentDom(content, 'loading...')
-    ).join('');
-    $(selector).html(contentsDom);
-}
-
 /** 
  * 콘텐츠를 렌더링하고 타이머를 설정하는 함수
  * 
@@ -108,12 +95,15 @@ async function initializeContentContainer(selector, timerName = 'main') {
     const contents = await fetchContentData('/contents/start-time');
 
     // 컨테이너 렌더링
-    renderContentsToContainer(contents, selector);
+    const contentsDom = contents.map(content =>
+        domTemplates.contentDom(content, 'loading...')
+    ).join('');
+    $(selector).html(contentsDom);
 
     // 유효한 데이터만 필터링
     const validContents = contents.filter(content => {
         if (!(content.contentStartTimes instanceof Date)) {
-            updateContentTime(content.contentId, content.contentStartTimes);
+            updateContentTime(content.contentId, content.contentStartTimes, selector);
             return false;
         }
         return true;
@@ -237,6 +227,7 @@ function isNextDay(time) {
  * @param {String} selector - 렌더링할 컨테이너의 dom 선택자
  */
 function updateContentTime(contentId, formattedTime, selector = '.content-container') {
+    console.log(selector + '의 dom 업데이터가 되고 있나요');
     const $remainTimeDom = $(`${selector} #content-${contentId} .remain-time`);
     if ($remainTimeDom) {
         $remainTimeDom.text(formattedTime);
