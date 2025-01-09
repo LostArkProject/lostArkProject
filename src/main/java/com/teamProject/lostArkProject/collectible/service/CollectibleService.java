@@ -7,6 +7,7 @@ import com.teamProject.lostArkProject.collectible.domain.CharacterInfo;
 import com.teamProject.lostArkProject.collectible.domain.CollectiblePoint;
 import com.teamProject.lostArkProject.collectible.dto.CollectiblePointDTO;
 import com.teamProject.lostArkProject.collectible.dto.CollectiblePointSummaryDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
 import java.util.*;
 
 @Service
+@Slf4j
 public class CollectibleService {
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
@@ -77,7 +79,7 @@ public class CollectibleService {
                     } catch (Exception e) {
                         return Mono.error(e);
                     }
-                });
+                }).subscribe();
     }
 
     public List<CollectiblePointSummaryDTO> getCollectiblePointSummary(String memberId) {

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE
+        mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProject.lostArkProject.member.dao.MemberDAO">
+
+    <!--회원가입 -->
+    <insert id="insertMember" parameterType="member">
+        INSERT INTO MEMBER (MEMBER_ID, MEMBER_PASSWD, REPRESENTATIVE_CHARACTER_NICKNAME)
+        VALUES (#{memberId}, #{memberPasswd}, #{representativeCharacterNickname})
+    </insert>
+
+    <!--로그인 -->
+    <select id="signinMember" parameterType="signinMember">
+        SELECT MEMBER_PASSWD FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
+    <!--대표캐릭터 반환 -->
+    <select id="getRepresentativeCharacter" parameterType="representativeCharacter">
+        SELECT REPRESENTATIVE_CHARACTER_NICKNAME FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
+</mapper>

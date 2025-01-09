@@ -12,6 +12,7 @@
         <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
             <div class="col-12 col-sm-8 col-md-8 col-lg-8 col-xl-6">
                 <div class="bg-secondary rounded p-4 p-sm-5 my-4 mx-3">
+                    <form name="signinForm" th:action="@{/member/signin/process}" method="post">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <a href="/" class="">
                             <img src="/img/loedu_white.png" style="width: 200px;" />
@@ -19,11 +20,11 @@
                         <h3>로그인</h3>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="signinId">
                         <label for="floatingInput">이메일 입력</label>
                     </div>
                     <div class="form-floating mb-4">
-                        <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                        <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="signinPW">
                         <label for="floatingPassword">비밀번호 입력</label>
                     </div>
                     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -33,8 +34,9 @@
                         </div>
                         <a href="">비밀번호 찾기</a>
                     </div>
-                    <button type="submit" class="btn btn-primary py-3 w-100 mb-4">로그인</button>
+                    <button type="button" class="btn btn-primary py-3 w-100 mb-4" onclick="checkSignin()">로그인</button>
                     <p class="text-center mb-0">계정이 없으신가요? <a href="/member/signup">회원가입</a></p>
+                    </form>
                 </div>
             </div>
         </div>
