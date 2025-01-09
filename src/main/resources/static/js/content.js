@@ -4,9 +4,7 @@ import { getRequest } from './api.js';
  *    Templates 
  *******************/
 
-/**
- * dom 템플릿 객체입니다.
- */
+/** dom 템플릿 객체입니다. */
 const domTemplates = {
     contentDom: (content, startTime) => `
         <div class="d-flex border-bottom py-3">
@@ -23,9 +21,7 @@ const domTemplates = {
     `,
 };
 
-/**
- * modal 관리 객체입니다.
- */
+/** modal 관리 객체입니다. */
 const modalManager = {
     // 모달 내용 업데이트
     updateModalBody(bodyDom) {
@@ -43,6 +39,15 @@ const modalManager = {
         await initializeContentContainer('.content-container', 'main');
     }
 };
+
+/** 컨텐츠의 name 테이블입니다. */
+const nameMapping = {
+    '[습격]리베르탄-[점령]-[습격]프라이겔리': '[습격]리베르탄',
+    '[습격]프라이겔리-[점령]-[습격]리베르탄': '[습격]1프라이겔리',
+    '몬테섬': '몬테 섬',
+    '배틀 아레나': '태초의 섬',
+    '세베크 아툰': '필드보스'
+}
 
 /********************
  *  Initialization 
@@ -78,7 +83,10 @@ async function fetchContentData(url) {
     try {
         const response = await getRequest(url);
         const contents = getValidStartTime(response); // 유효 시간 데이터 파싱
-        return contents;
+        const renameContents = replaceNames(contents);
+        const uniqueContents = removeDuplicateContent(renameContents);
+        console.log(uniqueContents);
+        return uniqueContents;
     } catch (e) {
         console.error('데이터를 가져오는 데 실패했습니다.', e);
         return [];
@@ -94,14 +102,19 @@ async function fetchContentData(url) {
 async function initializeContentContainer(selector, timerName = 'main') {
     const contents = await fetchContentData('/contents/start-time');
 
+    /** @deprecated */
+    const reductContents = selector === '.content-container' 
+        ? getFirstFiveContents(contents, 5)
+        : contents;
+
     // 컨테이너 렌더링
-    const contentsDom = contents.map(content =>
+    const contentsDom = reductContents.map(content =>
         domTemplates.contentDom(content, 'loading...')
     ).join('');
     $(selector).html(contentsDom);
 
     // 유효한 데이터만 필터링
-    const validContents = contents.filter(content => {
+    const validContents = reductContents.filter(content => {
         if (!(content.contentStartTimes instanceof Date)) {
             updateContentTime(content.contentId, content.contentStartTimes, selector);
             return false;
@@ -241,6 +254,53 @@ function updateContentTime(contentId, formattedTime, selector = '.content-contai
     if ($remainTimeDom) {
         $remainTimeDom.text(formattedTime);
     }
+}
+
+/**
+ * 컨텐츠 이름을 매핑 테이블 데이터로 대체하는 함수
+ * 
+ * @param {Array} contents - contents 배열
+ * @returns 컨텐츠 이름이 대체된 contents 배열
+ */
+function replaceNames(contents) {
+    return contents.map(content => ({
+        ...content,
+        contentName: nameMapping[content.contentName] || content.contentName,
+    }))
+}
+
+/**
+ * 배열에서 특정 중복 컨텐츠를 제거하는 함수
+ * 
+ * @param {Array} contents - contents 배열
+ * @returns {Array} 중복이 제거된 배열
+ */
+function removeDuplicateContent(contents) {
+    // 중복 확인 플래그 생성
+    let duplicateChaosGate = false;
+
+    // 중복 컨텐츠 제거 후 반환
+    return contents.filter(content => {
+        if (content.contentCategory === '카오스게이트') {
+            if (!duplicateChaosGate) {
+                duplicateChaosGate = true;
+                return true;
+            }
+            return false;
+        }
+        return true;
+    });
+}
+
+/**
+ * 특정 개수의 원소를 가지는 contents 배열을 반환하는 함수
+ * 
+ * @param {Array} contents - contents 배열
+ * @param {number} amount - 배열의 원소 개수
+ * @returns 특정 개수의 원소를 가진 contents 배열
+ */
+function getFirstFiveContents(contents, amount) {
+    return contents.slice(0, amount);
 }
 
 /** @type {Function | null} */
