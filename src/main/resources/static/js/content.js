@@ -127,12 +127,13 @@ async function initializeContentContainer(selector, timerName = 'main') {
 **********************/
 
 /**
- * 유효한 시간을 반환하는 함수
+ * 유효 시간을 정제해서 content 배열을 반환하는 함수
  * 
  * @param {Array} contents - content 배열
- * @returns {Array} 유효 시간이 분류된 contents 배열
+ * @returns {Array} 유효 시간으로 오름차순 정렬된 contents 배열
 */ 
 function getValidStartTime(contents) {
+    // 1. 배열에서 유효 시간 중 첫 번째 값을 반환
     return contents.map(content => {
         const validStartTimes = content.contentStartTimes
         .map(contentStartTime => new Date(contentStartTime.contentStartTime)) // Date 객체 변환
@@ -140,33 +141,42 @@ function getValidStartTime(contents) {
         
         return {
             ...content,
-            contentStartTimes: getRemainingTime(validStartTimes),
+            contentStartTimes: validStartTimes[0],
         };
+    // 2. 시간을 오름차순 정렬
+    }).sort((a, b) => {
+        const timeA = a.contentStartTimes instanceof Date ? a.contentStartTimes : Infinity;
+        const timeB = b.contentStartTimes instanceof Date ? b.contentStartTimes : Infinity;
+        return timeA - timeB;
+    // 3. 일정에 따라 메시지 처리
+    }).map(content => {
+        return {
+            ...content,
+            contentStartTimes: formatRemainingTime(content.contentStartTimes),
+        }
     });
 }
 
 /**
  * 남은 시간에 따른 데이터를 반환하는 함수
  * 
- * @param {Array<Date>} timeArray - 시간 배열
+ * @param {Date} startTime - 시작 시간
  * @returns {String | Date} '출현 대기 중...' || 유효 시간
  */
-function getRemainingTime(timeArray) {
+function formatRemainingTime(startTime) {
     // 1. 남은 일정이 없을 경우
-    if (!timeArray || timeArray.length === 0) {
+    if (!startTime || startTime.length === 0) {
         return '출현 대기 중...';
     }
 
-    const firstTime = timeArray[0];
-
     // 2. 당일 출현 컨텐츠인 경우
-    if (isToday(firstTime)) {
-        return firstTime;
+    if (isToday(startTime)) {
+        return startTime;
     }
 
     // 3. 익일 오전 6시 출현 예정인 경우
-    if (isNextDay(firstTime)) {
-        return `익일 ${firstTime.getHours().toString().padStart(2, '0')}:${firstTime.getMinutes().toString().padStart(2, '0')} 출현 예정`;
+    if (isNextDay(startTime)) {
+        return `익일 ${startTime.getHours().toString().padStart(2, '0')}:${startTime.getMinutes().toString().padStart(2, '0')} 출현 예정`;
     }
 
     // 4. 이외의 경우
@@ -227,7 +237,6 @@ function isNextDay(time) {
  * @param {String} selector - 렌더링할 컨테이너의 dom 선택자
  */
 function updateContentTime(contentId, formattedTime, selector = '.content-container') {
-    console.log(selector + '의 dom 업데이터가 되고 있나요');
     const $remainTimeDom = $(`${selector} #content-${contentId} .remain-time`);
     if ($remainTimeDom) {
         $remainTimeDom.text(formattedTime);
