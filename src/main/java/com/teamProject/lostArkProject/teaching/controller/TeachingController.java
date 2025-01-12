@@ -3,6 +3,7 @@ package com.teamProject.lostArkProject.teaching.controller;
 
 import com.teamProject.lostArkProject.teaching.dto.MenteeDTO;
 import com.teamProject.lostArkProject.teaching.dto.MentorDTO;
+import com.teamProject.lostArkProject.teaching.dto.MentorLIstDTO;
 import com.teamProject.lostArkProject.teaching.service.TeachingService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,15 +57,15 @@ public class TeachingController {
     @GetMapping("/teaching/mentorList")
     public String mentorList(HttpSession session, Model model) {
         // 세션에서 "memberNickname" 값을 확인
-        String memberNickname = (String) session.getAttribute("memberNickname");
+        //String memberNickname = (String) session.getAttribute("memberNickname");
         // 세션에 값이 없으면 로그인 페이지로 리다이렉트
-        if (memberNickname == null) {
-            return "redirect:/member/signin"; // 로그인 페이지로 리다이렉트
-        }
+       // if (memberNickname == null) {
+        //    return "redirect:/member/signin"; // 로그인 페이지로 리다이렉트
+       // }
 
         // 세션 값이 존재하면 서비스 호출 및 데이터 처리
-        List<Map<String, Object>> mentorList = teachingService.getMentorList();
-        model.addAttribute("mentorMap", mentorList);
+        List<MentorLIstDTO> mentors = teachingService.getMentorList();
+        model.addAttribute("mentors", mentors);
         return "teaching/mentorList";
     }
 

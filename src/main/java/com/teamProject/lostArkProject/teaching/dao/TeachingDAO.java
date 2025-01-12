@@ -16,5 +16,7 @@ public interface TeachingDAO {
     void insertMentorContent(@Param("mentorMemberId") String mentorMemberId, @Param("mentorContentId") Integer contentId);
     public void newMentee(MenteeDTO menteeDTO);
     public List<Map<String,Object>> getMentorList();
+    public List<Map<String,Object>> getMentorContent();
+    public List<Map<String,Object>> getMemberCharacter();
     //public Map<String,Object> getMentorListDetail(long mentorId);
 }

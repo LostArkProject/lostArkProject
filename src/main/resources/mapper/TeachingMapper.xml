@@ -48,7 +48,53 @@
         )
     </insert>
 
-    <!--멘토리스트 조회페이지-->
+    <select id="getMentorList" parameterType="java.util.HashMap" resultType="hashMap">
+        SELECT
+        M.MENTOR_MEMBER_ID AS mentorMemberId,
+        M.MENTOR_WANT_TO_SAY AS mentorWantToSay
+        FROM MENTOR M
+    </select>
+    <select id="getMentorContent" parameterType="java.util.HashMap" resultType="hashMap">
+        SELECT
+        M.MENTOR_MEMBER_ID AS mentorMemberId,
+        GROUP_CONCAT(
+        CASE
+        WHEN MC.MENTOR_CONTENT_ID = 1 THEN '카양겔'
+        WHEN MC.MENTOR_CONTENT_ID = 2 THEN '상아탑'
+        WHEN MC.MENTOR_CONTENT_ID = 3 THEN '발탄'
+        WHEN MC.MENTOR_CONTENT_ID = 4 THEN '비아키스'
+        WHEN MC.MENTOR_CONTENT_ID = 5 THEN '쿠크세이튼'
+        WHEN MC.MENTOR_CONTENT_ID = 6 THEN '아브렐슈드(3티어)'
+        WHEN MC.MENTOR_CONTENT_ID = 7 THEN '일리아칸'
+        WHEN MC.MENTOR_CONTENT_ID = 8 THEN '카멘'
+        WHEN MC.MENTOR_CONTENT_ID = 9 THEN '베히모스'
+        WHEN MC.MENTOR_CONTENT_ID = 10 THEN '에키드나'
+        WHEN MC.MENTOR_CONTENT_ID = 11 THEN '에기르'
+        WHEN MC.MENTOR_CONTENT_ID = 12 THEN '아브렐슈드(4티어)'
+        WHEN MC.MENTOR_CONTENT_ID = 13 THEN '기타 내실'
+        ELSE '알 수 없음'
+        END
+        ) AS mentorContentNames
+        FROM MENTOR_CONTENT MC
+        JOIN MENTOR M ON MC.MENTOR_MEMBER_ID = M.MENTOR_MEMBER_ID
+        GROUP BY M.MENTOR_MEMBER_ID
+    </select>
+
+    <select id="getMemberCharacter" parameterType="java.util.HashMap" resultType="hashMap">
+        SELECT
+        C.MEMBER_ID AS mentorMemberId,
+        C.CHARACTER_NICKNAME AS characterNickname,
+        C.ITEM_LEVEL AS itemLevel,
+        C.SERVER_NAME AS serverName
+        FROM MEMBER_CHARACTER C
+        JOIN MEMBER M
+        ON C.CHARACTER_NICKNAME = M.REPRESENTATIVE_CHARACTER_NICKNAME
+    </select>
+
+
+
+
+    <!--멘토리스트 조회페이지
     <select id="getMentorList" parameterType="java.util.HashMap" resultMap="mentorMap">
         SELECT
             M.MENTOR_MEMBER_ID       AS mentorMemberId,
@@ -63,7 +109,7 @@
         LEFT JOIN MEMBER_CHARACTER C
              ON C.MEMBER_ID = M.MENTOR_MEMBER_ID
     </select>
-
+-->
 
     <!--
     멘티 신청 페이지 > 멘토에게 전송되는 페이지

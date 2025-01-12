@@ -1,15 +1,14 @@
 package com.teamProject.lostArkProject.teaching.service;
 
 import com.teamProject.lostArkProject.teaching.dao.TeachingDAO;
-import com.teamProject.lostArkProject.teaching.dto.MenteeApplyDTO;
 import com.teamProject.lostArkProject.teaching.dto.MenteeDTO;
 import com.teamProject.lostArkProject.teaching.dto.MentorDTO;
+import com.teamProject.lostArkProject.teaching.dto.MentorLIstDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TeachingServiceImpl implements TeachingService {
@@ -39,13 +38,44 @@ public class TeachingServiceImpl implements TeachingService {
     //public void newMenteeApply(MenteeApplyDTO menteeApplyDTO){
 
    // }
+   @Override
+   public List<MentorLIstDTO> getMentorList() {
+       List<Map<String, Object>> mentorList = Optional.ofNullable(teachingDAO.getMentorList()).orElse(Collections.emptyList());
+       List<Map<String, Object>> mentorContentList = Optional.ofNullable(teachingDAO.getMentorContent()).orElse(Collections.emptyList());
+       List<Map<String, Object>> memberCharacterList = Optional.ofNullable(teachingDAO.getMemberCharacter()).orElse(Collections.emptyList());
 
-    @Override
-    public List<Map<String, Object>> getMentorList() {
-        List<Map<String, Object>> result = teachingDAO.getMentorList();
-        System.out.println("Mentor List: " + result);
-        return result;
-    }
+       List<MentorLIstDTO> resultList = new ArrayList<>();
+
+       for (Map<String, Object> mentor : mentorList) {
+           MentorLIstDTO dto = new MentorLIstDTO();
+           dto.setMentorMemberId(String.valueOf(mentor.get("mentorMemberId")));
+           dto.setMentorWantToSay(String.valueOf(mentor.get("mentorWantToSay")));
+
+           // mentorContentIds를 리스트로 설정
+           List<String> contentIds = mentorContentList.stream()
+                   .filter(content -> String.valueOf(content.get("mentorMemberId")).equals(String.valueOf(mentor.get("mentorMemberId"))))
+                   .map(content -> String.valueOf(content.get("mentorContentId"))) // int -> String 변환
+                   .collect(Collectors.toList());
+
+           dto.setMentorContentIds(contentIds); // 리스트 직접 설정
+
+           // memberCharacterList 처리
+           memberCharacterList.stream()
+                   .filter(character -> String.valueOf(character.get("mentorMemberId")).equals(String.valueOf(mentor.get("mentorMemberId"))))
+                   .findFirst()
+                   .ifPresent(character -> {
+                       dto.setCharacterNickname(String.valueOf(character.get("characterNickname")));
+                       dto.setItemLevel(String.valueOf(character.get("itemLevel")));
+                       dto.setServerName(String.valueOf(character.get("serverName")));
+                   });
+
+           resultList.add(dto);
+       }
+
+       return resultList;
+   }
+
+
 
 
     @Override

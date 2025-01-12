@@ -25,12 +25,12 @@
                                     <th scope="col">주로 하는 컨텐츠</th>
                                     <th scope="col">한마디</th>
                                 </tr>
-                                    <tr th:each="mentor,iterStat : ${mentorMap}">
+                                    <tr th:each="mentor,iterStat : ${mentors}">
                                     <td th:text="${iterStat.index + 1}"></td>
                                     <td th:text="${mentor.characterNickname}"></td>
                                     <td th:text="${mentor.itemLevel}"></td>
                                     <td th:text="${mentor.serverName}"></td>
-                                    <td th:text="${mentor.mentorContentId}"></td>
+                                    <td th:text="${mentor.mentorContentIds}"></td>
                                     <td th:text="${mentor.mentorWantToSay}"></td>
                                 </tr>
                                 <!--현재 로그인 로직 부재로 인해 블록 막아둠 -->
