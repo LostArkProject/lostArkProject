@@ -1,7 +1,51 @@
+/************************************ 
+*  Tag
+*************************************/
 span, small, td {
   color: #ccc
 }
 
+a {
+  color: #b19cd9;
+  text-decoration: none
+}
+
+a:hover {
+  color: #d1b5d6
+}
+
+/************************************ 
+*  Logo
+*************************************/
+.logo img {
+  width: 200px;
+}
+
+/************************************ 
+*  Navigation bar
+*************************************/
+.nav-image {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  background-color: black;
+  text-align: center;
+  align-content: center;
+  border-radius: 50%;
+}
+
+.nav-image:hover {
+  background-color: #191c24;
+}
+
+.nav-image img {
+  width: 40px;
+  filter: grayscale(100%);
+}
+
+/************************************ 
+*  Modal
+*************************************/
 .modal-content {
   background-color: #4f4f4f;
 }
@@ -15,6 +59,9 @@ span, small, td {
   transform: translate(0, 50px);
 }
 
+/************************************ 
+*  Button
+*************************************/
 .btn-primary {
   color: #fff;
   background-color: #5fb49a;
@@ -39,11 +86,3 @@ span, small, td {
   box-shadow: 0px 0px 0px 0px rgb(255 255 255 / 0%);
 }
 
-a {
-  color: #b19cd9;
-  text-decoration: none
-}
-
-a:hover {
-  color: #d1b5d6
-}

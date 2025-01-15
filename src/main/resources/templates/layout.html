@@ -16,7 +16,7 @@
     <link th:href="@{https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap}" rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
-    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css}" rel="stylesheet">
+    <link th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css}" rel="stylesheet">
     <link th:href="@{https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css}" rel="stylesheet">
 
     <!-- Customized Bootstrap Stylesheet -->
@@ -42,8 +42,8 @@
     <!-- Sidebar Start -->
     <div class="sidebar pe-4 pb-3">
         <nav class="navbar bg-secondary navbar-dark">
-            <a th:href="@{/}" class="navbar-brand mx-4 mb-3">
-                <img src="/img/loedu_white.png" style="width: 200px;" />
+            <a th:href="@{/}" class="navbar-brand mx-4 mb-3 logo">
+                <img src="/img/loedu_white.png" alt="logo" />
             </a>
             <div class="d-flex align-items-center ms-4 mb-4">
                 <div class="ms-3">
@@ -54,21 +54,27 @@
             </div>
             <div class="navbar-nav w-100">
                 <div class="nav-item dropdown">
-                    <a th:href="@{/collectible}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>내실</a>
+                    <a th:href="@{/collectible}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <div class="nav-image">
+                            <img src="/img/mokoko_seed.png" class="me-2" alt="mokoko" />내실
+                        </div>
+                    </a>
                     <div class="dropdown-menu bg-transparent border-0">
                         <a th:href="@{/collectible}" class="dropdown-item">내실 메인 화면</a>
                         <a th:href="@{/collectible/recommendation}" class="dropdown-item">추천 내실</a>
                         <a th:href="@{/collectible/otherCollectible}" class="dropdown-item">기타 내실</a>
                     </div>
                 </div>
-                <a th:href="@{/alarm}" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>알림</a>
                 <div class="nav-item dropdown">
-                    <a th:href="@{/teaching/main}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>멘토 & 멘티</a>
+                    <a th:href="@{/teaching/main}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fa-solid fa-user-group me-2"></i>멘토 & 멘티
+                    </a>
                     <div class="dropdown-menu bg-transparent border-0">
                         <a th:href="@{/teaching/newMentor}" class="dropdown-item">멘토</a>
                         <a th:href="@{/teaching/newMentee}" class="dropdown-item">멘티</a>
                     </div>
                 </div>
+                <a th:href="@{/academy}" class="nav-item nav-link"><i class="fa-solid fa-school me-2"></i>학원</a>
             </div>
         </nav>
     </div>
@@ -78,9 +84,6 @@
     <div class="content">
         <!-- Navbar Start -->
         <nav class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
-            <a th:href="@{/home}" class="navbar-brand d-flex d-lg-none me-4">
-                <h2 class="text-primary mb-0"><i class="fa fa-user-edit"></i></h2>
-            </a>
             <a href="#" class="sidebar-toggler flex-shrink-0">
                 <i class="fa fa-bars"></i>
             </a>

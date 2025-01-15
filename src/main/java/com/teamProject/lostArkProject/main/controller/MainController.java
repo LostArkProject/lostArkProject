@@ -10,6 +10,7 @@ import com.teamProject.lostArkProject.member.domain.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class MainController {
@@ -27,7 +29,8 @@ public class MainController {
 
     // 메인페이지
     @GetMapping("/")
-    public String home() {
+    public String home(Model model, HttpSession session) {
+        session.setAttribute("nickname", "밤피린");
         return "index";
     }
 

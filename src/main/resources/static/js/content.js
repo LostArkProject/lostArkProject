@@ -42,8 +42,8 @@ const modalManager = {
 
 /** 컨텐츠의 name 테이블입니다. */
 const nameMapping = {
-    '[습격]리베르탄-[점령]-[습격]프라이겔리': '[습격]리베르탄',
-    '[습격]프라이겔리-[점령]-[습격]리베르탄': '[습격]1프라이겔리',
+    '[습격]리베르탄-[점령]-[습격]프라이겔리': '[습격] 리베르탄',
+    '[습격]프라이겔리-[점령]-[습격]리베르탄': '[습격] 프라이겔리',
     '몬테섬': '몬테 섬',
     '배틀 아레나': '태초의 섬',
     '세베크 아툰': '필드보스'
@@ -270,16 +270,16 @@ function replaceNames(contents) {
 }
 
 /**
- * 배열에서 특정 중복 컨텐츠를 제거하는 함수
+ * 중복 컨텐츠를 제거한 후 컨텐츠명을 변환하는 함수
  * 
  * @param {Array} contents - contents 배열
- * @returns {Array} 중복이 제거된 배열
+ * @returns {Array} 수정된 contents 배열
  */
 function removeDuplicateContent(contents) {
-    // 중복 확인 플래그 생성
+    // 1. 중복 확인 플래그 생성
     let duplicateChaosGate = false;
 
-    // 중복 컨텐츠 제거 후 반환
+    // 2. 중복 컨텐츠 제거
     return contents.filter(content => {
         if (content.contentCategory === '카오스게이트') {
             if (!duplicateChaosGate) {
@@ -289,6 +289,13 @@ function removeDuplicateContent(contents) {
             return false;
         }
         return true;
+    })
+    // 3. 컨텐츠명 변환
+    .map(content => {
+        if (content.contentCategory === '카오스게이트') {
+            return { ...content, contentName: '카오스게이트' }; // 새 객체로 반환
+        }
+        return content;
     });
 }
 
