@@ -34,9 +34,11 @@ public class MainController {
     // 내실
     @GetMapping("/collectible")
     public String getCharacterCollectible(Model model, HttpSession session) {
-        String characterName = (String) session.getAttribute("nickname"); // http 세션에서 가져온 닉네임
-        //collectibleService.saveCollectiblePoint(characterName); //회원가입 후 즉시 적용
-        List<CollectiblePointSummaryDTO> collectibleItemList = collectibleService.getCollectiblePointSummary(characterName);
+        Member member = (Member) session.getAttribute("member"); // http 세션에서 가져온 닉네임
+        if(member == null) {
+            return "member/signin";
+        }
+        List<CollectiblePointSummaryDTO> collectibleItemList = collectibleService.getCollectiblePointSummary(member.getMemberId());
         model.addAttribute("collectibleItemList", collectibleItemList);
         return "collectible/collectible"; // 결과 뷰로 이동
     }
