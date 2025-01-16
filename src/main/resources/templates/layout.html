@@ -87,7 +87,7 @@
                 <i class="fa fa-bars"></i>
             </a>
             <div class="navbar-nav align-items-center ms-auto">
-                <div th:if="${session.memberNickname}">
+                <div th:if="${session.member}" class="navbar-nav">
                     <!-- 로그인된 상태 -->
                     <div class="nav-item dropdown">
                         <a th:href="@{/teaching/message}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
@@ -104,7 +104,7 @@
                     <div class="nav-item dropdown">
                         <a th:href="@{/member/myPage}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <img class="rounded-circle me-lg-2" th:src="@{/img/user.jpg}" alt="" style="width: 40px; height: 40px;">
-                            <span class="d-none d-lg-inline-flex" th:text="${session.memberNickname}">John Doe</span>
+                            <span class="d-none d-lg-inline-flex" th:text="${session.member.representativeCharacterNickname}">John Doe</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
                             <a th:href="@{/member/myPage}" class="dropdown-item">프로필</a>
@@ -113,7 +113,7 @@
                     </div>
                 </div>
 
-                <div th:unless="${session.memberNickname}" class="d-flex">
+                <div th:unless="${session.member}" class="d-flex">
                     <!-- 로그인되지 않은 상태 -->
                     <a th:href="@{/member/signin}" class="nav-link">로그인</a>
                     <a th:href="@{/member/signup}" class="nav-link">회원가입</a>
