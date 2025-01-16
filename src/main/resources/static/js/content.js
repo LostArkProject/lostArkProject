@@ -6,17 +6,43 @@ import { getRequest } from './api.js';
 
 /** dom 템플릿 객체입니다. */
 const domTemplates = {
-    contentDom: (content, startTime) => `
+    contentDom: (content, startTime, selectorType) => `
         <div class="d-flex border-bottom py-3">
             <div class="w-100 ms-3">
                 <div class="d-flex">
-                    <img class="rounded-circle flex-shrink-0" src="${content.contentIconLink}" alt="" style="width: 40px; height: 40px;">
+                    <img 
+                        class="rounded-circle flex-shrink-0"
+                        src="${content.contentIconLink}"
+                        alt="${content.contentName}"
+                        style="width: 40px; height: 40px;"
+                    />
                     <div id="content-${content.contentId}" class="text-start ms-3">
                         <h6 class="mb-0">${content.contentName}</h6>
                         <small class="remain-time">${startTime}</small>
                     </div>
                 </div>
             </div>
+            ${selectorType === 'modal' 
+                ? `
+                    <input
+                        type="checkbox"
+                        class="form-check-input align-self-center"
+                        id="checkbox-${content.contentId}"
+                        name="content"
+                        value="${content.contentId}"
+                        aria-label="알림 설정: ${content.contentName}"
+                        style="width: 20px;"
+                    />
+                    <label
+                        class="ms-2 me-4"
+                        for="checkbox-${content.contentId}"
+                        style="white-space: nowrap; align-self: center;"
+                    >
+                        알림 ON
+                    </label>
+                `
+                : ''
+            }
         </div>
     `,
 };
@@ -97,9 +123,9 @@ async function fetchContentData(url) {
  * 콘텐츠를 렌더링하고 타이머를 설정하는 함수
  * 
  * @param {string} selector - 렌더링할 컨테이너의 dom 선택자
- * @param {string} [timerName='main'] - 실행하는 타이머의 종류 (초기값: 'main')
+ * @param {string} [selectorType='main'] - 선택자의 종류 (초기값: 'main')
  */
-async function initializeContentContainer(selector, timerName = 'main') {
+async function initializeContentContainer(selector, selectorType = 'main') {
     const contents = await fetchContentData('/contents/start-time');
 
     /** @deprecated */
@@ -109,7 +135,7 @@ async function initializeContentContainer(selector, timerName = 'main') {
 
     // 컨테이너 렌더링
     const contentsDom = reductContents.map(content =>
-        domTemplates.contentDom(content, 'loading...')
+        domTemplates.contentDom(content, 'loading...', selectorType)
     ).join('');
     $(selector).html(contentsDom);
 
@@ -131,7 +157,7 @@ async function initializeContentContainer(selector, timerName = 'main') {
         (id, finalTime) => {
             updateContentTime(id, finalTime, selector);
         },
-        timerName
+        selectorType
     );
 }
 
@@ -321,11 +347,11 @@ let modalTimer = null;
  * @param {Array} contents - 초기 데이터 배열
  * @param {Function} onTick - 매초 호출되는 dom 업데이트 함수
  * @param {Function} onComplete - 타이머 종료 시 호출되는 함수
- * @param {string} [timerName='main'] - 실행하는 타이머의 종류 (초기값: 'main')
+ * @param {string} [selectorType='main'] - 선택자의 종류 (초기값: 'main')
  */
-function startTimer(contents, onTick, onComplete, timerName) {
+function startTimer(contents, onTick, onComplete, selectorType) {
     // 기존 타이머 확인 및 중지
-    if (timerName === 'main') {
+    if (selectorType === 'main') {
         if (mainTimer) {
             console.log('실행 중인 메인 타이머를 중지합니다.');
             clearInterval(mainTimer);
@@ -352,11 +378,11 @@ function startTimer(contents, onTick, onComplete, timerName) {
     }, 1000);
 
     // 새로운 타이머 실행
-    if (timerName === 'main') {
+    if (selectorType === 'main') {
         console.log('메인 타이머를 실행합니다.');
         mainTimer = timer;
     }
-    if (timerName === 'modal') {
+    if (selectorType === 'modal') {
         console.log('모달 타이머를 실행합니다.');
         modalTimer = timer;
     }
