@@ -11,7 +11,7 @@
     </insert>
 
     <!--로그인 -->
-    <select id="signinMember" parameterType="signinMember">
+    <select id="getMemberPW" parameterType="signinMember">
         SELECT MEMBER_PASSWD FROM MEMBER
         WHERE MEMBER_ID = #{memberId}
     </select>
@@ -19,6 +19,12 @@
     <!--대표캐릭터 반환 -->
     <select id="getRepresentativeCharacter" parameterType="representativeCharacter">
         SELECT REPRESENTATIVE_CHARACTER_NICKNAME FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
+    <!--중복 이메일 확인 -->
+    <select id="checkMemberId" parameterType="checkEmail">
+        SELECT MEMBER_ID FROM MEMBER
         WHERE MEMBER_ID = #{memberId}
     </select>
 

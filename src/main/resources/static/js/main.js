@@ -3,6 +3,7 @@
     /* -------------------------------------------------------------
                         * 프로젝트 함수
     --------------------------------------------------------------*/
+    let isEmailAvailable = false;
 
     // 내실 API 요청
     $.ajax({
@@ -51,6 +52,7 @@
 
     //회원가입
     window.checkSignup = function() {
+        //유효성 검사
         var form = document.signupForm;
         var emailTest =  /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
         var passwdTest = /^(?=.*[a-zA-Z])(?=.*[0-9])/;
@@ -61,6 +63,10 @@
         } else if (!emailTest.test(form.signupId.value)) {
             alert("이메일 형식으로 입력해주세요.");
             form.signupId.focus();
+            return false;
+        } else if (isEmailAvailable == false) {
+            alert("이메일 중복 확인을 해주세요.");
+            form.checkEmail.focus();
             return false;
         } else if (form.signupPW.value=="") {
             alert("비밀번호를 입력해주세요.");
@@ -87,7 +93,25 @@
             form.signupAgreement.focus();
             return false;
         }
-        form.submit();
+
+
+        //회원가입 프로세스
+        $.ajax({
+            url: '/member/signup-process',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ email: form.signupId.value, PW: form.signupPW.value,
+            representativeCharacter: form.signupRepresentativeCharacter.value }),
+            success: function(response) {
+                if(!response) {
+                    alert("대표 캐릭터 닉네임을 입력해주세요.");
+                    form.signupRepresentativeCharacter.focus();
+                    return false;
+                } else {
+                    window.location.href = "/"
+                }
+            }
+        });
     }
 
     //로그인
@@ -112,8 +136,64 @@
                 form.signinPW.focus();
                 return false;
             }
-            form.submit();
+
+            $.ajax({
+                url: '/member/signin-process',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ email: form.signinId.value, PW: form.signinPW.value, saveId: form.saveId.checked }),
+                success: function(response) {
+                    if(response) {
+                        alert("로그인 되었습니다.");
+                        window.location.href = "/"
+                    } else {
+                        alert("아이디 혹은 비밀번호가 틀렸습니다.");
+                        window.location.href = "/member/signin"
+                    }
+                }
+            });
         }
+
+    //이메일 중복확인 및 인증번호 발송
+    window.sendEmail = function() {
+        const email = $('#signupId').val();
+        var emailTest =  /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+        if (!email) {
+            alert("이메일을 입력해주세요.");
+            return;
+        } else if (!emailTest.test(email)) {
+            alert("이메일 형식으로 입력해주세요.");
+            form.signinId.focus();
+            return;
+        }
+
+        // AJAX로 이메일 중복 확인 요청
+        $.ajax({
+            url: '/member/check-email',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ email: email }),
+            success: function (response) {
+                if (response) {
+                    alert("이미 사용 중인 이메일입니다.");
+                    isEmailAvailable = false;
+                } else {
+                    isEmailAvailable = true;
+                    alert("이메일 전송");
+                    $.ajax({
+                        url: '/send-email',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ email: email })
+                    })
+                }
+            },
+            error: function () {
+                alert("중복 확인 중 문제가 발생했습니다.");
+                isEmailAvailable = false;
+            }
+        });
+    }
 
     //알람 띄우기
     function showAlert(message) {
