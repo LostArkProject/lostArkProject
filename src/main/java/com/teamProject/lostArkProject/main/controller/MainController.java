@@ -44,23 +44,4 @@ public class MainController {
         return "collectible/collectible"; // 결과 뷰로 이동
     }
 
-    // 테스트 페이지
-    @GetMapping("/test")
-    public String character(Model model) {
-        model.addAttribute("characterList", new ArrayList<CharacterInfo>());
-        return "test/index";
-    }
-
-    @GetMapping("/test/characters")
-    public Mono<String> getCharacterInfo(@RequestParam String characterName, Model model,
-                                         HttpServletRequest request) {
-        // 클라이언트가 입력한 캐릭터 닉네임을 http 세션에 저장
-        HttpSession session = request.getSession();
-        session.setAttribute("nickname", characterName);
-        Mono<List<CharacterInfo>> characterInfoMono = collectibleService.getCharacterInfo(characterName);
-        return characterInfoMono.flatMap(characterInfoList -> {
-            model.addAttribute("characterList", characterInfoList);
-            return Mono.just("test/characters");
-        });
-    }
 }
