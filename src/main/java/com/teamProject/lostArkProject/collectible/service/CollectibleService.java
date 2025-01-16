@@ -43,7 +43,7 @@ public class CollectibleService {
     }
 
     // 내실 내용 가져오는 메소드
-    public void saveCollectiblePoint(String characterName) {
+    public void saveCollectiblePoint(String characterName, String memberId) {
         webClient.get()
                 .uri("/armories/characters/" + characterName + "/collectibles") // 실제 API의 경로로 변경
                 .retrieve()
@@ -60,7 +60,7 @@ public class CollectibleService {
                                 .flatMap(item -> item.getCollectiblePoints().stream()
                                         .map(detail -> {
                                             CollectiblePoint collectible = new CollectiblePoint();
-                                            collectible.setMemberId(characterName);
+                                            collectible.setMemberId(memberId);
                                             collectible.setCollectibleTypeName(item.getCollectibleTypeName());
                                             collectible.setCollectibleIconLink(item.getCollectibleIconLink());
                                             collectible.setCollectiblePointName(detail.getCollectiblePointName());
