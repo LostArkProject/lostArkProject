@@ -20,7 +20,6 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class MainController {
@@ -29,8 +28,7 @@ public class MainController {
 
     // 메인페이지
     @GetMapping("/")
-    public String home(Model model, HttpSession session) {
-        session.setAttribute("nickname", "밤피린");
+    public String home() {
         return "index";
     }
 
