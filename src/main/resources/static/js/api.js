@@ -18,7 +18,7 @@ export async function getRequest(url) {
           });
       });
   } catch (e) {
-      console.error(`데이터를 가져오는 도중 예외가 발생했습니다: \n${e}`);
+      console.error(`GET 요청에서 예외가 발생했습니다:`);
       return e; // 예외 발생 시 해당 예외 반환
   }
 }
@@ -44,7 +44,7 @@ export async function postRequest(url, data = null) {
           });
       });
   } catch (e) {
-      console.error(`데이터를 가져오는 도중 예외가 발생했습니다: \n${e}`);
+      console.error(`POST 요청에서 예외가 발생했습니다:`);
       return e; // 예외 발생 시 해당 예외 반환
   }
 }

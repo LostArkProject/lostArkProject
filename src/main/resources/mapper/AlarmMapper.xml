@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProject.lostArkProject.alarm.dao.AlarmDAO">
+    <!-- 알림 저장 -->
+    <insert id="insertAlarm">
+        INSERT INTO alarm(member_id, content_name)
+        VALUES (#{memberId},
+                #{contentName})
+    </insert>
+
+    <!-- 유저의 알림 설정 내역 출력 -->
+    <select id="getAllAlarm" parameterType="String" resultType="alarm">
+        SELECT * FROM alarm
+        WHERE member_id=#{memberId};
+    </select>
+
+    <!-- 유저의 특정 컨텐츠에 대한 알림 설정 삭제 -->
+    <select id="deleteByMemberIdAndContentName">
+        DELETE FROM alarm
+        WHERE member_id=#{memberId} AND content_name=#{contentName}
+    </select>
+
+    <!-- 유저의 특정 컨텐츠 알림 설정 여부 조회 -->
+    <select id="existsByMemberIdAndContentName" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM alarm
+        WHERE member_id=#{memberId} AND content_name=#{contentName}
+    </select>
+</mapper>

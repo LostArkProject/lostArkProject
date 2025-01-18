@@ -1,4 +1,4 @@
-import { getRequest } from './api.js';
+import { getRequest, postRequest } from './api.js';
 
 /********************
  *    Templates 
@@ -7,7 +7,7 @@ import { getRequest } from './api.js';
 /** dom 템플릿 객체입니다. */
 const domTemplates = {
     contentDom: (content, startTime, selectorType) => `
-        <div class="d-flex border-bottom py-3">
+        <div class="d-flex border-bottom py-3 ${selectorType}-container">
             <div class="w-100 ms-3">
                 <div class="d-flex">
                     <img 
@@ -97,6 +97,15 @@ async function handleModalClick(event) {
 
     await initializeContentContainer('#remain-time-modal-body', 'modal');
 
+    $('.modal-container').on('change', 'input[type="checkbox"]', function () {
+        const isChecked = $(this).is(':checked'); // 체크박스의 상태 확인
+        const contentId = $(this).val(); // 체크박스의 value 속성 (contentId)
+        
+        console.log(isChecked);
+        console.log(contentId);
+        updateAlarmSettings(contentId);
+    });
+
     modalManager.openModal();
 }
 
@@ -109,12 +118,12 @@ async function fetchContentData(url) {
     try {
         const response = await getRequest(url);
         const contents = getValidStartTime(response); // 유효 시간 데이터 파싱
-        const renameContents = replaceNames(contents);
-        const uniqueContents = removeDuplicateContent(renameContents);
+        const renameContents = replaceNames(contents); // 컨텐츠 이름 대체
+        const uniqueContents = removeDuplicateContent(renameContents); // 중복 컨텐츠 제거
         console.log(uniqueContents);
         return uniqueContents;
     } catch (e) {
-        console.error('데이터를 가져오는 데 실패했습니다.', e);
+        console.error('데이터를 가져오는 데 실패했습니다.', e.responseText);
         return [];
     }
 }
@@ -159,6 +168,40 @@ async function initializeContentContainer(selector, selectorType = 'main') {
         },
         selectorType
     );
+}
+
+/**
+ * 특정 유저의 컨텐츠별 알림 설정 여부를 반환하는 함수
+ * 
+ * @returns {Object} 유저의 알림 설정 여부 객체
+ */
+async function fetchAlarmSettings() {
+    try {
+        const memberId = loggedInMember.memberId;
+        const response = await getRequest(`/alarm/member/${memberId}`);
+        console.log('알림 설정 데이터');
+        console.log(response);
+        return response;
+    } catch (e) {
+        console.error('유저의 알림 설정 데이터을 가져오는 데 실패했습니다.', e.responseText);
+        return false;
+    }
+}
+
+/**
+ * contentId로 알림 설정을 갱신하는 함수
+ * 
+ * @param {number} contentId - 특정 컨텐츠 id
+ */
+async function updateAlarmSettings(contentId) {
+    try {
+        const memberId = loggedInMember.memberId;
+        const response = await postRequest(`/alarm/member/${memberId}/${contentId}`);
+        console.log('알림 설정 갱신: ');
+        console.log(response);
+    } catch (e) {
+        console.error('유저의 알림 설정 갱신 실패', e.responseText);
+    }
 }
 
 /**********************
