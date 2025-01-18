@@ -1,4 +1,4 @@
-package com.teamProject.lostArkProject.main.config;
+package com.teamProject.lostArkProject.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
