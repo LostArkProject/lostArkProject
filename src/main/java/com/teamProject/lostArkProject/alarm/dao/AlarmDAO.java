@@ -16,7 +16,7 @@ public interface AlarmDAO {
     List<Alarm> getAllAlarm(String memberId);
     
     // 데이터 삭제
-    void deleteByMemberIdAndContentName(@Param("memberId") String memberId,
+    int deleteByMemberIdAndContentName(@Param("memberId") String memberId,
                                         @Param("contentName") String contentName);
 
     // 데이터 존재 여부 확인

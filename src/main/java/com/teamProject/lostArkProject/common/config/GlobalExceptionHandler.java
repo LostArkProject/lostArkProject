@@ -11,9 +11,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    /** 일반 예외 처리 */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception e) {
-        log.error(e.getMessage(), e);
+        log.error("일반 예외가 발생하였습니다: {}, {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error: " + e.getMessage());
+    }
+
+    /** IllegalArgumentException 예외 처리 */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        log.error("잘못된 요청: {}", e.getMessage());
+        return ResponseEntity.badRequest().body("잘못된 요청: " + e.getMessage());
     }
 }

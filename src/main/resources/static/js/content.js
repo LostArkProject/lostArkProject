@@ -1,4 +1,6 @@
-import { getRequest, postRequest } from './api.js';
+import { deleteRequest, getRequest, postRequest } from './api.js';
+
+const memberId = loggedInMember ? loggedInMember.memberId : null;
 
 /********************
  *    Templates 
@@ -24,22 +26,21 @@ const domTemplates = {
             </div>
             ${selectorType === 'modal' 
                 ? `
-                    <input
-                        type="checkbox"
-                        class="form-check-input align-self-center"
-                        id="checkbox-${content.contentNumber}"
-                        name="content"
-                        value="${content.contentName}"
-                        aria-label="알림 설정: ${content.contentName}"
-                        style="width: 20px;"
-                    />
-                    <label
-                        class="ms-2 me-4"
-                        for="checkbox-${content.contentNumber}"
-                        style="white-space: nowrap; align-self: center;"
-                    >
-                        알림 ON
-                    </label>
+                    <div class="modal-delete-btn-wrapper">
+                        <input
+                            type="checkbox"
+                            class="form-check-input align-self-center"
+                            id="checkbox-${content.contentNumber}"
+                            name="content"
+                            value="${content.contentName}"
+                            aria-label="알림 설정: ${content.contentName}"
+                        />
+                        <label
+                            class="form-check-label ms-2 me-4"
+                            for="checkbox-${content.contentNumber}"
+                            style="white-space: nowrap; align-self: center;"
+                        ></label>
+                    </div>
                 `
                 : ''
             }
@@ -63,6 +64,7 @@ const modalManager = {
     async closeModal() {
         $('#staticBackdrop').modal('hide');
         await initializeContentContainer('.content-container', 'main');
+        await renderAlarmContainer();
     }
 };
 
@@ -97,15 +99,32 @@ async function handleModalClick(event) {
 
     await initializeContentContainer('#remain-time-modal-body', 'modal');
 
-    $('.modal-container').on('change', 'input[type="checkbox"]', function () {
-        const contentName = $(this).val(); // 체크박스의 value 속성 (contentName)
-        
-        console.log(contentName);
-        updateAlarmSettings(contentName);
+
+    $('.modal-delete-btn-wrapper input[type="checkbox"]').each((idx, checkbox) => {
+        const $label = $(checkbox).next();
+        if (checkbox.disabled) {
+            $label.text('');
+        } else {
+            $label.text($(checkbox).is(':checked') ? '알림 ON' : '알림 OFF');
+        }
+    
+        // 상태 변경 시 동적으로 업데이트
+        $(checkbox).on('change', function () {
+            $label.text($(this).is(':checked') ? '알림 ON' : '알림 OFF');
+            updateAlarmSetting($(this).val());
+        });
     });
 
     modalManager.openModal();
 }
+
+// 알림 삭제 버튼 클릭 시 실행되는 함수
+$(document).on('click', '.btn[data-alarm-name]', async function () {
+    const contentName = $(this).data('alarm-name');
+    console.log('삭제 버튼 클릭: ' + contentName);
+    await deleteAlarmSetting(contentName);
+    await renderAlarmContainer();
+});
 
 /******************************
  *     Business functions
@@ -152,7 +171,7 @@ async function initializeContentContainer(selector, selectorType = 'main') {
         return domTemplates.contentDom(content, 'loading...', selectorType)
             .replace(
                 `type="checkbox"`,
-                `type="checkbox" ${isChecked ? 'checked' : ''}`
+                `type="checkbox" ${memberId ? '' : 'disabled'} ${isChecked ? 'checked' : ''}`
             )
     }).join('');
 
@@ -178,15 +197,51 @@ async function initializeContentContainer(selector, selectorType = 'main') {
 }
 
 /**
+ * 알림 컨테이너를 리렌더링하는 함수
+ */
+async function renderAlarmContainer() {
+    const $container = $('.alarm-wrapper');
+    $container.html('<p id="spinner">로딩 중...</p>');
+
+    try {
+        const alarms = await fetchAlarmSettings();
+        $container.empty();
+
+        if (!alarms || alarms.length === 0) {
+            $container.html('<p class="text-center">알림 설정한 컨텐츠가 존재하지 않습니다.</p>');
+        } else {
+            const alarmHTML = alarms.map(alarm => `
+                <div class="d-flex align-items-center border-bottom py-2">
+                    <div class="w-100 ms-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="flex-grow-1">${alarm.contentName}</span>
+                            <span>${alarm.memberId}</span>
+                            <button class="btn btn-sm" data-alarm-name="${alarm.contentName}">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            $container.html(alarmHTML);
+        }
+    } catch (e) {
+        console.error('알림 컨테이너를 리렌더링하는 데 실패했습니다: ', e.responseText);
+    }
+}
+
+/**
  * 특정 유저의 컨텐츠별 알림 설정 여부를 반환하는 함수
  * 
  * @returns {Object} 유저의 알림 설정 여부 객체
  */
 async function fetchAlarmSettings() {
+    const $container = $('.alarm-wrapper');
+
     try {
-        const memberId = loggedInMember.memberId;
         const response = await getRequest(`/alarm/member/${memberId}`);
         console.log(response);
+        console.log($container);
         return response;
     } catch (e) {
         console.error('유저의 알림 설정 데이터을 가져오는 데 실패했습니다.', e.responseText);
@@ -199,13 +254,24 @@ async function fetchAlarmSettings() {
  * 
  * @param {string} contentName - 컨텐츠명
  */
-async function updateAlarmSettings(contentName) {
+async function updateAlarmSetting(contentName) {
     try {
-        const memberId = loggedInMember.memberId;
         const response = await postRequest(`/alarm/member/${memberId}`, contentName);
         console.log(response);
     } catch (e) {
-        console.error('유저의 알림 설정 갱신 실패', e.responseText);
+        console.error('유저의 알림 설정 갱신 실패: ', e.responseText);
+    }
+}
+
+/**
+ * 특정 컨텐츠의 알람 설정을 해제하는 함수
+ */
+async function deleteAlarmSetting(contentName) {
+    try {
+        const response = await deleteRequest(`/alarm/member/${memberId}`, contentName);
+        console.log(response);
+    } catch (e) {
+        console.error('알림 설정 삭제 실패: ', e.responseText);
     }
 }
 

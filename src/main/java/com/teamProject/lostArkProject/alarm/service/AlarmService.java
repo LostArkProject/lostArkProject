@@ -22,11 +22,10 @@ public class AlarmService {
     }
 
     // 특정 컨텐츠의 알람을 설정하는 메서드
-    public boolean toggleAlarm(String memberId, String contentName) throws Exception {
+    public boolean toggleAlarm(String memberId, String contentName) {
         if (contentName.isEmpty()) {
-            throw new Exception("잘못된 컨텐츠명이 입력되었습니다." + contentName);
+            throw new IllegalArgumentException("컨텐츠명이 공백으로 입력되었습니다: " + contentName);
         }
-
         boolean isAlarmEnabled;
 
         if (alarmDAO.existsByMemberIdAndContentName(memberId, contentName)) {
@@ -39,5 +38,16 @@ public class AlarmService {
         log.info("현재 알람 상태: {}", isAlarmEnabled);
 
         return isAlarmEnabled;
+    }
+
+    public boolean deleteAlarm(String memberId, String contentName) {
+        if (contentName.isEmpty()) {
+            throw new IllegalArgumentException("컨텐츠명이 공백으로 입력되었습니다: " + contentName);
+        }
+
+        int deletedCount = alarmDAO.deleteByMemberIdAndContentName(memberId, contentName);
+        log.info("삭제된 행의 개수: {}", deletedCount);
+
+        return deletedCount == 1;
     }
 }

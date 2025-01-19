@@ -155,36 +155,40 @@
                     <div class="content-container"></div>
                 </div>
                 <!-- 알림 설정 -->
-                <div class="bg-secondary rounded p-4 mt-4">
+                <div class="bg-secondary rounded p-4 mt-4 alarm-container">
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <h6 class="mb-0">알림</h6>
                         <!-- 알림 설정 modal 링크 -->
                         <a href="#" class="content-modal-link">전체</a>
                     </div>
                     
-                    <th:block th:if="${loggedInMember == null}">
-                        <p>로그인해주세요.</p>
-                    </th:block>
-
-                    <th:block th:if="${loggedInMember != null}">
-                        <th:block th:if="${alarms != null and !#lists.isEmpty(alarms)}">
-                            <th:block th:each="alarm : ${alarms}">
-                                <div class="d-flex align-items-center border-bottom py-2">
-                                    <div class="w-100 ms-3">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <span class="flex-grow-1" th:text="${alarm.contentName}"></span>
-                                            <span th:text="${alarm.memberId}"></span>
-                                            <button class="btn btn-sm"><i class="fa fa-times"></i></button>
+                    <div class="alarm-wrapper">
+                        <th:block th:if="${loggedInMember == null}">
+                            <p class="text-center">로그인이 필요합니다.</p>
+                        </th:block>
+    
+                        <th:block th:if="${loggedInMember != null}">
+                            <th:block th:if="${alarms != null and !#lists.isEmpty(alarms)}">
+                                <th:block th:each="alarm : ${alarms}">
+                                    <div class="d-flex align-items-center border-bottom py-2">
+                                        <div class="w-100 ms-3">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <span class="flex-grow-1" th:text="${alarm.contentName}"></span>
+                                                <span th:text="${alarm.memberId}"></span>
+                                                <button class="btn btn-sm" th:data-alarm-name="${alarm.contentName}">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </th:block>
+                            </th:block>
+    
+                            <th:block th:if="${alarms == null or #lists.isEmpty(alarms)}">
+                                <p class="text-center">알림 설정한 컨텐츠가 존재하지 않습니다.</p>
                             </th:block>
                         </th:block>
-
-                        <th:block th:if="${alarms == null or #lists.isEmpty(alarms)}">
-                            <p>알림 설정한 컨텐츠가 존재하지 않습니다.</p>
-                        </th:block>
-                    </th:block>
+                    </div>
                 </div>
             </div>
         </div>
