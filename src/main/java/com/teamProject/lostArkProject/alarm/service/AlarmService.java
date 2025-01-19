@@ -22,10 +22,10 @@ public class AlarmService {
     }
 
     // 특정 컨텐츠의 알람을 설정하는 메서드
-    public boolean toggleAlarm(String memberId, int contentId) throws Exception {
-        String contentName = contentDAO.getContentNameByContentId(contentId);
+    public boolean toggleAlarm(String memberId, int contentNumber) throws Exception {
+        String contentName = contentDAO.getContentNameByContentNumber(contentNumber);
         if (contentName.isEmpty()) {
-            throw new Exception("[id :" + contentId + "]에 해당하는 컨텐츠가 존재하지 않습니다.");
+            throw new Exception("[number :" + contentNumber + "]에 해당하는 컨텐츠가 존재하지 않습니다.");
         }
 
         boolean isAlarmEnabled;

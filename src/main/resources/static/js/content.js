@@ -16,7 +16,7 @@ const domTemplates = {
                         alt="${content.contentName}"
                         style="width: 40px; height: 40px;"
                     />
-                    <div id="content-${content.contentId}" class="text-start ms-3">
+                    <div id="content-${content.contentNumber}" class="text-start ms-3">
                         <h6 class="mb-0">${content.contentName}</h6>
                         <small class="remain-time">${startTime}</small>
                     </div>
@@ -27,15 +27,15 @@ const domTemplates = {
                     <input
                         type="checkbox"
                         class="form-check-input align-self-center"
-                        id="checkbox-${content.contentId}"
+                        id="checkbox-${content.contentNumber}"
                         name="content"
-                        value="${content.contentId}"
+                        value="${content.contentNumber}"
                         aria-label="알림 설정: ${content.contentName}"
                         style="width: 20px;"
                     />
                     <label
                         class="ms-2 me-4"
-                        for="checkbox-${content.contentId}"
+                        for="checkbox-${content.contentNumber}"
                         style="white-space: nowrap; align-self: center;"
                     >
                         알림 ON
@@ -99,11 +99,11 @@ async function handleModalClick(event) {
 
     $('.modal-container').on('change', 'input[type="checkbox"]', function () {
         const isChecked = $(this).is(':checked'); // 체크박스의 상태 확인
-        const contentId = $(this).val(); // 체크박스의 value 속성 (contentId)
+        const contentNumber = $(this).val(); // 체크박스의 value 속성 (contentNumber)
         
         console.log(isChecked);
-        console.log(contentId);
-        updateAlarmSettings(contentId);
+        console.log(contentNumber);
+        updateAlarmSettings(contentNumber);
     });
 
     modalManager.openModal();
@@ -151,7 +151,7 @@ async function initializeContentContainer(selector, selectorType = 'main') {
     // 유효한 데이터만 필터링
     const validContents = reductContents.filter(content => {
         if (!(content.contentStartTimes instanceof Date)) {
-            updateContentTime(content.contentId, content.contentStartTimes, selector);
+            updateContentTime(content.contentNumber, content.contentStartTimes, selector);
             return false;
         }
         return true;
@@ -189,14 +189,14 @@ async function fetchAlarmSettings() {
 }
 
 /**
- * contentId로 알림 설정을 갱신하는 함수
+ * contentNumber로 알림 설정을 갱신하는 함수
  * 
- * @param {number} contentId - 특정 컨텐츠 id
+ * @param {number} contentNumber - 특정 컨텐츠의 number
  */
-async function updateAlarmSettings(contentId) {
+async function updateAlarmSettings(contentNumber) {
     try {
         const memberId = loggedInMember.memberId;
-        const response = await postRequest(`/alarm/member/${memberId}/${contentId}`);
+        const response = await postRequest(`/alarm/member/${memberId}/${contentNumber}`);
         console.log('알림 설정 갱신: ');
         console.log(response);
     } catch (e) {
@@ -314,12 +314,12 @@ function isNextDay(time) {
 /**
  * ui의 남은 시간을 갱신하는 함수
  * 
- * @param {int} contentId - content의 id
+ * @param {int} contentNumber - content의 number
  * @param {String} formattedTime - 00:00:00 형식의 문자열
  * @param {String} selector - 렌더링할 컨테이너의 dom 선택자
  */
-function updateContentTime(contentId, formattedTime, selector = '.content-container') {
-    const $remainTimeDom = $(`${selector} #content-${contentId} .remain-time`);
+function updateContentTime(contentNumber, formattedTime, selector = '.content-container') {
+    const $remainTimeDom = $(`${selector} #content-${contentNumber} .remain-time`);
     if ($remainTimeDom) {
         $remainTimeDom.text(formattedTime);
     }
@@ -413,9 +413,9 @@ function startTimer(contents, onTick, onComplete, selectorType) {
             const diff = content.contentStartTimes - now;
 
             if (diff > 1000) {
-                onTick(content.contentId, formatTime(decrementTime(diff)));
+                onTick(content.contentNumber, formatTime(decrementTime(diff)));
             } else {
-                onComplete(content.contentId, '---출현 중---');
+                onComplete(content.contentNumber, '---출현 중---');
             }
         });
     }, 1000);

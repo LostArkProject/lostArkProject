@@ -27,10 +27,10 @@ public class AlarmController {
     }
 
     // 특정 컨텐츠의 알람을 설정하는 메서드
-    @PostMapping("/api/alarm/member/{memberId}/{contentId}")
+    @PostMapping("/api/alarm/member/{memberId}/{contentNumber}")
     public ResponseEntity<?> toggleAlarm(@PathVariable("memberId") String memberId,
-                                         @PathVariable("contentId") int contentId) throws Exception {
-        boolean result = alarmService.toggleAlarm(memberId, contentId);
+                                         @PathVariable("contentNumber") int contentNumber) throws Exception {
+        boolean result = alarmService.toggleAlarm(memberId, contentNumber);
         return ResponseEntity.ok(result);
     }
 }

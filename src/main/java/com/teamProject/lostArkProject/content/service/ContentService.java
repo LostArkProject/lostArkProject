@@ -109,16 +109,16 @@ public class ContentService {
         return Mono.fromRunnable(() -> {
             // content 테이블 저장
             contentDAO.saveContent(content);
-            int contentId = content.getContentId();
+            int contentNumber = content.getContentNumber();
 
             // start_time 테이블 저장
             List<StartTime> startTimes = content.getStartTimes();
-            startTimes.forEach(startTime -> startTime.setContentId(contentId)); // contentId 매핑
+            startTimes.forEach(startTime -> startTime.setContentNumber(contentNumber)); // contentNumber 매핑
             contentDAO.saveStartTime(startTimes);
 
             // reward 테이블 저장
             List<Reward> rewards = content.getRewards();
-            rewards.forEach(reward -> reward.setContentId(contentId)); // contentId 매핑
+            rewards.forEach(reward -> reward.setContentNumber(contentNumber)); // contentNumber 매핑
             contentDAO.saveReward(content.getRewards());
         });
     }

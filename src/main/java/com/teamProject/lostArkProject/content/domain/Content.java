@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 @Alias("content")
 public class Content {
-    private int contentId;
+    private int contentNumber;
     private String contentName;
     private String contentIconLink;
     private int minItemLevel;

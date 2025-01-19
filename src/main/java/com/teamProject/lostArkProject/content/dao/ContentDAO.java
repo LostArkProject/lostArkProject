@@ -22,7 +22,7 @@ public interface ContentDAO {
     List<ContentDTO> getContents();
     List<StartTimeDTO> getstartTimes();
     List<RewardDTO> getRewards();
-    String getContentNameByContentId(int contentId);
+    String getContentNameByContentNumber(int contentNumber);
 
     // 데이터 삭제
     void deleteAll();
