@@ -29,7 +29,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	// Thymeleaf Layout Dialect
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.0'
@@ -44,6 +43,9 @@ dependencies {
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// Email-Authentication
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'
 
 	// Testing
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

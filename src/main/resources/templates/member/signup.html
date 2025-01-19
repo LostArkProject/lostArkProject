@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>LostArkProject - 회원가입 페이지</title>
+  <link rel="stylesheet" href="/css/member.css" />
 </head>
 
 <body>
@@ -19,26 +20,31 @@
             </a>
             <h3>회원가입</h3>
           </div>
-          <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="floatingText" placeholder="" name="signupId">
-            <label for="floatingText">이메일을 입력하세요</label>
-            <a href="">이메일 중복여부확인</a>
+          <div class="form-floating mb-3 d-flex">
+            <input type="email" class="form-control" id="signupId" placeholder="" name="signupId">
+            <label for="signupId">이메일을 입력하세요</label>
+            <button class="btn btn-outline-primary nowrap" type="button" onclick="sendEmail()">인증번호 발송</button>
+          </div>
+          <div class="form-floating mb-3 d-flex">
+              <input type="text" class="form-control" id="checkAuthentication" placeholder="" name="checkAuthentication">
+              <label for="checkAuthentication">인증번호를 입력하세요</label>
+              <button class="btn btn-outline-primary nowrap" type="button" onclick="checkAuthentication()">인증번호 확인</button>
           </div>
           <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="floatingInput" placeholder="" name="signupPW">
+            <input type="password" class="form-control" id="floatingInput" placeholder="" name="signupPW">
             <label for="floatingInput">비밀번호를 입력하세요</label>
           </div>
           <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="a" placeholder="" name="signupPWCheck">
+            <input type="password" class="form-control" id="a" placeholder="" name="signupPWCheck">
             <label for="floatingInput">비밀번호를 확인하세요</label>
           </div>
 
           <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="b" placeholder="" name="signupRepresentativeCharacter">
+            <input type="text" class="form-control" id="b" placeholder="" name="signupRepresentativeCharacter">
             <label for="floatingInput">대표캐릭터 이름을 입력하세요</label>
           </div>
           <div class="textarea">
-            <textarea class="form-control" row="5">
+            <textarea class="form-control privacy-agreement-form" row="5">
               [개인정보 이용 동의서]
 
 1. 개인정보의 수집 및 이용 목적
@@ -57,7 +63,7 @@
             </textarea>
           </div>
           <div class="d-flex align-items-center justify-content-between mb-4">
-            <div class="form-check">
+            <div class="form-check mt-2">
               <input type="checkbox" class="form-check-input" id="exampleCheck1" name="signupAgreement">
               <label class="form-check-label" for="exampleCheck1">개인정보 이용동의</label>
             </div>

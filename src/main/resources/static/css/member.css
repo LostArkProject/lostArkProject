@@ -1,0 +1,8 @@
+.nowrap {
+  white-space: nowrap;
+}
+
+.privacy-agreement-form {
+  height: 100px;
+  resize: none;
+}

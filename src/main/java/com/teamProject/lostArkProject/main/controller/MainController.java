@@ -10,6 +10,7 @@ import com.teamProject.lostArkProject.member.domain.Member;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,30 +35,13 @@ public class MainController {
     // 내실
     @GetMapping("/collectible")
     public String getCharacterCollectible(Model model, HttpSession session) {
-        String characterName = (String) session.getAttribute("nickname"); // http 세션에서 가져온 닉네임
-        //collectibleService.saveCollectiblePoint(characterName); //회원가입 후 즉시 적용
-        List<CollectiblePointSummaryDTO> collectibleItemList = collectibleService.getCollectiblePointSummary(characterName);
+        Member member = (Member) session.getAttribute("member"); // http 세션에서 가져온 닉네임
+        if(member == null) {
+            return "member/signin";
+        }
+        List<CollectiblePointSummaryDTO> collectibleItemList = collectibleService.getCollectiblePointSummary(member.getMemberId());
         model.addAttribute("collectibleItemList", collectibleItemList);
         return "collectible/collectible"; // 결과 뷰로 이동
     }
 
-    // 테스트 페이지
-    @GetMapping("/test")
-    public String character(Model model) {
-        model.addAttribute("characterList", new ArrayList<CharacterInfo>());
-        return "test/index";
-    }
-
-    @GetMapping("/test/characters")
-    public Mono<String> getCharacterInfo(@RequestParam String characterName, Model model,
-                                         HttpServletRequest request) {
-        // 클라이언트가 입력한 캐릭터 닉네임을 http 세션에 저장
-        HttpSession session = request.getSession();
-        session.setAttribute("nickname", characterName);
-        Mono<List<CharacterInfo>> characterInfoMono = collectibleService.getCharacterInfo(characterName);
-        return characterInfoMono.flatMap(characterInfoList -> {
-            model.addAttribute("characterList", characterInfoList);
-            return Mono.just("test/characters");
-        });
-    }
 }

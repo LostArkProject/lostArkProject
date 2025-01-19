@@ -1,7 +1,51 @@
+/************************************ 
+*  Tag
+*************************************/
 span, small, td {
   color: #ccc
 }
 
+a {
+  color: #b19cd9;
+  text-decoration: none
+}
+
+a:hover {
+  color: #d1b5d6
+}
+
+/************************************ 
+*  Logo
+*************************************/
+.logo img {
+  width: 200px;
+}
+
+/************************************ 
+*  Navigation bar
+*************************************/
+.nav-image {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  background-color: black;
+  text-align: center;
+  align-content: center;
+  border-radius: 50%;
+}
+
+.nav-image:hover {
+  background-color: #191c24;
+}
+
+.nav-image img {
+  width: 40px;
+  filter: grayscale(100%);
+}
+
+/************************************ 
+*  Modal
+*************************************/
 .modal-content {
   background-color: #4f4f4f;
 }
@@ -14,3 +58,31 @@ span, small, td {
 .modal.fade .modal-dialog {
   transform: translate(0, 50px);
 }
+
+/************************************ 
+*  Button
+*************************************/
+.btn-primary {
+  color: #fff;
+  background-color: #5fb49a;
+  border-color: transparent;
+}
+
+.btn-primary:hover {
+  color: #191c24;
+  background-color: #fff;
+  border-color: transparent;
+}
+
+.btn-check:focus+.btn-primary, .btn-primary:focus {
+  color: #191c24;
+  background-color: #fff;
+  border-color: transparent;
+  box-shadow: 0px 0px 0px 0px rgb(255 255 255 / 0%);
+}
+
+.btn-check:focus+.btn, .btn:focus {
+  outline: 0;
+  box-shadow: 0px 0px 0px 0px rgb(255 255 255 / 0%);
+}
+
