@@ -5,10 +5,7 @@ import com.teamProject.lostArkProject.alarm.service.AlarmService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,10 +24,10 @@ public class AlarmController {
     }
 
     // 특정 컨텐츠의 알람을 설정하는 메서드
-    @PostMapping("/api/alarm/member/{memberId}/{contentNumber}")
+    @PostMapping("/api/alarm/member/{memberId}")
     public ResponseEntity<?> toggleAlarm(@PathVariable("memberId") String memberId,
-                                         @PathVariable("contentNumber") int contentNumber) throws Exception {
-        boolean result = alarmService.toggleAlarm(memberId, contentNumber);
+                                         @RequestBody String contentName) throws Exception {
+        boolean result = alarmService.toggleAlarm(memberId, contentName);
         return ResponseEntity.ok(result);
     }
 }

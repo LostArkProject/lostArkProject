@@ -29,7 +29,7 @@ const domTemplates = {
                         class="form-check-input align-self-center"
                         id="checkbox-${content.contentNumber}"
                         name="content"
-                        value="${content.contentNumber}"
+                        value="${content.contentName}"
                         aria-label="알림 설정: ${content.contentName}"
                         style="width: 20px;"
                     />
@@ -98,12 +98,10 @@ async function handleModalClick(event) {
     await initializeContentContainer('#remain-time-modal-body', 'modal');
 
     $('.modal-container').on('change', 'input[type="checkbox"]', function () {
-        const isChecked = $(this).is(':checked'); // 체크박스의 상태 확인
-        const contentNumber = $(this).val(); // 체크박스의 value 속성 (contentNumber)
+        const contentName = $(this).val(); // 체크박스의 value 속성 (contentName)
         
-        console.log(isChecked);
-        console.log(contentNumber);
-        updateAlarmSettings(contentNumber);
+        console.log(contentName);
+        updateAlarmSettings(contentName);
     });
 
     modalManager.openModal();
@@ -135,17 +133,30 @@ async function fetchContentData(url) {
  * @param {string} [selectorType='main'] - 선택자의 종류 (초기값: 'main')
  */
 async function initializeContentContainer(selector, selectorType = 'main') {
+    // 데이터 가져오기
     const contents = await fetchContentData('/contents/start-time');
+    const alarms = await fetchAlarmSettings();
 
+    // 홈에 출력할 컨텐츠 데이터 페이징
     /** @deprecated */
     const reductContents = selector === '.content-container' 
         ? getFirstFiveContents(contents, 5)
         : contents;
 
+    // 알림 설정된 컨텐츠명 배열 생성
+    const alarmContentNames = alarms.map(alarm => alarm.contentName);
+
+    // dom 생성
+    const contentsDom = reductContents.map(content => {
+        const isChecked = alarmContentNames.includes(content.contentName);
+        return domTemplates.contentDom(content, 'loading...', selectorType)
+            .replace(
+                `type="checkbox"`,
+                `type="checkbox" ${isChecked ? 'checked' : ''}`
+            )
+    }).join('');
+
     // 컨테이너 렌더링
-    const contentsDom = reductContents.map(content =>
-        domTemplates.contentDom(content, 'loading...', selectorType)
-    ).join('');
     $(selector).html(contentsDom);
 
     // 유효한 데이터만 필터링
@@ -160,12 +171,8 @@ async function initializeContentContainer(selector, selectorType = 'main') {
     // 타이머 시작
     startTimer(
         validContents,
-        (id, formattedTime) => {
-            updateContentTime(id, formattedTime, selector);
-        },
-        (id, finalTime) => {
-            updateContentTime(id, finalTime, selector);
-        },
+        (id, formattedTime) => updateContentTime(id, formattedTime, selector),
+        (id, finalTime) => updateContentTime(id, finalTime, selector),
         selectorType
     );
 }
@@ -179,7 +186,6 @@ async function fetchAlarmSettings() {
     try {
         const memberId = loggedInMember.memberId;
         const response = await getRequest(`/alarm/member/${memberId}`);
-        console.log('알림 설정 데이터');
         console.log(response);
         return response;
     } catch (e) {
@@ -189,15 +195,14 @@ async function fetchAlarmSettings() {
 }
 
 /**
- * contentNumber로 알림 설정을 갱신하는 함수
+ * 컨텐츠명으로 알림 설정을 갱신하는 함수
  * 
- * @param {number} contentNumber - 특정 컨텐츠의 number
+ * @param {string} contentName - 컨텐츠명
  */
-async function updateAlarmSettings(contentNumber) {
+async function updateAlarmSettings(contentName) {
     try {
         const memberId = loggedInMember.memberId;
-        const response = await postRequest(`/alarm/member/${memberId}/${contentNumber}`);
-        console.log('알림 설정 갱신: ');
+        const response = await postRequest(`/alarm/member/${memberId}`, contentName);
         console.log(response);
     } catch (e) {
         console.error('유저의 알림 설정 갱신 실패', e.responseText);
@@ -394,12 +399,10 @@ let modalTimer = null;
  */
 function startTimer(contents, onTick, onComplete, selectorType) {
     // 기존 타이머 확인 및 중지
-    if (selectorType === 'main') {
-        if (mainTimer) {
-            console.log('실행 중인 메인 타이머를 중지합니다.');
-            clearInterval(mainTimer);
-            mainTimer = null;
-        }
+    if (mainTimer) {
+        console.log('실행 중인 메인 타이머를 중지합니다.');
+        clearInterval(mainTimer);
+        mainTimer = null;
     }
     if (modalTimer) {
         console.log('실행 중인 모달 타이머를 중지합니다.');
@@ -407,6 +410,7 @@ function startTimer(contents, onTick, onComplete, selectorType) {
         modalTimer = null;
     }
 
+    // 타이머 이벤트 설정
     const timer = setInterval(() => {
         const now = new Date();
         contents.forEach(content => {
