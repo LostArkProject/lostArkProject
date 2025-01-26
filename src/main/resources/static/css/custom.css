@@ -93,13 +93,13 @@ a:hover {
   background: aliceblue;
 }
 
-.modal-delete-btn-wrapper {
+.modal-checkbox-wrapper {
   display: flex;
   align-items: center;
   position: relative;
 }
 
-.modal-delete-btn-wrapper .form-check-input:disabled + .form-check-label::after {
+.modal-checkbox-wrapper .form-check-input:disabled + .form-check-label::after {
   position: absolute;
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
@@ -107,5 +107,5 @@ a:hover {
   color: #000000;
   top: 50%;
   transform: translateY(-41%);
-  margin-left: -21.5px;
+  margin-left: -22px;
 }

@@ -7,5 +7,6 @@ import org.apache.ibatis.type.Alias;
 @Alias("alarm")
 public class Alarm {
     private String memberId;
+    private int contentNumber;
     private String contentName;
 }

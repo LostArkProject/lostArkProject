@@ -59,18 +59,13 @@ export async function postRequest(url, data = null) {
  * @param {Object} data DELETE 요청의 body로 전달할 객체를 입력합니다.
  * @returns {Object} 요청에 따른 결과가 반환됩니다.
  */ 
-export async function deleteRequest(url, data = null) {
+export async function deleteRequest(url) {
     try {
-        if (typeof data === 'object') {
-            data = JSON.stringify(data); // 객체를 JSON 데이터로 파싱
-        }
         // 비동기 흐름 제어를 위한 async, await를 사용할 수 있도록 Promise 객체를 반환합니다.
         return await new Promise((resolve, reject) => {
             $.ajax({
                 url: `${baseUrl}${url}`,
-                method: 'POST',
-                data: data,
-                contentType: 'application/json', // POST 요청의 body를 JSON으로 전송
+                method: 'DELETE',
                 success: resolve, // 성공 시 데이터 반환
                 error: reject // 실패 시 에러 반환
             });
