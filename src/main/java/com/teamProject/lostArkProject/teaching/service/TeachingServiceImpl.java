@@ -22,12 +22,15 @@ public class TeachingServiceImpl implements TeachingService {
         teachingDAO.newMentor(mentorDTO);
 
         // 2. MENTOR_CONTENT 테이블에 콘텐츠 정보 저장
-        if (mentorDTO.getMentorContentId() != null) {
-            for (Integer mentorContentId : mentorDTO.getMentorContentId()) {
-                teachingDAO.insertMentorContent(mentorDTO.getMentorMemberId(), mentorContentId);
+        if (mentorDTO.getMentorContentId() != null && !mentorDTO.getMentorContentId().isEmpty()) {
+            // 쉼표로 구분된 문자열을 배열로 변환
+            String[] contentIds = mentorDTO.getMentorContentId().split(", ");
+            for (String contentId : contentIds) {
+                teachingDAO.insertMentorContent(mentorDTO.getMentorMemberId(), contentId.trim());
             }
         }
     }
+
 
     @Override
     public void newMentee(MenteeDTO menteeDTO) {

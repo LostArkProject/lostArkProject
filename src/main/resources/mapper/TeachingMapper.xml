@@ -35,6 +35,7 @@
         )
     </insert>
 
+
     <!--새로운 멘티 입력 -->
     <insert id="newMentee" parameterType="MenteeDTO">
         INSERT INTO MENTEE(

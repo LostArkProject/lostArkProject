@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -24,23 +25,29 @@ public class TeachingController {
 
     @GetMapping("/teaching/newMentor")
     public String newMentor(HttpSession session) {
-        // 세션에서 "memberNickname" 값 확인
-        String memberNickname = (String) session.getAttribute("memberNickname");
+        // 세션에서 "member" 객체 확인
+        Object member = session.getAttribute("member");
 
-        if (memberNickname == null) {
-            // 세션에 "memberNickname"이 없으면 접근 불가
+        if (member == null) {
+            // 세션에 "member" 객체가 없으면 접근 불가
             return "redirect:/member/signin"; // 로그인 페이지로 리다이렉트
         }
-        // "memberNickname"이 존재하면 페이지 반환
+        // "member" 객체가 존재하면 페이지 반환
         return "teaching/newMentor";
     }
 
+
     @PostMapping("/teaching/newMentor")
-    public String newMentor(@ModelAttribute MentorDTO mentorDTO) {
-        System.out.println("recieved : " + mentorDTO);
+    public String newMentor(@ModelAttribute MentorDTO mentorDTO, @RequestParam("mentorContentId[]") String[] contentIds) {
+        // 배열로 받은 mentorContentId를 하나의 문자열로 변환
+        String joinedContentIds = String.join(", ", contentIds);
+        // DTO에 문자열로 저장
+        mentorDTO.setMentorContentId(joinedContentIds);
+        // 서비스 레이어를 통해 데이터베이스에 저장
         teachingService.newMentor(mentorDTO);
         return "redirect:/teaching/mentorList";
     }
+
     /*
     @GetMapping("/teaching/newMentee")
     public String newMentee(){
