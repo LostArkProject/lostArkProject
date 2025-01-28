@@ -1,9 +1,8 @@
 package com.teamProject.lostArkProject.teaching.controller;
 
 
-import com.teamProject.lostArkProject.teaching.dto.MenteeDTO;
 import com.teamProject.lostArkProject.teaching.dto.MentorDTO;
-import com.teamProject.lostArkProject.teaching.dto.MentorLIstDTO;
+import com.teamProject.lostArkProject.teaching.dto.MentorListDTO;
 import com.teamProject.lostArkProject.teaching.service.TeachingService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class TeachingController {
@@ -71,7 +69,7 @@ public class TeachingController {
        // }
 
         // 세션 값이 존재하면 서비스 호출 및 데이터 처리
-        List<MentorLIstDTO> mentors = teachingService.getMentorList();
+        List<MentorListDTO> mentors = teachingService.getMentorList();
         model.addAttribute("mentors", mentors);
         return "teaching/mentorList";
     }

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class MentorLIstDTO {
+public class MentorListDTO {
     private String mentorMemberId;
     private String mentorWantToSay;
     private List<String> mentorContentIds; // 변경된 부분
