@@ -8,10 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -46,35 +43,23 @@ public class TeachingController {
         return "redirect:/teaching/mentorList";
     }
 
-    /*
-    @GetMapping("/teaching/newMentee")
-    public String newMentee(){
-        return "teaching/newMentee";
-    }
-
-    @PostMapping("/teaching/newMentee")
-    public String newMentee(@ModelAttribute MenteeDTO menteeDTO) {
-        System.out.println(menteeDTO);
-        teachingService.newMentee(menteeDTO);
-        return "redirect:/index";
-    }*/
-
     @GetMapping("/teaching/mentorList")
     public String mentorList(HttpSession session, Model model) {
-        // 세션에서 "memberNickname" 값을 확인
-        //String memberNickname = (String) session.getAttribute("memberNickname");
-        // 세션에 값이 없으면 로그인 페이지로 리다이렉트
-       // if (memberNickname == null) {
-        //    return "redirect:/member/signin"; // 로그인 페이지로 리다이렉트
-       // }
-
-        // 세션 값이 존재하면 서비스 호출 및 데이터 처리
+        Object member = session.getAttribute("member");
+        if (member == null) {
+            // 세션에 "member" 객체가 없으면 접근 불가
+            return "redirect:/member/signin"; // 로그인 페이지로 리다이렉트
+        }
         List<MentorListDTO> mentors = teachingService.getMentorList();
         model.addAttribute("mentors", mentors);
         return "teaching/mentorList";
     }
 
-    @GetMapping("/teaching/mentorListDetail")
-    public String mentorListDetail() { return "teaching/mentorListDetail";}
+    @GetMapping("/teaching/mentorListDetail/{mentorMemberId}")
+    public String mentorListDetail(@PathVariable("mentorMemberId") String mentorMemberId, Model model) {
+        List<MentorListDTO> mentors = teachingService.getMentorDetail(mentorMemberId);
+        model.addAttribute("mentors", mentors);
 
+        return "teaching/mentorListDetail";
+    }
 }

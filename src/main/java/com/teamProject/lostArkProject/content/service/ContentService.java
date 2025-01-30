@@ -125,6 +125,7 @@ public class ContentService {
 
     // api 데이터를 도메인 객체 형식으로 변환하는 메서드
     private Content toDomain(CalendarApiDTO calendarApiDTO) {
+        System.out.println(calendarApiDTO);
         Content content = new Content();
 
         content.setContentName(calendarApiDTO.getContentsName());

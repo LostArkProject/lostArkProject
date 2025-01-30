@@ -18,5 +18,5 @@ public interface TeachingDAO {
     public List<Map<String,Object>> getMentorList();
     public List<Map<String,Object>> getMentorContent();
     public List<Map<String,Object>> getMemberCharacter();
-    //public Map<String,Object> getMentorListDetail(long mentorId);
+//    public Map<String,Object> getMentorListDetail(long mentorId);
 }

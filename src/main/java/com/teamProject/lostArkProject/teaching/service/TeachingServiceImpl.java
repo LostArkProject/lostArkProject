@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TeachingServiceImpl implements TeachingService {
@@ -79,16 +80,44 @@ public class TeachingServiceImpl implements TeachingService {
 
        return resultList;
    }
-
-
-
-
-
     @Override
-    public Map<String, Object> getMentorListDetail(long mentorId) {
-        return Map.of();
+    public List<MentorListDTO> getMentorDetail(String mentorMemberId) {
+        Map<String, Map<String, Object>> mentorMap = teachingDAO.getMentorList().stream()
+                .collect(Collectors.toMap(m -> String.valueOf(m.get("mentorMemberId")), m -> m));
+        Map<String, Map<String, Object>> contentMap = teachingDAO.getMentorContent().stream()
+                .collect(Collectors.toMap(c -> String.valueOf(c.get("mentorMemberId")), c -> c));
+        Map<String, Map<String, Object>> characterMap = teachingDAO.getMemberCharacter().stream()
+                .collect(Collectors.toMap(c -> String.valueOf(c.get("mentorMemberId")), c -> c));
+
+        List<MentorListDTO> resultList = new ArrayList<>();
+        Map<String, Object> mentor = mentorMap.get(mentorMemberId);
+        if (mentor != null) {
+            MentorListDTO dto = new MentorListDTO();
+            dto.setMentorMemberId(mentorMemberId);
+            dto.setMentorWantToSay(String.valueOf(mentor.get("mentorWantToSay")));
+
+            Map<String, Object> content = contentMap.get(mentorMemberId);
+            if (content != null) {
+                String contentIdsString = String.valueOf(content.get("mentorContentNames"));
+                dto.setMentorContentIds(Arrays.asList(contentIdsString.split(",")));
+            }
+
+            Map<String, Object> character = characterMap.get(mentorMemberId);
+            if (character != null) {
+                dto.setCharacterNickname(String.valueOf(character.get("characterNickname")));
+                dto.setItemLevel(String.valueOf(character.get("itemLevel")));
+                dto.setServerName(String.valueOf(character.get("serverName")));
+            }
+
+            resultList.add(dto);
+        }
+
+        return resultList;
     }
 
-    ;
+
+
+
+
 
 }
