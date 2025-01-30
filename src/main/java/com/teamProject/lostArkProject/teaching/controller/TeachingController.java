@@ -59,7 +59,7 @@ public class TeachingController {
     public String mentorListDetail(@PathVariable("mentorMemberId") String mentorMemberId, Model model) {
         List<MentorListDTO> mentors = teachingService.getMentorDetail(mentorMemberId);
         model.addAttribute("mentors", mentors);
-
+//아이디로 상세정보가져오기
         return "teaching/mentorListDetail";
     }
 }
