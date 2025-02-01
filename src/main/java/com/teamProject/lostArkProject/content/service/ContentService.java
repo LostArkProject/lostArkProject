@@ -18,7 +18,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -134,15 +136,16 @@ public class ContentService {
         content.setContentCategory(calendarApiDTO.getCategoryName());
 
         // api에서 받아온 StartTimes 데이터를 db의 start_times 테이블에 맞게 가공
-        List<StartTime> startTimes = calendarApiDTO.getStartTimes().stream()
+        List<StartTime> startTimes = Optional.ofNullable(calendarApiDTO.getStartTimes())
+                .orElse(List.of("2099-12-30T00:00:00"))
+                .stream()
                 .map(startTime -> {
                     StartTime st = new StartTime();
                     st.setContentStartTime(LocalDateTime.parse(startTime));
-
                     return st;
-            }).toList();
+                })
+                .toList();
         content.setStartTimes(startTimes);
-
 
         // api에서 받아온 RewardItems 데이터를 db의 reward 테이블에 맞게 가공
         List<Reward> rewards = calendarApiDTO.getRewardItems().stream()
