@@ -4,14 +4,11 @@
 <head>
     <meta charset="utf-8">
     <title>기본 홈</title>
-    <style>
-        .notice-preview:hover {
-            background-color: rgba(100, 100, 100, 0.2);
-            transition-duration: 0.2ms;
-            cursor: pointer;
+    <link rel="stylesheet" href="/css/home.css" />
 
-        }
-    </style>
+    <script th:inline="javascript">
+        let loggedInMember = /*[[${loggedInMember}]]*/ {};
+    </script>
 </head>
 
 <body>
@@ -144,50 +141,46 @@
 
                 <!-- 컨텐츠까지 남은시간 리스트 -->
                 <div class="bg-secondary text-center rounded p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
                         <h6 class="mb-0">컨텐츠</h6>
                     </div>
                     <!-- 컨텐츠 본문 -->
                     <div class="content-container"></div>
                 </div>
                 <!-- 알림 설정 -->
-                <div class="bg-secondary rounded p-4 mt-4">
+                <div class="bg-secondary rounded p-4 mt-4 alarm-container">
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <h6 class="mb-0">알림</h6>
                         <!-- 알림 설정 modal 링크 -->
                         <a href="#" class="content-modal-link">전체</a>
                     </div>
                     
-                    
-                    <div class="d-flex align-items-center border-bottom py-2">
-                        <input class="form-check-input m-0" type="checkbox">
-                        <div class="w-100 ms-3">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="flex-grow-1">카오스게이트</span>
-                                <span>25:30</span>
-                                <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center border-bottom py-2">
-                        <input class="form-check-input m-0" type="checkbox">
-                        <div class="w-100 ms-3">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="flex-grow-1">필드보스</span>
-                                <span>25:30</span>
-                                <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center border-bottom py-2">
-                        <input class="form-check-input m-0" type="checkbox" checked>
-                        <div class="w-100 ms-3">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="flex-grow-1">모험 섬</span>
-                                <span>01:25:30</span>
-                                <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                            </div>
-                        </div>
+                    <div class="alarm-wrapper">
+                        <th:block th:if="${loggedInMember == null}">
+                            <p class="text-center">로그인이 필요합니다.</p>
+                        </th:block>
+    
+                        <th:block th:if="${loggedInMember != null}">
+                            <th:block th:if="${alarms != null and !#lists.isEmpty(alarms)}">
+                                <th:block th:each="alarm : ${alarms}">
+                                    <div class="d-flex align-items-center border-bottom py-2">
+                                        <div class="w-100 ms-3">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <span class="flex-grow-1" th:text="${alarm.contentName}"></span>
+                                                <span>loading...</span>
+                                                <button class="btn btn-sm" th:data-content-name="${alarm.contentName}">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th:block>
+                            </th:block>
+    
+                            <th:block th:if="${alarms == null or #lists.isEmpty(alarms)}">
+                                <p class="text-center">알림 설정한 컨텐츠가 존재하지 않습니다.</p>
+                            </th:block>
+                        </th:block>
                     </div>
                 </div>
             </div>
@@ -202,7 +195,7 @@
                     <h5 class="modal-title">알림 설정</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body" id="remain-time-modal-body"></div>
+                <div class="modal-body modal-container"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                     <button type="button" class="btn btn-primary">저장</button>
