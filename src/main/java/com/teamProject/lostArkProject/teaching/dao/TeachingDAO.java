@@ -13,10 +13,10 @@ import java.util.Map;
 @Mapper
 public interface TeachingDAO {
     public void newMentor(MentorDTO mentorDTO);
-    void insertMentorContent(@Param("mentorMemberId") String mentorMemberId, @Param("mentorContentId") Integer contentId);
+    void insertMentorContent(@Param("mentorMemberId") String mentorMemberId, @Param("mentorContentId") String contentId);
     public void newMentee(MenteeDTO menteeDTO);
     public List<Map<String,Object>> getMentorList();
     public List<Map<String,Object>> getMentorContent();
     public List<Map<String,Object>> getMemberCharacter();
-    //public Map<String,Object> getMentorListDetail(long mentorId);
+//    public Map<String,Object> getMentorListDetail(long mentorId);
 }

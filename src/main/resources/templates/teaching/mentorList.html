@@ -1,50 +1,38 @@
 <!DOCTYPE html>
 <html layout:decorate="~{/layout.html}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="utf-8">
     <title>MentorList</title>
 </head>
-
 <body>
 <div layout:fragment="content">
     <div class="container-fluid vh-100 p-0 m-0">
-    <!-- Content Start -->
-    <div class="row">
-        <!-- Table Start -->
-                <div class="col-12">
-                    <div class="bg-secondary rounded h-100 p-4">
-                        <h2 class="mb-4">멘토리스트</h2>
-                        <div class="table-responsive w-100">
-                            <table class="table table-striped">
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">대표캐릭터명</th>
-                                    <th scope="col">캐릭터 레벨</th>
-                                    <th scope="col">서버</th>
-                                    <th scope="col">주로 하는 컨텐츠</th>
-                                    <th scope="col">한마디</th>
-                                </tr>
-                                    <tr th:each="mentor,iterStat : ${mentors}">
-                                    <td th:text="${iterStat.index + 1}"></td>
-                                    <td th:text="${mentor.characterNickname}"></td>
-                                    <td th:text="${mentor.itemLevel}"></td>
-                                    <td th:text="${mentor.serverName}"></td>
-                                    <td th:text="${mentor.mentorContentIds}"></td>
-                                    <td th:text="${mentor.mentorWantToSay}"></td>
-                                </tr>
-                                <!--현재 로그인 로직 부재로 인해 블록 막아둠 -->
-                                <!--
-                                <th:block th:if="${session.memberId != null}">
-                                    <tr>
-                                        <td colspan="6">
-                                            <input type="button" value="멘토 신청하러 가기" th:onclick="|location.href='@{/teaching/newMentor}'|">
-                                        </td>
-                                    </tr>
-                                </th:block>
-                                -->
-                            </table>
-                        </div>
+        <!-- Content Start -->
+        <div class="row">
+            <div class="col-12">
+                <div class="bg-secondary rounded h-100 p-4">
+                    <h2 class="mb-4">멘토리스트</h2>
+                    <div class="table-responsive w-100">
+                        <table class="table table-striped">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">대표캐릭터명</th>
+                                <th scope="col">캐릭터 레벨</th>
+                                <th scope="col">서버</th>
+                                <th scope="col">주로 하는 컨텐츠</th>
+                                <th scope="col">한마디</th>
+                            </tr>
+                            <tr th:each="mentor,iterStat : ${mentors}">
+                                <td th:text="${iterStat.index + 1}"></td>
+                                <td>
+                                    <a th:href="@{/teaching/mentorListDetail/{mentorMemberId}(mentorMemberId=${mentor.mentorMemberId})}" th:text="${mentor.characterNickname}"></a>
+                                </td>
+                                <td th:text="${mentor.itemLevel}"></td>
+                                <td th:text="${mentor.serverName}"></td>
+                                <td th:text="${mentor.mentorContentIds}"></td>
+                                <td th:text="${mentor.mentorWantToSay}"></td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -53,11 +41,8 @@
     </div>
     <!-- Content End -->
 
-
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 </div>
-
 </body>
-
 </html>
