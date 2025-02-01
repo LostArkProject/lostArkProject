@@ -9,7 +9,7 @@ import org.apache.ibatis.type.Alias;
 @Alias("rewardDTO")
 public class RewardDTO {
     private int rewardId;
-    private int contentId;
+    private int contentNumber;
     private String rewardItemName;
     private int rewardItemLevel;
     private String rewardItemIconLink;

@@ -10,7 +10,7 @@ import java.util.List;
 @Setter
 @Alias("contentStartTimeDTO")
 public class ContentStartTimeDTO {
-    private int contentId;
+    private int contentNumber;
     private String contentName;
     private String contentIconLink;
     private String contentCategory;

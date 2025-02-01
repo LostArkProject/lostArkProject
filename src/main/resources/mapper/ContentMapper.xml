@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProject.lostArkProject.content.dao.ContentDAO">
     <!-- content 테이블 저장 -->
-    <insert id="saveContent" parameterType="content" useGeneratedKeys="true" keyProperty="contentId" keyColumn="content_id">
+    <insert id="saveContent" parameterType="content" useGeneratedKeys="true" keyProperty="contentNumber" keyColumn="content_number">
         INSERT INTO content(content_name, content_icon_link, min_item_level, content_location, content_category)
         VALUES (#{contentName},
                 #{contentIconLink},
@@ -15,20 +15,20 @@
 
     <!-- start_time 테이블 저장 -->
     <insert id="saveStartTime">
-        INSERT INTO start_time(content_id, content_start_time)
+        INSERT INTO start_time(content_number, content_start_time)
         VALUES
         <foreach collection="startTimes" item="startTime" separator=",">
-            (#{startTime.contentId},
+            (#{startTime.contentNumber},
              #{startTime.contentStartTime})
         </foreach>
     </insert>
 
     <!-- reward 테이블 저장 -->
     <insert id="saveReward">
-        INSERT INTO reward(content_id, reward_item_name, reward_item_level, reward_item_icon_link, reward_item_grade)
+        INSERT INTO reward(content_number, reward_item_name, reward_item_level, reward_item_icon_link, reward_item_grade)
         VALUES
         <foreach collection="rewards" item="reward" separator=",">
-            (#{reward.contentId},
+            (#{reward.contentNumber},
              #{reward.rewardItemName},
              #{reward.rewardItemLevel},
              #{reward.rewardItemIconLink},
@@ -49,10 +49,10 @@
         FROM content c
         LEFT JOIN
             start_time s
-            ON s.content_id = c.content_id
+            ON s.content_number = c.content_number
         LEFT JOIN
             reward r
-            ON r.content_id = c.content_id
+            ON r.content_number = c.content_number
     </select>
     <resultMap id="ContentAll" type="contentDTO">
         <!-- contentDTO 기본 컬럼 매핑 -->
@@ -75,23 +75,23 @@
 
     <!-- content, start_time 테이블 join -->
     <select id="getContentStartTimes" resultMap="contentStartTime">
-        SELECT c.content_id,
+        SELECT c.content_number,
                c.content_name,
                c.content_icon_link,
                c.content_category,
                s.content_start_time
         FROM content c
         LEFT JOIN start_time s
-        ON s.content_id = c.content_id
+        ON s.content_number = c.content_number
     </select>
     <resultMap id="contentStartTime" type="contentStartTimeDTO">
-        <result property="contentId" column="content_id" />
+        <result property="contentNumber" column="content_number" />
         <result property="contentName" column="content_name" />
         <result property="contentIconLink" column="content_icon_link" />
         <result property="contentCategory" column="content_category" />
 
-        <collection property="contentStartTimes" ofType="startTimeDTO" column="content_id" javaType="ArrayList">
-            <result property="contentId" column="content_id" />
+        <collection property="contentStartTimes" ofType="startTimeDTO" column="content_number" javaType="ArrayList">
+            <result property="contentNumber" column="content_number" />
             <result property="contentStartTime" column="content_start_time" />
         </collection>
     </resultMap>
@@ -109,6 +109,12 @@
     <!-- reward 테이블 조회 -->
     <select id="getRewards" parameterType="rewardDTO">
         SELECT * FROM reward
+    </select>
+
+    <!-- -->
+    <select id="getContentNameByContentNumber" parameterType="int" resultType="String">
+        SELECT content_name FROM content
+        WHERE content_number=#{contentNumber}
     </select>
 
     <!-- content 관련 테이블의 모든 데이터 삭제 -->

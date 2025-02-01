@@ -18,7 +18,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -109,16 +111,16 @@ public class ContentService {
         return Mono.fromRunnable(() -> {
             // content 테이블 저장
             contentDAO.saveContent(content);
-            int contentId = content.getContentId();
+            int contentNumber = content.getContentNumber();
 
             // start_time 테이블 저장
             List<StartTime> startTimes = content.getStartTimes();
-            startTimes.forEach(startTime -> startTime.setContentId(contentId)); // contentId 매핑
+            startTimes.forEach(startTime -> startTime.setContentNumber(contentNumber)); // contentNumber 매핑
             contentDAO.saveStartTime(startTimes);
 
             // reward 테이블 저장
             List<Reward> rewards = content.getRewards();
-            rewards.forEach(reward -> reward.setContentId(contentId)); // contentId 매핑
+            rewards.forEach(reward -> reward.setContentNumber(contentNumber)); // contentNumber 매핑
             contentDAO.saveReward(content.getRewards());
         });
     }
@@ -134,15 +136,16 @@ public class ContentService {
         content.setContentCategory(calendarApiDTO.getCategoryName());
 
         // api에서 받아온 StartTimes 데이터를 db의 start_times 테이블에 맞게 가공
-        List<StartTime> startTimes = calendarApiDTO.getStartTimes().stream()
+        List<StartTime> startTimes = Optional.ofNullable(calendarApiDTO.getStartTimes())
+                .orElse(List.of("2099-12-30T00:00:00"))
+                .stream()
                 .map(startTime -> {
                     StartTime st = new StartTime();
                     st.setContentStartTime(LocalDateTime.parse(startTime));
-
                     return st;
-            }).toList();
+                })
+                .toList();
         content.setStartTimes(startTimes);
-
 
         // api에서 받아온 RewardItems 데이터를 db의 reward 테이블에 맞게 가공
         List<Reward> rewards = calendarApiDTO.getRewardItems().stream()
@@ -174,88 +177,4 @@ public class ContentService {
         log.info("content, start_time 테이블을 조회합니다.");
         return contentDAO.getContentStartTimes();
     }
-
-    //// 주간일정 데이터를 db에서 가져와서 반환
-    //public Mono<List<Calendar>> getCalendars() {
-    //    return Mono.fromCallable(() -> calendarDAO.selectAllCalendarTable());
-    //}
-    //
-    //// Calendar에 서버시간을 추가해서 반환
-    //public Mono<List<CalendarWithServerTimeDTO>> getCalendarWithServerTime() {
-    //    return Mono.fromCallable(() -> calendarDAO.selectCalendarWithStartTime()
-    //                .stream()
-    //                .map(this::convertDTOWithLongTypeTime)
-    //                .toList()
-    //    );
-    //}
-    //
-    //// api에서 받아온 데이터를 entity로 변환
-    //private Calendar toEntity(CalendarAPIDTO apiDTO) {
-    //    Calendar calendar = new Calendar();
-    //    calendar.setCategoryName(apiDTO.getCategoryName());
-    //    calendar.setContentsName(apiDTO.getContentsName());
-    //    calendar.setContentsIcon(apiDTO.getContentsIcon());
-    //    calendar.setMinItemLevel(apiDTO.getMinItemLevel());
-    //    calendar.setLocation(apiDTO.getLocation());
-    //
-    //    // 외부 api에서 받아온 데이터인 rewardItemAPIDTO를 Calendar의 RewardItem으로 변환
-    //    List<RewardItem> rewardItems = apiDTO.getRewardItems().stream().map(rewardItemAPIDTO -> {
-    //        RewardItem rewardItem = new RewardItem();
-    //        rewardItem.setItemLevel(rewardItemAPIDTO.getItemLevel());
-    //
-    //        // 외부 api에서 받아온 데이터인 ItemAPIDTO를 Calendar.RewardItem의 Item으로 변환
-    //        List<Item> items = rewardItemAPIDTO.getItems().stream().map(itemAPIDTO -> {
-    //            Item item = new Item();
-    //            item.setName(itemAPIDTO.getName());
-    //            item.setIcon(itemAPIDTO.getIcon());
-    //            item.setGrade(itemAPIDTO.getGrade());
-    //            return item;
-    //        }).toList();
-    //
-    //        rewardItem.setItems(items);
-    //        return rewardItem;
-    //    }).toList();
-    //
-    //    calendar.setRewardItems(rewardItems);
-    //
-    //    // <LocalDate> 배열의 StartTimeAPIDTO의 startTimes를 <StartTime> 객체 배열의 startTimes로 변환
-    //    List<StartTime> startTimes = apiDTO.getStartTimes().stream().map(startTime -> {
-    //        StartTime start = new StartTime();
-    //        start.setStartTime(startTime);
-    //
-    //        return start;
-    //    }).toList();
-    //
-    //    calendar.setStartTimes(startTimes);
-    //
-    //    return calendar;
-    //}
-
-    //// 서버 시간, 이벤트 시작 시간을 long 타입 변환
-    //private CalendarWithServerTimeDTO convertDTOWithLongTypeTime(Calendar calendar) {
-    //    CalendarWithServerTimeDTO calendarDTO = new CalendarWithServerTimeDTO();
-    //    LocalDateTime now = LocalDateTime.now();  // 현재 서버 시간을 저장
-    //
-    //    calendarDTO.setCategoryName(calendar.getCategoryName());
-    //    calendarDTO.setContentsName(calendar.getContentsName());
-    //    calendarDTO.setSanitizedContentsName(sanitizeContentsName(calendar.getContentsName()));
-    //    calendarDTO.setContentsIcon(calendar.getContentsIcon());
-    //    calendarDTO.setMinItemLevel(calendar.getMinItemLevel());
-    //
-    //    List<Long> startTime = calendar.getStartTimes()  // Calendar 객체의 startTimes(List<StartTime>) 필드를 가져옴
-    //            .stream()  // List를 stream으로 변환
-    //            .map(StartTime::getStartTime)  // StartTime 객체의 startTime(LocalDateTime) 필드를 가져옴
-    //            .map(localDateTime -> localDateTime.toInstant(ZoneOffset.ofHours(9)).toEpochMilli())  // LocalDateTime 타입을 밀리초(long)로 변환
-    //            .toList();  // stream을 List로 변환
-    //    calendarDTO.setStartTimes(startTime);
-    //
-    //    calendarDTO.setServerTime(now.toInstant(ZoneOffset.ofHours(9)).toEpochMilli());  // 서버 시간을 밀리초(long)로 변환
-    //
-    //    return calendarDTO;
-    //}
-    //
-    //// contentsName의 모든 특수문자를 _로 변환
-    //private String sanitizeContentsName(String contentsName) {
-    //    return contentsName.replaceAll("[^a-zA-Z0-9가-힣]", "_");
-    //}
 }
