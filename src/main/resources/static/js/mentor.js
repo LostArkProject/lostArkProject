@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
             link2.textContent = '내가 보낸 멘토링 신청 결과';
 
             // 구분선 + 고정 메뉴 추가
-            messageDropdown.appendChild(fixedDivider);
+            // messageDropdown.appendChild(fixedDivider);
             messageDropdown.appendChild(link1);
             messageDropdown.appendChild(link2);
         } catch (error) {
