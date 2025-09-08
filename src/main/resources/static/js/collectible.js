@@ -10,9 +10,10 @@ window.toggleCleared = function(checkbox) {
     const id      = $(checkbox).data('id');       // data-id 속성 읽기
     const cleared = checkbox.checked;
 
+    //추천 내실 달성 상태 변경
     $.ajax({
       url: '/collectible/clear-status',
-      method: 'POST',
+      method: 'PATCH',
       contentType: 'application/json; charset=UTF-8',
       data: JSON.stringify({
         recommendCollectibleID: id,
@@ -52,6 +53,7 @@ $.ajax({
     }
 });
 
+//내실 차트
 function collectibleChart(collectibleItemList) {
     // collectibleItemList에서 Labels와 데이터 추출 (Type과 비율 계산)
     window.collectibleLabels = collectibleItemList.map(item => item.collectibleTypeName);
@@ -97,9 +99,10 @@ window.escapeHtml = function(str) {
 
 window.changeCollectible = function() {
 
+    //추천 내실 목록 일부 조회
     $.ajax({
         url: '/collectible/getRecommendCollectibleList',
-        type: 'POST',
+        type: 'GET',
         contentType: 'application/json',
         success: function(recommendCollectibleList) {
             const tbody = document.getElementById('recommendTbody');
@@ -108,7 +111,6 @@ window.changeCollectible = function() {
                 const item = recommendCollectibleList[i];
                 // URL이 null이면 disabled 클래스 추가
                 const disabled = item.recommendCollectibleURL ? '' : ' disabled';
-                // name, URL, ID 값을 그대로 넣으면 XSS 위험 → 반드시 escape 처리하세요!
                 rows += `
                   <tr>
                     <td>${escapeHtml(item.recommendCollectibleName)}</td>
@@ -137,10 +139,10 @@ window.changeCollectible = function() {
 
 window.collectibleClear = function(btn) {
         const id = btn.dataset.id;
-
+        //추천 내실 달성시
         $.ajax({
             url: '/collectible/clear',
-            type: 'POST',
+            type: 'PATCH',
             contentType: 'application/json',
             data: JSON.stringify({ collectibleId: id }),
             success: function() {
@@ -150,9 +152,10 @@ window.collectibleClear = function(btn) {
     }
 
 window.loadFullList = function() {
+  //추천내실 전체 목록 조회
   $.ajax({
     url: '/collectible/getRecommendFullCollectibleList',   // JSON 반환용 컨트롤러 엔드포인트
-    type: 'POST',
+    type: 'GET',
     dataType: 'json',
     success: function(recommendFullCollectibleList) {
 

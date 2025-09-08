@@ -7,6 +7,7 @@ import com.teamProject.lostArkProject.member.domain.Member;
 import com.teamProject.lostArkProject.member.domain.MemberCharacter;
 import com.teamProject.lostArkProject.member.dto.CertificationDTO;
 import com.teamProject.lostArkProject.member.dto.CharacterCertificationDTO;
+import com.teamProject.lostArkProject.member.service.EmailService;
 import com.teamProject.lostArkProject.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 public class MemberRestController {
     private final MemberService memberService;
     private final CollectibleService collectibleService;
+    private final EmailService emailService;
     private static final String EMAIL_REGEX =
             "^[0-9A-Za-z]([-_.]?[0-9A-Za-z])*@[0-9A-Za-z]([-_.]?[0-9A-Za-z])*\\.[A-Za-z]{2,3}$";
 
@@ -46,27 +48,21 @@ public class MemberRestController {
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile(PASSWORD_REGEX);
 
-    public MemberRestController(MemberService memberService, CollectibleService collectibleService) {
+    public MemberRestController(MemberService memberService, CollectibleService collectibleService, EmailService emailService) {
         this.memberService = memberService;
         this.collectibleService = collectibleService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/check-email")
+    @Operation(summary = "이메일 중복 확인", description = "중복 이메일인지 확인합니다.")
     public boolean checkEmail(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         return memberService.checkEmail(email);
     }
 
-    //대표캐릭터 api 체크
-    @PostMapping("/check-representativeCharacter")
-    public boolean checkRepresentativeCharacter(@RequestBody Map<String, String> request) {
-        String representativeCharacter = request.get("representativeCharacter");
-        System.out.println(memberService.getCharacterInfo(representativeCharacter));
-        return false;
-    }
-
-    //회원가입
     @PostMapping("/signup-process")
+    @Operation(summary = "회원가입", description = "사용자가 회원가입합니다.")
     public boolean signupProcess(HttpServletRequest request, @RequestBody Map<String, String> requestMap) {
         HttpSession session = request.getSession();
         List<CharacterInfo> characterInfoList = memberService.getCharacterInfo(requestMap.get("representativeCharacter"))
@@ -107,8 +103,8 @@ public class MemberRestController {
         return true;
     }
 
-    //로그인
     @PostMapping("/signin-process")
+    @Operation(summary = "로그인", description = "사용자가 로그인합니다.")
     public boolean signinProcess(HttpServletRequest request, @RequestBody Map<String, String> requestMap,
                                  HttpServletResponse response) {
         HttpSession session = request.getSession();
@@ -134,23 +130,31 @@ public class MemberRestController {
         }
         return false;
     }
-    @PostMapping("/changePassword-process")
+
+    @PatchMapping("/changePassword-process")
+    @Operation(summary = "비밀번호 변경", description = "사용자의 비밀번호를 변경합니다.")
     public boolean changePasswordProcess(@RequestBody Map<String, String> requestMap) {
         memberService.changePassword(requestMap.get("email"),requestMap.get("PW"));
         return true;
     }
 
-    @PostMapping("/check-auth")
-    public String checkAuth(HttpServletRequest request, @RequestBody Map<String, String> requestMap) {
+    @GetMapping("/check-auth")
+    @Operation(summary = "이메일 중복 확인", description = "중복 이메일인지 확인합니다.")
+    public String checkAuth(HttpServletRequest request, @RequestParam String authCode, @RequestParam String email) {
         HttpSession session = request.getSession();
 
         if (session.getAttribute("checkCode") == null) {
             return "expiration";
         }
 
-        if (requestMap.get("authCode").equals((String) session.getAttribute("checkCode"))) {
-            session.invalidate();
+        if (!authCode.equals(emailService.getAuthCode(email))) {
+            return "false";
+        }
+
+        if (authCode.equals((String) session.getAttribute("checkCode"))) {
             session.setMaxInactiveInterval(3600); //1 * 60 * 60 1시간
+            session.invalidate();
+            emailService.deleteAuthCode(email);
             return "true";
         } else {
             return "false";
@@ -182,7 +186,8 @@ public class MemberRestController {
         );
     }
 
-    @PostMapping("changeRCN")
+    @PatchMapping("changeRCN")
+    @Operation(summary = "대표캐릭터 변경", description = "사용자의 대표 캐릭터를 변경합니다.")
     public boolean changeRCN(HttpServletRequest request, @RequestBody Map<String, String> requestMap) {
         HttpSession session = request.getSession();
         Member member = (Member) session.getAttribute("member");
@@ -213,6 +218,7 @@ public class MemberRestController {
     }
 
     @GetMapping("/{nickname}/checkCertification")
+    @Operation(summary = "캐릭터 인증", description = "해당 캐릭터가 사용자의 캐릭터가 맞는지 인증합니다.")
     public boolean checkCertification(@PathVariable("nickname") String nickname, HttpSession session)  {
         List<String> excludedList =
                 (List<String>) session.getAttribute("requiredEquipmentList");
@@ -268,7 +274,8 @@ public class MemberRestController {
 
     }
 
-    @PostMapping("finishCertification")
+    @PatchMapping("finishCertification")
+    @Operation(summary = "캐릭터 인증 성공", description = "캐릭터 인증에 성공하면 사용자에게 특정 권한을 줍니다.")
     public void finishCertification(HttpServletRequest request) {
         HttpSession session = request.getSession();
         Member member = (Member) session.getAttribute("member");

@@ -1,5 +1,6 @@
 package com.teamProject.lostArkProject.member.service;
 
+import com.teamProject.lostArkProject.member.dao.MemberDAO;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
     private static final String senderEmail = "ysh0621000@gmail.com";
+    private final MemberDAO memberDAO;
 
     // 랜덤으로 숫자 생성
     public String createNumber() {
@@ -64,5 +66,18 @@ public class EmailService {
         }
 
         return number; // 생성된 인증번호 반환
+    }
+
+    public void saveAuthCode(String memberId, String authCode) {
+        memberDAO.insertAuthCode(memberId, authCode);
+    }
+
+    public String getAuthCode(String memberId) {
+        String authCode = memberDAO.getAuthCode(memberId);
+        return authCode;
+    }
+
+    public void deleteAuthCode(String memberId) {
+        memberDAO.deleteAuthCode(memberId);
     }
 }

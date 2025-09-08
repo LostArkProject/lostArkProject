@@ -50,6 +50,7 @@ public class MemberController {
         return "member/signin";
     }
 
+    //비밀번호 찾기
     @GetMapping("/findPassword")
     public String findPasswrod() { return "member/findPassword"; }
 

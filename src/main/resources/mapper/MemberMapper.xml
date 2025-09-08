@@ -62,4 +62,22 @@
         WHERE MEMBER_ID = #{memberId}
     </update>
 
+    <!--인증번호 정보 저장 -->
+    <insert id="insertAuthCode">
+        INSERT INTO AUTH_CODE (MEMBER_ID, CODE)
+        VALUES (#{memberId}, #{authCode})
+    </insert>
+
+    <!--인증번호 정보 조회 -->
+    <select id="getAuthCode">
+        SELECT CODE FROM AUTH_CODE
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
+    <!--인증번호 정보 삭제 -->
+    <delete id="deleteAuthCode">
+        DELETE FROM AUTH_CODE
+        WHERE MEMBER_ID = #{memberId}
+    </delete>
+
 </mapper>

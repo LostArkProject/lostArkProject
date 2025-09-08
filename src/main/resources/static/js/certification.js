@@ -163,7 +163,7 @@ async function submitCertification() {
             alert("성공적으로 인증을 마쳤습니다.");
             $.ajax({
                     url: '/member/finishCertification',
-                    type: 'POST',
+                    type: 'Patch',
                     contentType: 'application/json',
             });
             window.location.href = "/"
